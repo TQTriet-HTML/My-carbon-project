@@ -4,4 +4,4 @@ geemap
 streamlit-folium
 folium
 setuptools
-
+python-box==6.1.0
