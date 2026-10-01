@@ -1,4 +1,6 @@
 streamlit
 earthengine-api
+geemap
 streamlit-folium
 folium
+setuptools
