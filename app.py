@@ -1,6 +1,6 @@
 import streamlit as st
 import ee
-import folium
+import geemap.foliumap as geemap
 from streamlit_folium import st_folium
 
 # 1. CẤU HÌNH TRANG WEB
