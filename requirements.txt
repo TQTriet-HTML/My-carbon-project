@@ -3,3 +3,4 @@ earthengine-api
 geemap
 streamlit-folium
 folium
+python-box==7.1.1
