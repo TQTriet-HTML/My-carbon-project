@@ -5,7 +5,7 @@ from streamlit_folium import st_folium
 
 # 1. CẤU HÌNH TRANG WEB
 st.set_page_config(page_title="MRV Forest Carbon", layout="wide", page_icon="🌍")
-st.title("🌍 NỀN TẢNG MRV ĐÁNH GIÁ TÍN CHỈ RỪNG")
+st.title("🌍 NỀN TẢNG MRV ĐÁNH GIÁ TÍN CHỈ CARBON")
 st.markdown("**Bản Demo VQG Cát Tiên** - Tích hợp Vệ tinh Sentinel-2, Laser GEDI & AI")
 
 # 2. KHỞI TẠO EARTH ENGINE (Tự động nhận diện Token bảo mật từ Secrets)
