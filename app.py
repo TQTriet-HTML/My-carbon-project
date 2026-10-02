@@ -11,42 +11,62 @@ from social import hien_thi_mang_xa_hoi
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- CSS HOẠT HỌA & LÀM MƯỢT GIAO DIỆN (UI/UX) ---
+# --- ĐẠI TU GIAO DIỆN (UI OVERHAUL) BẰNG CSS ---
 def inject_custom_css():
     st.markdown("""
         <style>
-        /* Hiệu ứng nổi lên (Hover) cho các thẻ Container */
+        /* Ép font chữ sang các họ sans-serif hiện đại, chuyên nghiệp */
+        html, body, [class*="css"]  {
+            font-family: 'Inter', 'Roboto', 'Segoe UI', sans-serif !important;
+        }
+        
+        /* Tinh chỉnh tiêu đề chính để không bị rớt dòng (giảm size một chút) */
+        .main-title {
+            font-size: 2.2rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0px !important;
+            padding-bottom: 0px !important;
+            color: #E2E8F0;
+        }
+
+        /* Định dạng lại nút Đăng xuất cho gọn gàng và đẹp mắt */
+        .logout-btn-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100%;
+            margin-top: 15px;
+        }
+        
+        /* Hiệu ứng nổi lên cho các khối container (Card) */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 10px;
+            background-color: #1A202C; /* Màu nền tối sang trọng */
         }
         div[data-testid="stVerticalBlock"] > div[style*="border"]:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            border-color: #48bb78 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            border-color: #38A169 !important; /* Viền xanh lá khi hover */
         }
         
-        /* Hiệu ứng bo góc mượt mà cho Nút bấm */
+        /* Chỉnh nút bấm primary (màu chính) */
         button[data-testid="baseButton-primary"] {
-            border-radius: 8px !important;
-            transition: all 0.3s ease;
+            border-radius: 6px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease;
         }
         button[data-testid="baseButton-primary"]:hover {
-            transform: scale(1.02);
+            transform: translateY(-1px);
             filter: brightness(1.1);
-        }
-        
-        /* Chỉnh font chữ Headers tinh tế hơn */
-        h1, h2, h3, h4 {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-            font-weight: 600 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
         </style>
     """, unsafe_allow_html=True)
 
 inject_custom_css()
 
-# --- ĐA NGÔN NGỮ ---
+# --- SIDEBAR: NGÔN NGỮ & LIÊN KẾT NGOÀI ---
 with st.sidebar:
     st.title("🌐 Ngôn ngữ / Language")
     ngon_ngu = st.selectbox(
@@ -56,9 +76,16 @@ with st.sidebar:
     if ngon_ngu != "Tiếng Việt":
         st.info(f"⏳ Đang triển khai AI dịch thuật tự động cho **{ngon_ngu}**.")
     st.divider()
-    st.caption("Carbon Exchange Platform v1.5")
+    
+    st.markdown("### Kết nối với chúng tôi")
+    st.markdown("[📘 Facebook Fanpage](https://facebook.com)")
+    st.markdown("[💬 Nhóm Zalo Cộng đồng](https://zalo.me)")
+    st.markdown("[💼 LinkedIn B2B](https://linkedin.com)")
+    
+    st.divider()
+    st.caption("Carbon Exchange Platform v2.0")
 
-# Khởi tạo trạng thái (Bổ sung mảng social_posts)
+# Khởi tạo trạng thái phiên
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -74,7 +101,6 @@ if "investor_portfolios" not in st.session_state:
 if "project_reports" not in st.session_state:
     st.session_state["project_reports"] = {}
 if "social_posts" not in st.session_state:
-    # Vài bài đăng mồi (Seed data) cho mạng xã hội
     st.session_state["social_posts"] = [
         {
             "id": "post_seed_1",
@@ -109,13 +135,20 @@ if "market_projects" not in st.session_state:
     ]
 
 def main_app():
+    # Sử dụng cột để cấu trúc lại phần Tiêu đề và Nút Đăng xuất cho thẳng hàng, gọn gàng
     col_title, col_logout = st.columns([5, 1])
     with col_title:
-        st.title("🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON")
+        # Sử dụng thẻ div với class main-title đã định dạng bằng CSS thay vì thẻ markdown mặc định
+        st.markdown('<div class="main-title">🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
+        st.caption(f"Chào mừng trở lại, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
+        
     with col_logout:
-        if st.button("🚪 Đăng xuất", use_container_width=True):
+        # Đặt nút đăng xuất vào một container để căn chỉnh tốt hơn
+        st.markdown('<div class="logout-btn-container">', unsafe_allow_html=True)
+        if st.button("🚪 Đăng xuất", type="secondary", use_container_width=True):
             st.session_state["logged_in"] = False
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
             
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
@@ -148,7 +181,7 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # Đã thêm Tab thứ 6: Mạng xã hội Carbon Connect
+    # Các Tab giao diện
     tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs([
         "🛰️ Hệ thống MRV", 
         "💹 Sàn Giao dịch", 
