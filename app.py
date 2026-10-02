@@ -64,7 +64,7 @@ def hien_thi_cong_dang_nhap():
                 save_users(user_db)
                 st.success(f"✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
 
-# 4. HỆ THỐNG LÕI 
+# 4. HỆ THỐNG LÕI (BẢN ĐỒ & SÀN GIAO DỊCH)
 def main_app():
     col_title, col_logout = st.columns([5, 1])
     with col_title:
@@ -74,6 +74,7 @@ def main_app():
             st.session_state["logged_in"] = False
             st.rerun()
             
+    # Kết nối Google Earth Engine
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
         cred_path = os.path.expanduser('~/.config/earthengine/')
@@ -110,9 +111,10 @@ def main_app():
         
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # KHAI BÁO TẠO 2 TAB CHÍNH
+    # KHỞI TẠO TABS
     tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B"])
 
+    # --- TAB 1: MRV ---
     with tab_mrv:
         c_nam1, c_nam2 = st.columns(2)
         with c_nam1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4, key="ns1") 
@@ -131,20 +133,19 @@ def main_app():
             map_data = st_folium(m, width=800, height=550)
 
         with c2:
-            st.info(f"👤 Xin chào: **{st.session_state.get('current_role', 'Thành viên')}**")
             gia_usd = st.number_input("Giá Tín chỉ (USD):", value=12.5)
             if map_data and map_data.get("last_active_drawing"):
                 st.success("Đã khoanh vùng. Sẵn sàng thẩm định.")
             else:
                 st.info("Khoanh vùng để thẩm định dự án.")
 
-   TAB 2: GIAO DIỆN SÀN GIAO DỊCH VÀ QUẢN LÝ TÀI KHOẢN
+    # --- TAB 2: SÀN GIAO DỊCH B2B ---
     with tab_market:
         st.markdown("## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ Carbon")
         
-        # --- PHÂN QUYỀN GIAO DIỆN ---
         vai_tro = st.session_state.get('current_role', '')
         
+        # Giao diện riêng cho từng vai trò
         if vai_tro == "Doanh nghiệp mua tín chỉ":
             st.success("💳 **Ví Doanh nghiệp:** Khả dụng **$150,000.00** | Trạng thái: Đã xác thực KYC")
             
@@ -157,7 +158,7 @@ def main_app():
                 
                 st.markdown("#### 2. Không gian & Tọa độ sinh thái")
                 st.caption("Vui lòng sang Tab 'Hệ thống MRV', khoanh vùng khu rừng của bạn để hệ thống AI trích xuất tọa độ tự động.")
-                st.text_input("Tọa độ Đa giác (GeoJSON) - (Hệ thống tự động đồng bộ từ bản đồ):", disabled=True, placeholder="Chưa có dữ liệu. Vui lòng khoanh vùng bản đồ.")
+                st.text_input("Tọa độ Đa giác (GeoJSON):", disabled=True, placeholder="Chưa có dữ liệu. Vui lòng khoanh vùng bản đồ.")
                 
                 st.markdown("#### 3. Báo cáo Tín chỉ & Cam kết")
                 st.number_input("Khối lượng tín chỉ đề xuất bán (tấn):", min_value=0)
@@ -165,7 +166,7 @@ def main_app():
 
         st.divider()
         
-        # --- BẢNG THỐNG KÊ CHUNG ---
+        # Thống kê
         st.markdown("### 📊 Thống kê Hệ sinh thái")
         user_db = load_users()
         so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
@@ -179,16 +180,27 @@ def main_app():
         
         st.divider()
         
-        # --- BIỂU ĐỒ & THỊ TRƯỜNG ---
+        # Biểu đồ giá
+        st.markdown("### 📈 Biến động Giá Tín chỉ Carbon (6 tháng qua)")
+        dates = pd.date_range(end=pd.Timestamp.today(), periods=6, freq="ME") 
+        chart_data = pd.DataFrame({
+            "Giá Carbon (USD/tấn)": [8.5, 9.2, 10.1, 11.5, 12.0, 12.5]
+        }, index=dates)
+        st.line_chart(chart_data, color="#31a354")
+        
+        st.divider()
+        
         col_news, col_projects = st.columns([1, 2])
         
+        # Tin tức có link thật
         with col_news:
             st.markdown("### 📰 Tin tức Thị trường")
             with st.container(height=400):
-                st.info("🕒 **Hôm nay:** [Báo Chính Phủ: Thị trường carbon giúp Việt Nam thu về hàng ngàn tỷ đồng](https://baochinhphu.vn/thong-diep-quoc-gia-ve-ung-pho-bien-doi-khi-hau-va-thi-truong-carbon-102240101150000000.htm)")
-                st.warning("🕒 **Gần đây:** [VnEconomy: Chuẩn bị vận hành thí điểm sàn giao dịch tín chỉ carbon](https://vneconomy.vn/thi-truong-tin-chi-carbon.html)")
-                st.success("🕒 **Cập nhật:** [Báo Tuổi Trẻ: Đẩy mạnh các dự án tín chỉ carbon rừng tại Tây Nguyên](https://tuoitre.vn/tin-chi-carbon.html)")
+                st.info("🕒 **Hôm nay:** [Thị trường carbon giúp Việt Nam thu về hàng ngàn tỷ đồng](https://baochinhphu.vn/thong-diep-quoc-gia-ve-ung-pho-bien-doi-khi-hau-va-thi-truong-carbon-102240101150000000.htm)")
+                st.warning("🕒 **Gần đây:** [Chuẩn bị vận hành thí điểm sàn giao dịch tín chỉ carbon](https://vneconomy.vn/thi-truong-tin-chi-carbon.html)")
+                st.success("🕒 **Cập nhật:** [Đẩy mạnh các dự án tín chỉ carbon rừng tại Tây Nguyên](https://tuoitre.vn/tin-chi-carbon.html)")
 
+        # Dự án thực tế
         with col_projects:
             st.markdown("### 🛒 Danh mục Tín chỉ chào bán (Dữ liệu tham khảo)")
             
@@ -209,6 +221,7 @@ def main_app():
                 with c_btn1: st.button("🗺️ Xem Sổ đỏ Không gian", key="map_cm")
                 with c_btn2: st.button("📄 Xem Giấy phép & Chứng nhận", key="doc_cm")
                 with c_btn3: st.button("🛒 Trích tiền ví Đặt mua", key="buy_cm", type="primary", disabled=(vai_tro != "Doanh nghiệp mua tín chỉ"))
+
 # 5. ĐIỀU HƯỚNG MÀN HÌNH
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
