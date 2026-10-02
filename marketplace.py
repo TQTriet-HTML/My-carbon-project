@@ -180,75 +180,11 @@ def hien_thi_cong_dau_tu():
                         st.info("Đăng nhập tài khoản Cổ đông để góp vốn.")
 
 
-# --- 3. TRANG GIỚI THIỆU, UY TÍN & GỌI VỐN (CSS HOẠT HỌA NÂNG CAO) ---
+# --- 3. TRANG GIỚI THIỆU ---
 def hien_thi_gioi_thieu_va_goi_von():
-    # CHÈN MÃ CSS ĐẶC BIỆT CHO HIỆU ỨNG THẺ & CHỮ CẢM ƠN
-    st.markdown("""
-        <style>
-        /* Hiệu ứng trượt và sáng cho thông điệp Cảm ơn */
-        @keyframes floatAndGlow {
-            0% { transform: translateY(0px); text-shadow: 0 0 5px rgba(56, 161, 105, 0.2); }
-            50% { transform: translateY(-5px); text-shadow: 0 0 15px rgba(56, 161, 105, 0.6); }
-            100% { transform: translateY(0px); text-shadow: 0 0 5px rgba(56, 161, 105, 0.2); }
-        }
-        .thank-you-banner {
-            background: linear-gradient(90deg, rgba(26,32,44,1) 0%, rgba(45,55,72,1) 100%);
-            border-left: 5px solid #3182ce;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            animation: floatAndGlow 4s ease-in-out infinite; /* Chuyển động liên tục */
-            border: 1px solid #4a5568;
-        }
-        .text-green { color: #48bb78; } /* Xanh lá cây */
-        .text-blue-bold { color: #3182ce; font-weight: 800; font-size: 1.2rem; } /* Xanh dương đậm & to */
-
-        /* Hiệu ứng Card Đối tác 3D Cao cấp */
-        .partner-card {
-            background: linear-gradient(145deg, #1e2530, #2a3441);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #2d3748;
-            height: 160px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        /* Khi hover: Nổi lên và sáng viền */
-        .partner-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: #48bb78;
-            box-shadow: 0 15px 30px rgba(72, 187, 120, 0.25);
-        }
-
-        /* Dải ánh sáng lướt qua thẻ (Shine effect) */
-        .partner-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
-            transform: skewX(-25deg);
-            transition: 0.6s;
-        }
-        .partner-card:hover::after {
-            left: 125%; /* Chạy từ trái sang phải */
-        }
-        
-        .pc-title { color: #a0aec0; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .pc-value { color: #ffffff; font-size: 18px; font-weight: bold; margin-top: 0; line-height: 1.3;}
-        .pc-status { color: #48bb78; font-size: 13px; margin-top: 15px; display: flex; align-items: center;}
-        </style>
-    """, unsafe_allow_html=True)
-
     st.title("🌟 VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI")
 
-    # --- KHU VỰC CẢM ƠN (HOẠT HỌA) ---
+    # Nội dung HTML có class CSS đã được định nghĩa trong app.py
     st.markdown("""
         <div class="thank-you-banner">
             <span class="text-green">Thay mặt Đội ngũ Sáng lập, chúng tôi xin gửi </span>
@@ -268,7 +204,6 @@ def hien_thi_gioi_thieu_va_goi_von():
 
     st.markdown("### 🏛️ Chứng nhận Uy tín & Đối tác Pháp lý")
     
-    # --- THẺ ĐỐI TÁC VỚI HIỆU ỨNG LIGHT SWEEP ---
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -312,7 +247,6 @@ def hien_thi_gioi_thieu_va_goi_von():
 
     st.divider()
 
-    # --- KHU VỰC KÊU GỌI VỐN PHÁT TRIỂN NỀN TẢNG ---
     st.markdown("### 🌱 Cùng nhau xây dựng Sàn giao dịch Xanh — Bước tiến mới của Nhân loại")
     st.markdown("""
     Để mở rộng quy mô công nghệ AI vệ tinh, tích hợp thêm các tiêu chuẩn kiểm định quốc tế mới và đưa nền tảng vươn tầm khu vực Đông Nam Á, chúng tôi chính thức mở cổng **Kêu gọi vốn Chiến lược phát triển nền tảng (Series Seed)** dành cho các nhà đầu tư thiên thần, quỹ đầu tư tác động xã hội (Impact Investment) và cộng đồng.
