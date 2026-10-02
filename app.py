@@ -105,3 +105,51 @@ with tab_mrv:
                         st.warning("Vùng bạn vẽ không có dữ liệu rừng hợp lệ.")
         else:
             st.info("👈 Khoanh vùng để thẩm định dự án trước khi đưa lên sàn.")
+
+# ==========================================
+# TAB 2: SÀN GIAO DỊCH B2B (Dành cho Doanh nghiệp mua Tín chỉ)
+# ==========================================
+with tab_market:
+    st.markdown("## 🏢 Trung tâm Giao dịch Tín chỉ Carbon Doanh nghiệp")
+    
+    # Tổng quan thị trường
+    st.markdown("### 📈 Tổng quan Thị trường Hôm nay")
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Tổng khối lượng sẵn có", "245,000 tấn", "+12,000 tấn")
+    m2.metric("Giá tham chiếu (VCS)", "$12.50 / tín chỉ", "+$0.50")
+    m3.metric("Doanh nghiệp đang tìm mua", "84 Đối tác", "+3")
+    m4.metric("Dự án chờ duyệt MRV", "12 Dự án")
+    
+    st.divider()
+    
+    # Danh sách dự án (Mô phỏng)
+    st.markdown("### 🛒 Danh mục Tín chỉ đã được Kiểm định MRV")
+    
+    col_sp1, col_sp2, col_sp3 = st.columns(3)
+    
+    with col_sp1:
+        st.info("🌳 **Dự án Rừng ngập mặn Cần Giờ**")
+        st.write("- **Chủ sở hữu:** Ban quản lý RPH Cần Giờ")
+        st.write("- **Tiêu chuẩn:** Verified Carbon Standard (VCS)")
+        st.write("- **Trữ lượng chào bán:** 50,000 tín chỉ")
+        st.write("- **Giá chào bán:** $14.00 / tín chỉ")
+        if st.button("Hồ sơ MRV", key="btn_cg_mrv"): st.success("Dữ liệu vệ tinh hợp lệ (Đã kiểm tra qua AI)")
+        if st.button("🛒 Đặt mua khối lượng lớn", key="btn_cg_buy", type="primary"): st.balloons()
+        
+    with col_sp2:
+        st.success("🌲 **Dự án Phục hồi Sinh thái VQG Cát Tiên**")
+        st.write("- **Chủ sở hữu:** Hợp tác xã Lâm nghiệp Đồng Nai")
+        st.write("- **Tiêu chuẩn:** Gold Standard (GS)")
+        st.write("- **Trữ lượng chào bán:** 120,000 tín chỉ")
+        st.write("- **Giá chào bán:** $12.50 / tín chỉ")
+        if st.button("Hồ sơ MRV", key="btn_ct_mrv"): st.success("Dữ liệu vệ tinh hợp lệ (Đã kiểm tra qua AI)")
+        if st.button("🛒 Đặt mua khối lượng lớn", key="btn_ct_buy", type="primary"): st.balloons()
+
+    with col_sp3:
+        st.warning("🌴 **Dự án Rừng cao su Tiểu điền Bình Phước**")
+        st.write("- **Chủ sở hữu:** Hiệp hội Nông dân Bình Phước")
+        st.write("- **Tiêu chuẩn:** Tín chỉ Nội địa (VN-Carbon)")
+        st.write("- **Trữ lượng chào bán:** 15,000 tín chỉ")
+        st.write("- **Giá chào bán:** $8.50 / tín chỉ")
+        if st.button("Hồ sơ MRV", key="btn_bp_mrv"): st.success("Dữ liệu vệ tinh hợp lệ (Đã kiểm tra qua AI)")
+        if st.button("🛒 Đặt mua khối lượng lớn", key="btn_bp_buy", type="primary"): st.balloons()
