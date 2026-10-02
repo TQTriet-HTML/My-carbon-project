@@ -2,58 +2,53 @@ import streamlit as st
 import ee
 import geemap.foliumap as geemap
 from streamlit_folium import st_folium
-from streamlit_gsheets import GSheetsConnection
-import pandas as pd
+import json
+import os
 
-# 1. CẤU HÌNH TRANG WEB (Luôn nằm trên cùng)
+# 1. CẤU HÌNH TRANG WEB
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# 2. KHỞI TẠO BỘ NHỚ TRẠNG THÁI (MÔ PHỎNG DATABASE)
+# 2. HỆ THỐNG QUẢN LÝ TÀI KHOẢN BẰNG FILE NHỎ (LOCAL JSON)
+USER_FILE = "users_db.json"
+
+def load_users():
+    if os.path.exists(USER_FILE):
+        with open(USER_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    else:
+        # Tài khoản mặc định ban đầu
+        default_db = {"admin": {"password": "123456", "role": "Chủ rừng / Kỹ sư MRV"}}
+        save_users(default_db)
+        return default_db
+
+def save_users(db):
+    with open(USER_FILE, "w", encoding="utf-8") as f:
+        json.dump(db, f, ensure_ascii=False, indent=4)
+
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
-if "user_db" not in st.session_state:
-    # Dữ liệu tạm thời để test. Sau này code sẽ kéo từ Google Sheets về đây.
-    st.session_state["user_db"] = {"admin": "123456", "doanhnghiepA": "carbon2026"}
+if "current_role" not in st.session_state:
+    st.session_state["current_role"] = ""
 
-# 3. GIAO DIỆN CỔNG ĐĂNG NHẬP (Kết nối Google Sheets)
+# 3. GIAO DIỆN CỔNG ĐĂNG NHẬP
 def hien_thi_cong_dang_nhap():
     st.title("🔐 CỔNG ĐĂNG NHẬP NỀN TẢNG")
     st.markdown("Vui lòng đăng nhập hoặc tạo tài khoản để truy cập Sàn giao dịch & Hệ thống MRV.")
     
-    # Kết nối trực tiếp với Google Sheets bằng URL
-    url_sheet = "https://docs.google.com/spreadsheets/d/1HlMhjhvE6t0RDgN2zIx4nx1rPDHQJt3bRJfdgmTFGsU/edit"
-    conn = st.connection("gsheets", type=GSheetsConnection)
-    
-    # Kéo dữ liệu từ Excel về (ttl=0 để luôn cập nhật mới nhất)
-    try:
-        db = conn.read(spreadsheet=url_sheet, usecols=[0, 1, 2], ttl=0)
-    except:
-        st.error("Chưa kết nối được với Google Sheets. Vui lòng kiểm tra lại link!")
-        return
-
+    user_db = load_users()
     tab_login, tab_register = st.tabs(["Đăng nhập", "Tạo tài khoản mới"])
     
-    # --- LUỒNG TÌM KIẾM & ĐĂNG NHẬP ---
     with tab_login:
         user = st.text_input("Tên đăng nhập", key="login_user")
         pwd = st.text_input("Mật khẩu", type="password", key="login_pwd")
         if st.button("Đăng nhập", type="primary"):
-            # Lọc trong bảng excel xem có user này không
-            user_row = db[db['Username'] == user]
-            
-            if not user_row.empty:
-                # Nếu có, kiểm tra cột Password
-                mk_dung = str(user_row.iloc[0]['Password'])
-                if mk_dung == pwd:
-                    st.session_state["logged_in"] = True
-                    st.session_state["current_role"] = user_row.iloc[0]['Role']
-                    st.rerun() # Tải lại trang vào nền tảng
-                else:
-                    st.error("❌ Sai mật khẩu!")
+            if user in user_db and user_db[user]["password"] == pwd:
+                st.session_state["logged_in"] = True
+                st.session_state["current_role"] = user_db[user]["role"]
+                st.rerun()
             else:
-                st.error("❌ Tên đăng nhập không tồn tại!")
+                st.error("❌ Sai tên đăng nhập hoặc mật khẩu!")
                 
-    # --- LUỒNG LƯU DỮ LIỆU ĐĂNG KÝ ---
     with tab_register:
         new_user = st.text_input("Chọn tên đăng nhập mới", key="reg_user")
         new_pwd = st.text_input("Nhập mật khẩu", type="password", key="reg_pwd")
@@ -62,19 +57,14 @@ def hien_thi_cong_dang_nhap():
         if st.button("Đăng ký tài khoản"):
             if new_user == "" or new_pwd == "":
                 st.warning("⚠️ Vui lòng nhập đầy đủ thông tin!")
-            elif new_user in db['Username'].values:
+            elif new_user in user_db:
                 st.warning("⚠️ Tên đăng nhập này đã có người sử dụng!")
             else:
-                # Tạo một dòng dữ liệu mới
-                new_data = pd.DataFrame([{"Username": new_user, "Password": new_pwd, "Role": role}])
-                # Ghép vào dữ liệu cũ
-                updated_db = pd.concat([db, new_data], ignore_index=True)
-                # Ghi đè lại lên Google Sheets
-                conn.update(worksheet="Sheet1", data=updated_db, spreadsheet=url_sheet)
-                
-                st.success(f"✅ Tạo tài khoản {role} thành công! Hãy quay lại tab Đăng nhập.")
+                user_db[new_user] = {"password": new_pwd, "role": role}
+                save_users(user_db)
+                st.success(f"✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
 
-# 4. HỆ THỐNG LÕI (BỊ KHÓA NẾU CHƯA ĐĂNG NHẬP)
+# 4. HỆ THỐNG LÕI (BẢN ĐỒ & SÀN GIAO DỊCH)
 def main_app():
     col_title, col_logout = st.columns([5, 1])
     with col_title:
@@ -84,10 +74,8 @@ def main_app():
             st.session_state["logged_in"] = False
             st.rerun()
             
-    # Phần khởi tạo Google Earth Engine
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
-        import os
         cred_path = os.path.expanduser('~/.config/earthengine/')
         os.makedirs(cred_path, exist_ok=True)
         with open(os.path.join(cred_path, 'credentials'), 'w') as f:
@@ -142,6 +130,7 @@ def main_app():
             map_data = st_folium(m, width=800, height=550)
 
         with c2:
+            st.info(f"👤 Xin chào: **{st.session_state.get('current_role', 'Thành viên')}**")
             gia_usd = st.number_input("Giá Tín chỉ (USD):", value=12.5)
             if map_data and map_data.get("last_active_drawing"):
                 st.success("Đã khoanh vùng. Sẵn sàng thẩm định.")
@@ -156,7 +145,7 @@ def main_app():
         m3.metric("Doanh nghiệp tìm mua", "84 Đối tác", "+3")
         m4.metric("Dự án chờ duyệt MRV", "12 Dự án")
 
-# 5. CÔNG TẮC LUỒNG CHẠY
+# 5. ĐIỀU HƯỚNG MÀN HÌNH
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
 else:
