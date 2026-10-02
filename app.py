@@ -6,7 +6,7 @@ from streamlit_folium import st_folium
 # 1. CẤU HÌNH TRANG WEB
 st.set_page_config(page_title="MRV Forest Carbon", layout="wide", page_icon="🌍")
 st.title("🌍 NỀN TẢNG MRV ĐÁNH GIÁ TÍN CHỈ CARBON")
-st.markdown("**Bản Demo Khu vực Miền Nam** - Tích hợp Vệ tinh Sentinel-2, Laser GEDI & AI")
+st.markdown("**Bản Demo Khu vực Vệ tinh (Bán kính 50km)** - Tích hợp Sentinel-2, Laser GEDI & AI")
 
 # 2. KHỞI TẠO EARTH ENGINE
 try:
@@ -21,33 +21,32 @@ except Exception as e:
     st.error(f"Lỗi xác thực Earth Engine: {e}")
     st.stop()
 
-# 3. MỞ RỘNG VÙNG DỰ ÁN & HUẤN LUYỆN AI ĐỘNG
+# 3. MỞ RỘNG VÙNG DỰ ÁN (BÁN KÍNH 50KM) & HUẤN LUYỆN AI ĐỘNG
 @st.cache_resource
 def get_vung_du_an():
-    # Chuyển tâm bản đồ về TP.HCM và mở rộng bán kính lên 150km (bao quát toàn Miền Nam)
-    mien_nam_center = ee.Geometry.Point([106.6297, 10.8231])
-    return mien_nam_center.buffer(150000)
+    # Tọa độ trung tâm và bán kính 50km để tối ưu tốc độ huấn luyện AI
+    trung_tam = ee.Geometry.Point([106.6297, 10.8231])
+    return trung_tam.buffer(50000) 
 
 vung_du_an = get_vung_du_an()
 
 @st.cache_resource
 def tao_ban_do_carbon(nam):
-    # Khai báo dữ liệu nền tảng
     worldcover = ee.ImageCollection('ESA/WorldCover/v200').first()
     mask_rung = worldcover.select('Map').eq(10)
     gedi = ee.ImageCollection('LARSE/GEDI/GEDI04_A_002_MONTHLY').filterBounds(vung_du_an).filterDate('2022-01-01', '2023-12-31').select('agbd').mean().rename('Carbon_ThucTe')
     
-    # Kéo dữ liệu vệ tinh theo năm được chọn
     s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(vung_du_an).filterDate(f'{nam}-01-01', f'{nam}-12-31').median()
     ndvi = s2.normalizedDifference(['B8', 'B4']).rename('NDVI')
     
-    # Xử lý và huấn luyện AI
     forest_mask = mask_rung.add(ndvi.gt(0.4)).gt(0)
     ndvi_forest = ndvi.updateMask(forest_mask)
     gedi_forest = gedi.updateMask(forest_mask)
     
     du_lieu = ndvi_forest.addBands(gedi_forest)
-    tap_huan_luyen = du_lieu.sample(region=vung_du_an, scale=100, numPixels=3000, dropNulls=True) # Tăng Scale để xử lý mượt diện rộng
+    
+    # Tối ưu lại tập huấn luyện: 1500 điểm ảnh là đủ độ chính xác và AI học rất nhanh
+    tap_huan_luyen = du_lieu.sample(region=vung_du_an, scale=100, numPixels=1500, dropNulls=True) 
     ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
     
     return ndvi_forest.classify(ai_model).clip(vung_du_an)
@@ -58,9 +57,9 @@ c_nam1, c_nam2 = st.columns(2)
 with c_nam1:
     nam_co_so = st.selectbox("📅 Chọn Năm cơ sở (Quá khứ):", range(2016, 2027), index=4) # Mặc định 2020
 with c_nam2:
-    nam_so_sanh = st.selectbox("📅 Chọn Năm so sánh (Hiện tại/Tương lai):", range(2016, 2027), index=7) # Mặc định 2023
+    nam_so_sanh = st.selectbox("📅 Chọn Năm so sánh (Hiện tại/Tương lai):", range(2016, 2027), index=8) # Mặc định 2024
 
-with st.spinner(f'Đang tải và phân tích dữ liệu AI cho năm {nam_co_so} và {nam_so_sanh}...'):
+with st.spinner(f'Đang tải và phân tích dữ liệu AI cho năm {nam_co_so} và {nam_so_sanh}... (Quá trình này diễn ra rất nhanh nhờ bán kính 50km)'):
     carbon_base = tao_ban_do_carbon(nam_co_so)
     carbon_compare = tao_ban_do_carbon(nam_so_sanh)
 
@@ -69,13 +68,13 @@ col1, col2 = st.columns([2, 1])
 
 with col1:
     st.markdown("### 🗺 Khảo sát Không gian")
-    # Thu nhỏ mức zoom để nhìn được toàn cảnh Miền Nam
-    m = geemap.Map(center=[10.8231, 106.6297], zoom=8)
+    # Điều chỉnh zoom về mức 9 để vừa vặn với bán kính 50km
+    m = geemap.Map(center=[10.8231, 106.6297], zoom=9)
     vis = {'min': 0, 'max': 140, 'palette': ['#ffffcc', '#c2e699', '#78c679', '#31a354', '#006837']}
     
     m.addLayer(carbon_base, vis, f'Mật độ {nam_co_so}')
     m.addLayer(carbon_compare, vis, f'Mật độ {nam_so_sanh}')
-    m.addLayer(ee.FeatureCollection([ee.Feature(vung_du_an)]).style(color='blue', fillColor='00000000'), {}, 'Phạm vi khảo sát Miền Nam')
+    m.addLayer(ee.FeatureCollection([ee.Feature(vung_du_an)]).style(color='blue', fillColor='00000000'), {}, 'Phạm vi 50km')
     
     map_data = st_folium(m, width=800, height=550)
 
