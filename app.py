@@ -6,11 +6,10 @@ import os
 import pandas as pd
 
 from auth import hien_thi_cong_dang_nhap
-from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu
+from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# Khởi tạo toàn bộ trạng thái phiên để tránh lỗi KeyError
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -102,11 +101,12 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # Chia thành 3 Tab chức năng rõ rệt
-    tab_mrv, tab_market, tab_invest = st.tabs([
+    # Thêm Tab thứ 4: Giới thiệu & Gọi vốn phát triển nền tảng
+    tab_mrv, tab_market, tab_invest, tab_about = st.tabs([
         "🛰️ Hệ thống MRV (Đo đạc)", 
-        "💹 Sàn Giao dịch Tín chỉ (B2B/B2C)", 
-        "🤝 Quỹ Đầu tư Trồng rừng (Cổ đông)"
+        "💹 Sàn Giao dịch Tín chỉ", 
+        "🤝 Quỹ Đầu tư Trồng rừng",
+        "🌟 Về chúng tôi & Gọi vốn"
     ])
 
     with tab_mrv:
@@ -132,6 +132,9 @@ def main_app():
 
     with tab_invest:
         hien_thi_cong_dau_tu()
+
+    with tab_about:
+        hien_thi_gioi_thieu_va_goi_von()
 
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
