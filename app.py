@@ -15,37 +15,64 @@ if "user_db" not in st.session_state:
     # Dữ liệu tạm thời để test. Sau này code sẽ kéo từ Google Sheets về đây.
     st.session_state["user_db"] = {"admin": "123456", "doanhnghiepA": "carbon2026"}
 
-# 3. GIAO DIỆN CỔNG ĐĂNG NHẬP
+# 3. GIAO DIỆN CỔNG ĐĂNG NHẬP (Kết nối Google Sheets)
 def hien_thi_cong_dang_nhap():
     st.title("🔐 CỔNG ĐĂNG NHẬP NỀN TẢNG")
     st.markdown("Vui lòng đăng nhập hoặc tạo tài khoản để truy cập Sàn giao dịch & Hệ thống MRV.")
     
+    # Kết nối trực tiếp với Google Sheets bằng URL
+    url_sheet = "https://docs.google.com/spreadsheets/d/1HlMhjhvE6t0RDgN2zIx4nx1rPDHQJt3bRJfdgmTFGsU/edit"
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    
+    # Kéo dữ liệu từ Excel về (ttl=0 để luôn cập nhật mới nhất)
+    try:
+        db = conn.read(spreadsheet=url_sheet, usecols=[0, 1, 2], ttl=0)
+    except:
+        st.error("Chưa kết nối được với Google Sheets. Vui lòng kiểm tra lại link!")
+        return
+
     tab_login, tab_register = st.tabs(["Đăng nhập", "Tạo tài khoản mới"])
     
+    # --- LUỒNG TÌM KIẾM & ĐĂNG NHẬP ---
     with tab_login:
         user = st.text_input("Tên đăng nhập", key="login_user")
         pwd = st.text_input("Mật khẩu", type="password", key="login_pwd")
         if st.button("Đăng nhập", type="primary"):
-            # BƯỚC XÁC MINH
-            if user in st.session_state["user_db"] and st.session_state["user_db"][user] == pwd:
-                st.session_state["logged_in"] = True
-                st.rerun() # Tự động tải lại trang để vào hệ thống chính
+            # Lọc trong bảng excel xem có user này không
+            user_row = db[db['Username'] == user]
+            
+            if not user_row.empty:
+                # Nếu có, kiểm tra cột Password
+                mk_dung = str(user_row.iloc[0]['Password'])
+                if mk_dung == pwd:
+                    st.session_state["logged_in"] = True
+                    st.session_state["current_role"] = user_row.iloc[0]['Role']
+                    st.rerun() # Tải lại trang vào nền tảng
+                else:
+                    st.error("❌ Sai mật khẩu!")
             else:
-                st.error("Sai tên đăng nhập hoặc mật khẩu!")
+                st.error("❌ Tên đăng nhập không tồn tại!")
                 
+    # --- LUỒNG LƯU DỮ LIỆU ĐĂNG KÝ ---
     with tab_register:
         new_user = st.text_input("Chọn tên đăng nhập mới", key="reg_user")
         new_pwd = st.text_input("Nhập mật khẩu", type="password", key="reg_pwd")
         role = st.selectbox("Vai trò của bạn", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV"])
         
         if st.button("Đăng ký tài khoản"):
-            if new_user in st.session_state["user_db"]:
-                st.warning("Tên đăng nhập này đã tồn tại!")
-            elif new_user == "" or new_pwd == "":
-                st.warning("Vui lòng nhập đầy đủ thông tin!")
+            if new_user == "" or new_pwd == "":
+                st.warning("⚠️ Vui lòng nhập đầy đủ thông tin!")
+            elif new_user in db['Username'].values:
+                st.warning("⚠️ Tên đăng nhập này đã có người sử dụng!")
             else:
-                st.session_state["user_db"][new_user] = new_pwd
-                st.success(f"Tạo tài khoản {role} thành công! Vui lòng chuyển sang tab Đăng nhập.")
+                # Tạo một dòng dữ liệu mới
+                new_data = pd.DataFrame([{"Username": new_user, "Password": new_pwd, "Role": role}])
+                # Ghép vào dữ liệu cũ
+                updated_db = pd.concat([db, new_data], ignore_index=True)
+                # Ghi đè lại lên Google Sheets
+                conn.update(worksheet="Sheet1", data=updated_db, spreadsheet=url_sheet)
+                
+                st.success(f"✅ Tạo tài khoản {role} thành công! Hãy quay lại tab Đăng nhập.")
 
 # 4. HỆ THỐNG LÕI (BỊ KHÓA NẾU CHƯA ĐĂNG NHẬP)
 def main_app():
