@@ -11,26 +11,23 @@ from social import hien_thi_mang_xa_hoi
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- CSS HOẠT HỌA (HOVER EFFECTS) & GIAO DIỆN CHUYÊN NGHIỆP ---
+# --- CSS TỔNG HỢP (BAO GỒM HOẠT HỌA PHẦN GIỚI THIỆU) ---
 def inject_custom_css():
     st.markdown("""
         <style>
-        /* Ép font chữ sang họ sans-serif hiện đại, thanh thoát */
         html, body, [class*="css"] {
             font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important;
         }
         
-        /* TINH CHỈNH TIÊU ĐỀ: Ép về 1 dòng duy nhất, tự động thu nhỏ nếu màn hình hẹp */
         .main-title {
             font-size: clamp(22px, 2.5vw, 32px) !important;
             font-weight: 800 !important;
             color: #E2E8F0;
             margin-bottom: 0px !important;
             padding-bottom: 0px !important;
-            white-space: nowrap !important; /* Tuyệt đối không rớt dòng */
+            white-space: nowrap !important;
         }
 
-        /* Nút Đăng xuất căn chỉnh thẳng hàng */
         .logout-btn-container {
             display: flex;
             justify-content: flex-end;
@@ -39,27 +36,78 @@ def inject_custom_css():
             margin-top: 5px;
         }
         
-        /* HIỆU ỨNG TƯƠNG TÁC (HOVER) CHO CÁC KHỐI CHỨA (CARD/CONTAINER) */
         div[data-testid="stVerticalBlockBorderWrapper"] {
             transition: all 0.3s ease-in-out !important;
             border-radius: 12px !important;
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-            transform: translateY(-6px) !important; /* Bật nổi lên 6px */
-            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.25) !important; /* Bóng đổ ánh xanh */
-            border-color: #48bb78 !important; /* Viền sáng lên */
+            transform: translateY(-6px) !important;
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.25) !important;
+            border-color: #48bb78 !important;
         }
         
-        /* HIỆU ỨNG TƯƠNG TÁC CHO TẤT CẢ NÚT BẤM (BUTTON) */
         div.stButton > button {
             transition: all 0.3s ease-in-out !important;
             border-radius: 8px !important;
         }
         div.stButton > button:hover {
-            transform: translateY(-3px) !important; /* Nổi lên */
+            transform: translateY(-3px) !important;
             box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important;
             border-color: #48bb78 !important;
         }
+
+        /* --- CSS HOẠT HỌA CHO PHẦN GIỚI THIỆU --- */
+        @keyframes floatAndGlow {
+            0% { transform: translateY(0px); text-shadow: 0 0 5px rgba(56, 161, 105, 0.2); }
+            50% { transform: translateY(-5px); text-shadow: 0 0 15px rgba(56, 161, 105, 0.6); }
+            100% { transform: translateY(0px); text-shadow: 0 0 5px rgba(56, 161, 105, 0.2); }
+        }
+        .thank-you-banner {
+            background: linear-gradient(90deg, rgba(26,32,44,1) 0%, rgba(45,55,72,1) 100%);
+            border-left: 5px solid #3182ce;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            animation: floatAndGlow 4s ease-in-out infinite;
+            border: 1px solid #4a5568;
+        }
+        .text-green { color: #48bb78; } 
+        .text-blue-bold { color: #3182ce; font-weight: 800; font-size: 1.2rem; }
+
+        .partner-card {
+            background: linear-gradient(145deg, #1e2530, #2a3441);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2d3748;
+            height: 160px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .partner-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #48bb78;
+            box-shadow: 0 15px 30px rgba(72, 187, 120, 0.25);
+        }
+        .partner-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+            transform: skewX(-25deg);
+            transition: 0.6s;
+        }
+        .partner-card:hover::after {
+            left: 125%;
+        }
+        
+        .pc-title { color: #a0aec0; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .pc-value { color: #ffffff; font-size: 18px; font-weight: bold; margin-top: 0; line-height: 1.3;}
+        .pc-status { color: #48bb78; font-size: 13px; margin-top: 15px; display: flex; align-items: center;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -129,7 +177,6 @@ if "market_projects" not in st.session_state:
 def main_app():
     col_title, col_logout = st.columns([6, 1])
     with col_title:
-        # Tiêu đề được ép vào class .main-title để CSS xử lý
         st.markdown('<div class="main-title">🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
         st.caption(f"Chào mừng trở lại, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
         
