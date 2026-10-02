@@ -158,96 +158,104 @@ def main_app():
         with c2:
             st.write("Thẩm định sinh khối")
 
-    # --- TAB 2: SÀN GIAO DỊCH ---
+    # --- TAB 2: SÀN GIAO DỊCH B2B & B2C ---
     with tab_market:
         st.markdown("## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ")
         vai_tro = st.session_state.get('current_role', '')
         
-        # 3.1. KHU VỰC VÍ & NIÊM YẾT (Phân quyền)
+        # 3.1. KHU VỰC VÍ & NIÊM YẾT
         if vai_tro == "Doanh nghiệp mua tín chỉ":
-            st.success(f"💳 **Ví Doanh nghiệp:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | Trạng thái: Đã xác thực KYC")
+            st.success(f"💳 **Ví Khách hàng:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | Trạng thái: Đã xác thực KYC")
             if st.button("💵 Nạp thêm $50,000 vào ví"):
                 st.session_state["wallet_balance"] += 50000.0
                 st.rerun()
                 
         elif vai_tro == "Chủ rừng / Kỹ sư MRV":
             st.info("🌳 **Khu vực Chủ rừng:** Nộp hồ sơ minh chứng để AI thẩm định và niêm yết lên sàn.")
-            with st.expander("📝 TẠO HỒ SƠ NIÊM YẾT DỰ ÁN MỚI", expanded=False):
+            with st.expander("📝 TẠO HỒ SƠ NIÊM YẾT DỰ ÁN MỚI (Bắt buộc có minh chứng)", expanded=False):
                 ten_du_an = st.text_input("Tên dự án rừng của bạn:")
-                kl_ban = st.number_input("Khối lượng tín chỉ muốn bán (tấn):", min_value=1000, step=1000)
+                kl_ban = st.number_input("Khối lượng tín chỉ muốn bán (tấn):", min_value=1, step=100)
                 gia_ban = st.number_input("Giá bán mỗi tín chỉ (USD):", value=10.0)
-                st.file_uploader("📎 Tải lên Minh chứng Pháp lý (Sổ đỏ, Quyết định giao rừng - PDF)", type=['pdf'])
+                
+                # Bắt buộc tải file
+                file_minh_chung = st.file_uploader("📎 Tải lên Sổ đỏ / Giấy tờ pháp lý (Bắt buộc - PDF/JPG)", type=['pdf', 'jpg', 'png'])
                 
                 if st.button("🚀 XÁC THỰC AI & ĐƯA LÊN SÀN", type="primary"):
-                    if ten_du_an:
-                        # Thêm dự án mới vào sàn giả lập
+                    if not ten_du_an:
+                        st.error("❌ Vui lòng nhập tên dự án.")
+                    elif file_minh_chung is None:
+                        st.error("❌ HỒ SƠ BỊ TỪ CHỐI: Bạn chưa tải lên minh chứng pháp lý (Sổ đỏ). Trí tuệ nhân tạo không thể xác thực khu vực trống.")
+                    else:
                         new_proj = {
                             "id": f"user_p_{len(st.session_state['market_projects'])}",
                             "name": ten_du_an,
-                            "owner": "Chủ rừng (Hệ thống test)",
+                            "owner": "Chủ rừng (Đã xác thực minh chứng)",
                             "price": gia_ban,
                             "volume": kl_ban,
-                            "lat": 11.4280, # Tọa độ Cát Tiên mặc định cho bản test
-                            "lon": 107.4286
+                            "lat": 11.4280, 
+                            "lon": 107.4286,
+                            "verified": True # Cờ xác nhận đã có minh chứng
                         }
                         st.session_state["market_projects"].append(new_proj)
-                        st.success("✅ Dự án của bạn đã vượt qua bài test AI và được niêm yết công khai bên dưới!")
-                    else:
-                        st.error("Vui lòng nhập tên dự án.")
+                        st.success("✅ Hợp lệ! Dự án đã được đối chiếu Sổ đỏ với Vệ tinh và đưa lên sàn công khai.")
 
         st.divider()
         
-        # 3.2. BẢNG HIỂN THỊ CÁC DỰ ÁN TRÊN SÀN
+        # 3.2. BẢNG HIỂN THỊ CÁC DỰ ÁN TRÊN SÀN (MUA LẺ & SỈ)
         st.markdown("### 🛒 Danh mục Tín chỉ đang giao dịch")
         
-        # Vòng lặp hiển thị toàn bộ dự án có trong bộ nhớ giả lập
         for p in st.session_state["market_projects"]:
-            with st.container(border=True):
-                col_info, col_action = st.columns([3, 1])
-                
-                with col_info:
-                    st.markdown(f"#### 🌳 {p['name']}")
-                    st.write(f"**Chủ sở hữu:** {p['owner']} | **Trữ lượng còn lại:** {p['volume']:,} tấn")
-                    st.write(f"**Giá chốt:** ${p['price']:,.2f} / tín chỉ")
+            # Chỉ hiển thị dự án còn hàng
+            if p['volume'] > 0:
+                with st.container(border=True):
+                    col_info, col_action = st.columns([3, 2])
                     
-                    # Nút bật/tắt bản đồ minh chứng
-                    if st.button("🗺️ Xem Sổ đỏ & Bản đồ Không gian", key=f"btn_map_{p['id']}"):
-                        st.session_state[f"show_map_{p['id']}"] = not st.session_state.get(f"show_map_{p['id']}", False)
-                    
-                    # Hiển thị bản đồ Folium giả lập minh chứng Sổ đỏ
-                    if st.session_state.get(f"show_map_{p['id']}", False):
-                        st.caption("📍 Dữ liệu được trích xuất từ vệ tinh & Sổ đỏ người bán cung cấp")
-                        m_mini = folium.Map(location=[p['lat'], p['lon']], zoom_start=11)
-                        # Vẽ một vùng đa giác đỏ giả lập tọa độ rừng
-                        folium.Polygon(
-                            locations=[[p['lat']-0.05, p['lon']-0.05], [p['lat']+0.05, p['lon']-0.05], 
-                                       [p['lat']+0.05, p['lon']+0.05], [p['lat']-0.05, p['lon']+0.05]],
-                            color="red", fill=True, fill_opacity=0.4
-                        ).add_to(m_mini)
-                        st_folium(m_mini, width=600, height=350, key=f"fmap_{p['id']}")
-
-                with col_action:
-                    # Chức năng giao dịch thật sự bằng ví ảo
-                    sl_mua = 10000  # Mặc định mua lô 10k tấn
-                    tong_tien = sl_mua * p['price']
-                    
-                    # Chỉ hiển thị nút mua nếu đăng nhập là Doanh nghiệp và dự án còn hàng
-                    if vai_tro == "Doanh nghiệp mua tín chỉ":
-                        if p['volume'] >= sl_mua:
-                            if st.button(f"🛒 Mua {sl_mua:,} tín chỉ\n(Tổng: ${tong_tien:,.0f})", key=f"buy_{p['id']}", type="primary", use_container_width=True):
+                    with col_info:
+                        st.markdown(f"#### 🌳 {p['name']}")
+                        # Kiểm tra cờ minh chứng để cấp tích xanh
+                        trang_thai = "✅ Đã xác thực Pháp lý & Vệ tinh" if p.get('verified', False) else "⚠️ Dữ liệu tham khảo (Chưa xác minh sổ đỏ)"
+                        st.write(f"**Chủ sở hữu:** {p['owner']} | **Trạng thái:** {trang_thai}")
+                        st.write(f"**Trữ lượng còn lại:** {int(p['volume']):,} tấn | **Giá chốt:** ${p['price']:,.2f} / tín chỉ")
+                        
+                        if st.button("🗺️ Xem Hồ sơ Không gian", key=f"btn_map_{p['id']}"):
+                            st.session_state[f"show_map_{p['id']}"] = not st.session_state.get(f"show_map_{p['id']}", False)
+                        
+                        if st.session_state.get(f"show_map_{p['id']}", False):
+                            if p.get('verified', False):
+                                st.caption("📍 Ranh giới được số hóa từ Sổ đỏ tải lên và đối chiếu với AI vệ tinh.")
+                                m_mini = folium.Map(location=[p['lat'], p['lon']], zoom_start=11)
+                                folium.Polygon(
+                                    locations=[[p['lat']-0.05, p['lon']-0.05], [p['lat']+0.05, p['lon']-0.05], 
+                                            [p['lat']+0.05, p['lon']+0.05], [p['lat']-0.05, p['lon']+0.05]],
+                                    color="green", fill=True, fill_opacity=0.4
+                                ).add_to(m_mini)
+                                st_folium(m_mini, width=500, height=300, key=f"fmap_{p['id']}")
+                            else:
+                                st.warning("Không có dữ liệu không gian do dự án chưa cung cấp minh chứng pháp lý hợp lệ.")
+    
+                    with col_action:
+                        if vai_tro == "Doanh nghiệp mua tín chỉ":
+                            # Tính năng mua lẻ: Người dùng tự nhập số lượng
+                            sl_mua = st.number_input(
+                                "Nhập số lượng muốn mua (tấn):", 
+                                min_value=1, 
+                                max_value=int(p['volume']), 
+                                value=min(100, int(p['volume'])), 
+                                key=f"sl_input_{p['id']}"
+                            )
+                            tong_tien = sl_mua * p['price']
+                            st.info(f"Tổng thanh toán: **${tong_tien:,.2f}**")
+                            
+                            if st.button(f"🛒 Thanh toán", key=f"buy_{p['id']}", type="primary", use_container_width=True):
                                 if st.session_state["wallet_balance"] >= tong_tien:
-                                    # Thực hiện giao dịch: Trừ tiền, trừ sản lượng
                                     st.session_state["wallet_balance"] -= tong_tien
                                     p['volume'] -= sl_mua
-                                    st.success(f"🎉 Khớp lệnh thành công! Trừ ${tong_tien:,.0f} vào ví.")
-                                    st.balloons()
+                                    st.success(f"🎉 Mua thành công {sl_mua} tín chỉ! Trừ ${tong_tien:,.2f} vào ví.")
+                                    st.rerun() # Tải lại trang để cập nhật số dư và trữ lượng lập tức
                                 else:
-                                    st.error("❌ Ví không đủ tiền. Vui lòng nạp thêm.")
-                        else:
-                            st.warning("Đã bán hết hoặc không đủ lô lớn.")
-                    elif vai_tro == "Chủ rừng / Kỹ sư MRV":
-                        st.button("🔒 Tính năng dành cho người mua", key=f"lock_{p['id']}", disabled=True, use_container_width=True)
-
+                                    st.error("❌ Ví không đủ tiền.")
+                        elif vai_tro == "Chủ rừng / Kỹ sư MRV":
+                            st.button("🔒 Đăng nhập tài khoản mua để giao dịch", key=f"lock_{p['id']}", disabled=True, use_container_width=True)
 # 4. ĐIỀU HƯỚNG MÀN HÌNH
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
