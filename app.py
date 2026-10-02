@@ -2,6 +2,8 @@ import streamlit as st
 import ee
 import geemap.foliumap as geemap
 from streamlit_folium import st_folium
+from streamlit_gsheets import GSheetsConnection
+import pandas as pd
 
 # 1. CẤU HÌNH TRANG WEB (Luôn nằm trên cùng)
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
