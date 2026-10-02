@@ -1,15 +1,17 @@
 import streamlit as st
 import ee
 import geemap.foliumap as geemap
+import folium
 from streamlit_folium import st_folium
 import json
 import os
 import pandas as pd
 
-# 1. CẤU HÌNH TRANG WEB
+# ==========================================
+# 1. CẤU HÌNH TRANG WEB & DATABASE ẢO
+# ==========================================
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# 2. HỆ THỐNG QUẢN LÝ TÀI KHOẢN
 USER_FILE = "users_db.json"
 
 def load_users():
@@ -17,7 +19,7 @@ def load_users():
         with open(USER_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     else:
-        default_db = {"admin": {"password": "123456", "role": "Chủ rừng / Kỹ sư MRV"}}
+        default_db = {"admin": {"password": "1234", "role": "Chủ rừng / Kỹ sư MRV"}}
         save_users(default_db)
         return default_db
 
@@ -25,12 +27,39 @@ def save_users(db):
     with open(USER_FILE, "w", encoding="utf-8") as f:
         json.dump(db, f, ensure_ascii=False, indent=4)
 
+# Khởi tạo các trạng thái phiên (Session State) cho giả lập Giao dịch
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_role" not in st.session_state:
     st.session_state["current_role"] = ""
+if "wallet_balance" not in st.session_state:
+    st.session_state["wallet_balance"] = 150000.0  # Ví ảo ban đầu
+if "market_projects" not in st.session_state:
+    # Danh sách dự án ban đầu trên sàn
+    st.session_state["market_projects"] = [
+        {
+            "id": "p1",
+            "name": "Dự án giảm phát thải vùng Bắc Trung Bộ (ERPA)",
+            "owner": "Bộ NN&PTNT",
+            "price": 5.0,
+            "volume": 10300000,
+            "lat": 16.4637,
+            "lon": 107.5908
+        },
+        {
+            "id": "p2",
+            "name": "Dự án Rừng ngập mặn nuôi tôm Cà Mau",
+            "owner": "BQL rừng phòng hộ Cà Mau",
+            "price": 15.0,
+            "volume": 250000,
+            "lat": 8.8242,
+            "lon": 104.9452
+        }
+    ]
 
-# 3. GIAO DIỆN CỔNG ĐĂNG NHẬP
+# ==========================================
+# 2. GIAO DIỆN CỔNG ĐĂNG NHẬP
+# ==========================================
 def hien_thi_cong_dang_nhap():
     st.title("🔐 CỔNG ĐĂNG NHẬP NỀN TẢNG")
     st.markdown("Vui lòng đăng nhập hoặc tạo tài khoản để truy cập Sàn giao dịch & Hệ thống MRV.")
@@ -62,9 +91,11 @@ def hien_thi_cong_dang_nhap():
             else:
                 user_db[new_user] = {"password": new_pwd, "role": role}
                 save_users(user_db)
-                st.success(f"✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
+                st.success("✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
 
-# 4. HỆ THỐNG LÕI (BẢN ĐỒ & SÀN GIAO DỊCH)
+# ==========================================
+# 3. HỆ THỐNG LÕI (MRV & GIAO DỊCH ẢO)
+# ==========================================
 def main_app():
     col_title, col_logout = st.columns([5, 1])
     with col_title:
@@ -74,7 +105,7 @@ def main_app():
             st.session_state["logged_in"] = False
             st.rerun()
             
-    # Kết nối Google Earth Engine
+    # Kết nối Earth Engine an toàn
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
         cred_path = os.path.expanduser('~/.config/earthengine/')
@@ -83,13 +114,11 @@ def main_app():
             f.write(ee_token)
         ee.Initialize()
     except Exception as e:
-        st.error(f"Lỗi xác thực Earth Engine: {e}")
+        st.error("Vui lòng thiết lập cấu hình Earth Engine Token.")
         st.stop()
 
     @st.cache_resource
-    def get_vung_du_an():
-        return ee.Geometry.Point([106.6297, 10.8231]).buffer(50000) 
-
+    def get_vung_du_an(): return ee.Geometry.Point([106.6297, 10.8231]).buffer(50000) 
     vung_du_an = get_vung_du_an()
 
     @st.cache_resource
@@ -97,33 +126,28 @@ def main_app():
         worldcover = ee.ImageCollection('ESA/WorldCover/v200').first()
         mask_rung = worldcover.select('Map').eq(10)
         gedi = ee.ImageCollection('LARSE/GEDI/GEDI04_A_002_MONTHLY').filterBounds(vung_du_an).filterDate('2022-01-01', '2023-12-31').select('agbd').mean().rename('Carbon_ThucTe')
-        
         s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(vung_du_an).filterDate(f'{nam}-01-01', f'{nam}-12-31').median()
         ndvi = s2.normalizedDifference(['B8', 'B4']).rename('NDVI')
         
         forest_mask = mask_rung.add(ndvi.gt(0.4)).gt(0)
         ndvi_forest = ndvi.updateMask(forest_mask)
         gedi_forest = gedi.updateMask(forest_mask)
-        
         du_lieu = ndvi_forest.addBands(gedi_forest)
         tap_huan_luyen = du_lieu.sample(region=vung_du_an, scale=100, numPixels=1500, dropNulls=True) 
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
-        
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # KHỞI TẠO TABS
     tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B"])
 
-    # --- TAB 1: MRV ---
+    # --- TAB 1: BẢN ĐỒ MRV ---
     with tab_mrv:
+        st.info("Công cụ đo đạc vệ tinh sinh khối rừng")
         c_nam1, c_nam2 = st.columns(2)
-        with c_nam1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4, key="ns1") 
-        with c_nam2: nam_so_sanh = st.selectbox("Năm so sánh:", range(2016, 2027), index=8, key="ns2") 
-
-        with st.spinner(f'Đang kết nối vệ tinh và xử lý mô hình AI cho năm {nam_co_so} và {nam_so_sanh}...'):
+        with c_nam1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4) 
+        with c_nam2: nam_so_sanh = st.selectbox("Năm so sánh:", range(2016, 2027), index=8) 
+        with st.spinner("Đang tải dữ liệu vệ tinh..."):
             carbon_base = tao_ban_do_carbon(nam_co_so)
             carbon_compare = tao_ban_do_carbon(nam_so_sanh)
-
         c1, c2 = st.columns([2, 1])
         with c1:
             m = geemap.Map(center=[10.8231, 106.6297], zoom=9)
@@ -131,98 +155,100 @@ def main_app():
             m.addLayer(carbon_base, vis, f'Mật độ {nam_co_so}')
             m.addLayer(carbon_compare, vis, f'Mật độ {nam_so_sanh}')
             map_data = st_folium(m, width=800, height=550)
-
         with c2:
-            gia_usd = st.number_input("Giá Tín chỉ (USD):", value=12.5)
-            if map_data and map_data.get("last_active_drawing"):
-                st.success("Đã khoanh vùng. Sẵn sàng thẩm định.")
-            else:
-                st.info("Khoanh vùng để thẩm định dự án.")
+            st.write("Thẩm định sinh khối")
 
-    # --- TAB 2: SÀN GIAO DỊCH B2B ---
+    # --- TAB 2: SÀN GIAO DỊCH ---
     with tab_market:
-        st.markdown("## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ Carbon")
-        
+        st.markdown("## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ")
         vai_tro = st.session_state.get('current_role', '')
         
-        # Giao diện riêng cho từng vai trò
+        # 3.1. KHU VỰC VÍ & NIÊM YẾT (Phân quyền)
         if vai_tro == "Doanh nghiệp mua tín chỉ":
-            st.success("💳 **Ví Doanh nghiệp:** Khả dụng **$150,000.00** | Trạng thái: Đã xác thực KYC")
-            
+            st.success(f"💳 **Ví Doanh nghiệp:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | Trạng thái: Đã xác thực KYC")
+            if st.button("💵 Nạp thêm $50,000 vào ví"):
+                st.session_state["wallet_balance"] += 50000.0
+                st.rerun()
+                
         elif vai_tro == "Chủ rừng / Kỹ sư MRV":
-            st.info("🌳 **Quản lý Dự án:** Bạn hiện có **0** dự án đang niêm yết. Hãy nộp hồ sơ dự án mới bên dưới.")
+            st.info("🌳 **Khu vực Chủ rừng:** Nộp hồ sơ minh chứng để AI thẩm định và niêm yết lên sàn.")
             with st.expander("📝 TẠO HỒ SƠ NIÊM YẾT DỰ ÁN MỚI", expanded=False):
-                st.markdown("#### 1. Thông tin pháp lý & Minh chứng")
                 ten_du_an = st.text_input("Tên dự án rừng của bạn:")
-                st.file_uploader("📎 Tải lên Minh chứng (Sổ đỏ, Giấy phép, Quyết định giao rừng - PDF/JPG)", type=['pdf', 'jpg', 'png'])
+                kl_ban = st.number_input("Khối lượng tín chỉ muốn bán (tấn):", min_value=1000, step=1000)
+                gia_ban = st.number_input("Giá bán mỗi tín chỉ (USD):", value=10.0)
+                st.file_uploader("📎 Tải lên Minh chứng Pháp lý (Sổ đỏ, Quyết định giao rừng - PDF)", type=['pdf'])
                 
-                st.markdown("#### 2. Không gian & Tọa độ sinh thái")
-                st.caption("Vui lòng sang Tab 'Hệ thống MRV', khoanh vùng khu rừng của bạn để hệ thống AI trích xuất tọa độ tự động.")
-                st.text_input("Tọa độ Đa giác (GeoJSON):", disabled=True, placeholder="Chưa có dữ liệu. Vui lòng khoanh vùng bản đồ.")
-                
-                st.markdown("#### 3. Báo cáo Tín chỉ & Cam kết")
-                st.number_input("Khối lượng tín chỉ đề xuất bán (tấn):", min_value=0)
-                st.button("🚀 GỬI HỒ SƠ LÊN HỘI ĐỒNG THẨM ĐỊNH", type="primary")
+                if st.button("🚀 XÁC THỰC AI & ĐƯA LÊN SÀN", type="primary"):
+                    if ten_du_an:
+                        # Thêm dự án mới vào sàn giả lập
+                        new_proj = {
+                            "id": f"user_p_{len(st.session_state['market_projects'])}",
+                            "name": ten_du_an,
+                            "owner": "Chủ rừng (Hệ thống test)",
+                            "price": gia_ban,
+                            "volume": kl_ban,
+                            "lat": 11.4280, # Tọa độ Cát Tiên mặc định cho bản test
+                            "lon": 107.4286
+                        }
+                        st.session_state["market_projects"].append(new_proj)
+                        st.success("✅ Dự án của bạn đã vượt qua bài test AI và được niêm yết công khai bên dưới!")
+                    else:
+                        st.error("Vui lòng nhập tên dự án.")
 
         st.divider()
         
-        # Thống kê
-        st.markdown("### 📊 Thống kê Hệ sinh thái")
-        user_db = load_users()
-        so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
-        so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
+        # 3.2. BẢNG HIỂN THỊ CÁC DỰ ÁN TRÊN SÀN
+        st.markdown("### 🛒 Danh mục Tín chỉ đang giao dịch")
         
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
-        m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
-        m3.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50 (Xu hướng tăng)")
-        m4.metric("Dự án chờ duyệt MRV", "12 Dự án", "Đang xử lý")
-        
-        st.divider()
-        
-        # Biểu đồ giá
-        st.markdown("### 📈 Biến động Giá Tín chỉ Carbon (6 tháng qua)")
-        dates = pd.date_range(end=pd.Timestamp.today(), periods=6, freq="ME") 
-        chart_data = pd.DataFrame({
-            "Giá Carbon (USD/tấn)": [8.5, 9.2, 10.1, 11.5, 12.0, 12.5]
-        }, index=dates)
-        st.line_chart(chart_data, color="#31a354")
-        
-        st.divider()
-        
-        col_news, col_projects = st.columns([1, 2])
-        
-        # Tin tức có link thật
-        with col_news:
-            st.markdown("### 📰 Tin tức Thị trường")
-            with st.container(height=400):
-                st.info("🕒 **Hôm nay:** [Thị trường carbon giúp Việt Nam thu về hàng ngàn tỷ đồng](https://baochinhphu.vn/thong-diep-quoc-gia-ve-ung-pho-bien-doi-khi-hau-va-thi-truong-carbon-102240101150000000.htm)")
-                st.warning("🕒 **Gần đây:** [Chuẩn bị vận hành thí điểm sàn giao dịch tín chỉ carbon](https://vneconomy.vn/thi-truong-tin-chi-carbon.html)")
-                st.success("🕒 **Cập nhật:** [Đẩy mạnh các dự án tín chỉ carbon rừng tại Tây Nguyên](https://tuoitre.vn/tin-chi-carbon.html)")
-
-        # Dự án thực tế
-        with col_projects:
-            st.markdown("### 🛒 Danh mục Tín chỉ chào bán (Dữ liệu tham khảo)")
-            
-            with st.expander("🌳 Dự án giảm phát thải vùng Bắc Trung Bộ (ERPA) - 10.3 triệu tín chỉ", expanded=True):
-                st.write("**Chủ sở hữu:** Bộ NN&PTNT (Chuyển nhượng cho Ngân hàng Thế giới WB)")
-                st.write("**Tiêu chuẩn:** FCPF (Forest Carbon Partnership Facility)")
-                st.write("**Mức giá chào bán:** $5.00 / tín chỉ")
-                c_btn1, c_btn2, c_btn3 = st.columns(3)
-                with c_btn1: st.button("🗺️ Xem Sổ đỏ Không gian", key="map_btb")
-                with c_btn2: st.button("📄 Xem Giấy phép & Chứng nhận", key="doc_btb")
-                with c_btn3: st.button("🛒 Trích tiền ví Đặt mua", key="buy_btb", type="primary", disabled=(vai_tro != "Doanh nghiệp mua tín chỉ"))
+        # Vòng lặp hiển thị toàn bộ dự án có trong bộ nhớ giả lập
+        for p in st.session_state["market_projects"]:
+            with st.container(border=True):
+                col_info, col_action = st.columns([3, 1])
                 
-            with st.expander("🌲 Dự án Rừng ngập mặn kết hợp nuôi tôm sinh thái Cà Mau - 250,000 tín chỉ"):
-                st.write("**Chủ sở hữu:** Ban quản lý rừng phòng hộ Cà Mau")
-                st.write("**Tiêu chuẩn:** Gold Standard (GS)")
-                st.write("**Mức giá chào bán:** $15.00 / tín chỉ")
-                c_btn1, c_btn2, c_btn3 = st.columns(3)
-                with c_btn1: st.button("🗺️ Xem Sổ đỏ Không gian", key="map_cm")
-                with c_btn2: st.button("📄 Xem Giấy phép & Chứng nhận", key="doc_cm")
-                with c_btn3: st.button("🛒 Trích tiền ví Đặt mua", key="buy_cm", type="primary", disabled=(vai_tro != "Doanh nghiệp mua tín chỉ"))
+                with col_info:
+                    st.markdown(f"#### 🌳 {p['name']}")
+                    st.write(f"**Chủ sở hữu:** {p['owner']} | **Trữ lượng còn lại:** {p['volume']:,} tấn")
+                    st.write(f"**Giá chốt:** ${p['price']:,.2f} / tín chỉ")
+                    
+                    # Nút bật/tắt bản đồ minh chứng
+                    if st.button("🗺️ Xem Sổ đỏ & Bản đồ Không gian", key=f"btn_map_{p['id']}"):
+                        st.session_state[f"show_map_{p['id']}"] = not st.session_state.get(f"show_map_{p['id']}", False)
+                    
+                    # Hiển thị bản đồ Folium giả lập minh chứng Sổ đỏ
+                    if st.session_state.get(f"show_map_{p['id']}", False):
+                        st.caption("📍 Dữ liệu được trích xuất từ vệ tinh & Sổ đỏ người bán cung cấp")
+                        m_mini = folium.Map(location=[p['lat'], p['lon']], zoom_start=11)
+                        # Vẽ một vùng đa giác đỏ giả lập tọa độ rừng
+                        folium.Polygon(
+                            locations=[[p['lat']-0.05, p['lon']-0.05], [p['lat']+0.05, p['lon']-0.05], 
+                                       [p['lat']+0.05, p['lon']+0.05], [p['lat']-0.05, p['lon']+0.05]],
+                            color="red", fill=True, fill_opacity=0.4
+                        ).add_to(m_mini)
+                        st_folium(m_mini, width=600, height=350, key=f"fmap_{p['id']}")
 
-# 5. ĐIỀU HƯỚNG MÀN HÌNH
+                with col_action:
+                    # Chức năng giao dịch thật sự bằng ví ảo
+                    sl_mua = 10000  # Mặc định mua lô 10k tấn
+                    tong_tien = sl_mua * p['price']
+                    
+                    # Chỉ hiển thị nút mua nếu đăng nhập là Doanh nghiệp và dự án còn hàng
+                    if vai_tro == "Doanh nghiệp mua tín chỉ":
+                        if p['volume'] >= sl_mua:
+                            if st.button(f"🛒 Mua {sl_mua:,} tín chỉ\n(Tổng: ${tong_tien:,.0f})", key=f"buy_{p['id']}", type="primary", use_container_width=True):
+                                if st.session_state["wallet_balance"] >= tong_tien:
+                                    # Thực hiện giao dịch: Trừ tiền, trừ sản lượng
+                                    st.session_state["wallet_balance"] -= tong_tien
+                                    p['volume'] -= sl_mua
+                                    st.success(f"🎉 Khớp lệnh thành công! Trừ ${tong_tien:,.0f} vào ví.")
+                                    st.balloons()
+                                else:
+                                    st.error("❌ Ví không đủ tiền. Vui lòng nạp thêm.")
+                        else:
+                            st.warning("Đã bán hết hoặc không đủ lô lớn.")
+                    elif vai_tro == "Chủ rừng / Kỹ sư MRV":
+                        st.button("🔒 Tính năng dành cho người mua", key=f"lock_{p['id']}", disabled=True, use_container_width=True)
+
+# 4. ĐIỀU HƯỚNG MÀN HÌNH
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
 else:
