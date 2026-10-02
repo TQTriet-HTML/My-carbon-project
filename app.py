@@ -7,10 +7,46 @@ import os
 from auth import hien_thi_cong_dang_nhap
 from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
 from community import hien_thi_vinh_danh_va_gop_y
+from social import hien_thi_mang_xa_hoi
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- NỀN MÓNG ĐA NGÔN NGỮ (GLOBALIZATION) ---
+# --- CSS HOẠT HỌA & LÀM MƯỢT GIAO DIỆN (UI/UX) ---
+def inject_custom_css():
+    st.markdown("""
+        <style>
+        /* Hiệu ứng nổi lên (Hover) cho các thẻ Container */
+        div[data-testid="stVerticalBlock"] > div[style*="border"] {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+        }
+        div[data-testid="stVerticalBlock"] > div[style*="border"]:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: #48bb78 !important;
+        }
+        
+        /* Hiệu ứng bo góc mượt mà cho Nút bấm */
+        button[data-testid="baseButton-primary"] {
+            border-radius: 8px !important;
+            transition: all 0.3s ease;
+        }
+        button[data-testid="baseButton-primary"]:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+        
+        /* Chỉnh font chữ Headers tinh tế hơn */
+        h1, h2, h3, h4 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-weight: 600 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+inject_custom_css()
+
+# --- ĐA NGÔN NGỮ ---
 with st.sidebar:
     st.title("🌐 Ngôn ngữ / Language")
     ngon_ngu = st.selectbox(
@@ -18,13 +54,11 @@ with st.sidebar:
         ["Tiếng Việt", "English (Global)", "中文 (Chinese)", "Русский (Russian)", "Français (French)"]
     )
     if ngon_ngu != "Tiếng Việt":
-        st.info(f"⏳ Hệ thống đang triển khai AI dịch thuật tự động cho gói ngôn ngữ **{ngon_ngu}**. Tạm thời hiển thị Tiếng Việt.")
-    
+        st.info(f"⏳ Đang triển khai AI dịch thuật tự động cho **{ngon_ngu}**.")
     st.divider()
-    st.caption("Carbon Exchange Platform v1.2")
-    st.caption("Sẵn sàng cho kỷ nguyên Net-Zero toàn cầu.")
+    st.caption("Carbon Exchange Platform v1.5")
 
-# Khởi tạo trạng thái
+# Khởi tạo trạng thái (Bổ sung mảng social_posts)
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -39,6 +73,20 @@ if "investor_portfolios" not in st.session_state:
     st.session_state["investor_portfolios"] = {}
 if "project_reports" not in st.session_state:
     st.session_state["project_reports"] = {}
+if "social_posts" not in st.session_state:
+    # Vài bài đăng mồi (Seed data) cho mạng xã hội
+    st.session_state["social_posts"] = [
+        {
+            "id": "post_seed_1",
+            "author": "Chuyên gia Lâm nghiệp Lê Văn A",
+            "role": "Chủ rừng / Kỹ sư MRV",
+            "content": "Tôi vừa thử nghiệm công nghệ vệ tinh mới trên sàn, độ chính xác nhận diện thảm thực vật lên đến 95%. Rất đáng kỳ vọng cho đợt đo đạc tới!",
+            "tag": "#KinhNghiemTrongRung",
+            "time": "02/10/2026 09:30",
+            "likes": 12,
+            "comments": [{"user": "Đại diện Vinamilk", "text": "Tuyệt vời, chúng tôi rất mong chờ lô tín chỉ tiếp theo của anh."}]
+        }
+    ]
 
 if "market_projects" not in st.session_state:
     st.session_state["market_projects"] = [
@@ -100,12 +148,13 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # Đã thêm Tab thứ 5: Cộng đồng & Bảng Vàng
-    tab_mrv, tab_market, tab_invest, tab_community, tab_about = st.tabs([
+    # Đã thêm Tab thứ 6: Mạng xã hội Carbon Connect
+    tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs([
         "🛰️ Hệ thống MRV", 
         "💹 Sàn Giao dịch", 
-        "🤝 Quỹ Đầu tư Trồng rừng",
-        "🏆 Cộng đồng & Bảng Vàng",
+        "🤝 Đầu tư Trồng rừng",
+        "🌐 Mạng xã hội",
+        "🏆 Bảng Vàng",
         "🌟 Về chúng tôi"
     ])
 
@@ -127,17 +176,11 @@ def main_app():
         with c2:
             st.write("Thẩm định sinh khối")
 
-    with tab_market:
-        hien_thi_san_giao_dich()
-
-    with tab_invest:
-        hien_thi_cong_dau_tu()
-
-    with tab_community:
-        hien_thi_vinh_danh_va_gop_y()
-
-    with tab_about:
-        hien_thi_gioi_thieu_va_goi_von()
+    with tab_market: hien_thi_san_giao_dich()
+    with tab_invest: hien_thi_cong_dau_tu()
+    with tab_social: hien_thi_mang_xa_hoi()
+    with tab_community: hien_thi_vinh_danh_va_gop_y()
+    with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
