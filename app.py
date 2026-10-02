@@ -8,7 +8,7 @@ import os
 # 1. CẤU HÌNH TRANG WEB
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# 2. HỆ THỐNG QUẢN LÝ TÀI KHOẢN BẰNG FILE NHỎ (LOCAL JSON)
+# 2. HỆ THỐNG QUẢN LÝ TÀI KHOẢN
 USER_FILE = "users_db.json"
 
 def load_users():
@@ -16,7 +16,6 @@ def load_users():
         with open(USER_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     else:
-        # Tài khoản mặc định ban đầu
         default_db = {"admin": {"password": "123456", "role": "Chủ rừng / Kỹ sư MRV"}}
         save_users(default_db)
         return default_db
@@ -64,7 +63,7 @@ def hien_thi_cong_dang_nhap():
                 save_users(user_db)
                 st.success(f"✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
 
-# 4. HỆ THỐNG LÕI (BẢN ĐỒ & SÀN GIAO DỊCH)
+# 4. HỆ THỐNG LÕI (TỐI ƯU HIỆU NĂNG LOAD NHANH)
 def main_app():
     col_title, col_logout = st.columns([5, 1])
     with col_title:
@@ -110,14 +109,16 @@ def main_app():
         
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
+    # HIỂN THỊ TAB NGAY LẬP TỨC KHÔNG BỊ CHẶN BỞI GEE
     tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B"])
 
     with tab_mrv:
         c_nam1, c_nam2 = st.columns(2)
-        with c_nam1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4) 
-        with c_nam2: nam_so_sanh = st.selectbox("Năm so sánh:", range(2016, 2027), index=8) 
+        with c_nam1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4, key="ns1") 
+        with c_nam2: nam_so_sanh = st.selectbox("Năm so sánh:", range(2016, 2027), index=8, key="ns2") 
 
-        with st.spinner(f'Đang tải bản đồ...'):
+        # Đưa lệnh gọi GEE vào trong spinner riêng của tab MRV
+        with st.spinner(f'Đang kết nối vệ tinh và xử lý mô hình AI cho năm {nam_co_so} và {nam_so_sanh}...'):
             carbon_base = tao_ban_do_carbon(nam_co_so)
             carbon_compare = tao_ban_do_carbon(nam_so_sanh)
 
