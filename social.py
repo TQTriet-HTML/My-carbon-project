@@ -5,6 +5,20 @@ def hien_thi_mang_xa_hoi():
     st.markdown("## 🌐 Carbon Connect - Mạng xã hội Tín chỉ Xanh")
     st.caption("Cộng đồng kết nối, chia sẻ kiến thức và thảo luận về thị trường Net-Zero toàn cầu.")
     
+    # --- BỔ SUNG: LIÊN KẾT ĐẾN CÁC MẠNG XÃ HỘI BÊN NGOÀI ---
+    st.markdown("#### 🔗 Theo dõi & Tham gia Cộng đồng của chúng tôi trên các nền tảng:")
+    col_fb, col_zl, col_li, col_yt = st.columns(4)
+    with col_fb:
+        st.markdown("[![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://facebook.com)")
+    with col_zl:
+        st.markdown("[![Zalo](https://img.shields.io/badge/Zalo-0180C7?style=for-the-badge&logo=zalo&logoColor=white)](https://zalo.me)")
+    with col_li:
+        st.markdown("[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)")
+    with col_yt:
+        st.markdown("[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com)")
+    
+    st.divider()
+
     # 1. KHU VỰC ĐĂNG BÀI
     with st.container(border=True):
         st.markdown("#### ✍️ Chia sẻ góc nhìn của bạn")
@@ -20,7 +34,6 @@ def hien_thi_mang_xa_hoi():
                     nguoi_dang = st.session_state.get('current_user', 'Khách ẩn danh')
                     vai_tro = st.session_state.get('current_role', 'Người dùng')
                     
-                    # Thêm bài viết mới lên đầu danh sách
                     st.session_state["social_posts"].insert(0, {
                         "id": f"post_{len(st.session_state['social_posts'])}",
                         "author": nguoi_dang,
@@ -46,10 +59,8 @@ def hien_thi_mang_xa_hoi():
     else:
         for post in st.session_state["social_posts"]:
             with st.container(border=True):
-                # Avatar và Tên người đăng
                 col_ava, col_name = st.columns([1, 15])
                 with col_ava:
-                    # Gán avatar giả lập theo vai trò
                     if post["role"] == "Chủ rừng / Kỹ sư MRV": st.markdown("## 👨‍🌾")
                     elif post["role"] == "Doanh nghiệp mua tín chỉ": st.markdown("## 🏢")
                     else: st.markdown("## 🤵")
@@ -57,20 +68,17 @@ def hien_thi_mang_xa_hoi():
                     st.markdown(f"**{post['author']}** 🔹 *{post['role']}*")
                     st.caption(f"🕒 {post['time']} | 🏷️ {post['tag']}")
                 
-                # Nội dung bài viết
                 st.markdown(f"> {post['content']}")
                 
-                # Nút tương tác
                 col_like, col_cmt, col_blank = st.columns([2, 2, 8])
                 with col_like:
-                    if st.button(f"❤️️ Thích ({post['likes']})", key=f"like_{post['id']}", help="Thích bài viết này"):
+                    if st.button(f"❤ Thích ({post['likes']})", key=f"like_{post['id']}", help="Thích bài viết này"):
                         post['likes'] += 1
                         st.rerun()
                 with col_cmt:
                     if st.button(f"💬 Bình luận ({len(post['comments'])})", key=f"cmt_btn_{post['id']}"):
                         st.session_state[f"show_cmt_{post['id']}"] = not st.session_state.get(f"show_cmt_{post['id']}", False)
                 
-                # Khu vực Bình luận
                 if st.session_state.get(f"show_cmt_{post['id']}", False):
                     st.markdown("---")
                     for cmt in post['comments']:
