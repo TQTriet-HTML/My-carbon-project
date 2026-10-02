@@ -37,7 +37,6 @@ if "current_role" not in st.session_state:
 if "wallet_balance" not in st.session_state:
     st.session_state["wallet_balance"] = 150000.0  
 
-# Lưu danh mục tín chỉ mà các tài khoản đã mua: {username: [{"project":..., "amount":..., "expiry":...}]}
 if "user_portfolios" not in st.session_state:
     st.session_state["user_portfolios"] = {}
 
@@ -49,7 +48,7 @@ if "market_projects" not in st.session_state:
             "owner": "Bộ NN&PTNT",
             "price": 5.0,
             "volume": 10300000,
-            "duration": 5, # Cam kết 5 năm
+            "duration": 5, 
             "lat": 16.4637,
             "lon": 107.5908,
             "verified": True
@@ -60,7 +59,7 @@ if "market_projects" not in st.session_state:
             "owner": "BQL rừng phòng hộ Cà Mau",
             "price": 15.0,
             "volume": 250000,
-            "duration": 3, # Cam kết 3 năm
+            "duration": 3, 
             "lat": 8.8242,
             "lon": 104.9452,
             "verified": True
@@ -105,7 +104,7 @@ def hien_thi_cong_dang_nhap():
                 st.success("✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
 
 # ==========================================
-# 3. HỆ THỐNG LÕI (MRV & GIAO DỊCH B2B/B2C)
+# 3. HỆ THỐNG LÕI (MRV & GIAO DỊCH)
 # ==========================================
 def main_app():
     col_title, col_logout = st.columns([5, 1])
@@ -180,7 +179,7 @@ def main_app():
                 st.session_state["wallet_balance"] += 50000.0
                 st.rerun()
                 
-            # HIỂN THỊ KHO TÍN CHỈ ĐÃ MUA (PORTFOLIO)
+            # HIỂN THỊ KHO TÍN CHỈ BẰNG DATA TABLE ĐỂ CHỐNG CẮT CHỮ
             st.markdown("### 📦 Kho Tín chỉ Carbon Đang Sở hữu của Bạn")
             current_user = st.session_state['current_user']
             user_holdings = st.session_state["user_portfolios"].get(current_user, [])
@@ -188,11 +187,9 @@ def main_app():
             if not user_holdings:
                 st.info("Kho của bạn đang trống. Hãy chọn mua các dự án bên dưới để tích lũy tín chỉ bù đắp carbon.")
             else:
-                for h in user_holdings:
-                    col_h1, col_h2, col_h3 = st.columns(3)
-                    col_h1.metric("Dự án sở hữu", h["project"])
-                    col_h2.metric("Số lượng tín chỉ", f"{h['amount']:,} tấn")
-                    col_h3.metric("Thời hạn hiệu lực", h["expiry"])
+                df_portfolio = pd.DataFrame(user_holdings)
+                df_portfolio.columns = ["Dự án sở hữu", "Số lượng (tấn)", "Thời hạn hiệu lực"]
+                st.dataframe(df_portfolio, use_container_width=True, hide_index=True)
             st.divider()
             
         elif vai_tro == "Chủ rừng / Kỹ sư MRV":
@@ -227,7 +224,7 @@ def main_app():
 
         st.divider()
         
-        # DANH MỤC TRÊN SÀN (MUA LẺ / SỈ)
+        # DANH MỤC TRÊN SÀN
         st.markdown("### 🛒 Danh mục Tín chỉ đang giao dịch")
         
         for p in st.session_state["market_projects"]:
@@ -237,7 +234,7 @@ def main_app():
                     
                     with col_info:
                         st.markdown(f"#### 🌳 {p['name']}")
-                        trang_thai = "✅ Đã xác thực Pháp lý & Vệ tinh" if p.get('verified', False) else "⚠️ Dữ liệu tham khảo (Chưa xác minh sổ đỏ)"
+                        trang_thai = "✅ Đã xác thực Pháp lý & Vệ tinh" if p.get('verified', False) else "⚠ Dữ liệu tham khảo (Chưa xác minh sổ đỏ)"
                         st.write(f"**Chủ sở hữu:** {p['owner']} | **Trạng thái:** {trang_thai}")
                         st.write(f"**Trữ lượng còn lại:** {int(p['volume']):,} tấn | **Giá chốt:** ${p['price']:,.2f} / tín chỉ")
                         st.write(f"⏳ **Thời hạn cam kết hiệu lực:** {p['duration']} năm (Đảm bảo tính pháp lý & sinh khối)")
@@ -256,7 +253,7 @@ def main_app():
                                 ).add_to(m_mini)
                                 st_folium(m_mini, width=500, height=300, key=f"fmap_{p['id']}")
                             else:
-                                st.warning("⚠️️ Không có minh chứng pháp lý hợp lệ.")
+                                st.warning("⚠ Không có minh chứng pháp lý hợp lệ.")
     
                     with col_action:
                         if vai_tro == "Doanh nghiệp mua tín chỉ":
@@ -272,20 +269,15 @@ def main_app():
                             
                             if st.button(f"🛒 Thanh toán", key=f"buy_{p['id']}", type="primary", use_container_width=True):
                                 if st.session_state["wallet_balance"] >= tong_tien:
-                                    # Trừ tiền ví
                                     st.session_state["wallet_balance"] -= tong_tien
-                                    # Trừ trữ lượng dự án
                                     p['volume'] -= sl_mua
                                     
-                                    # GHI NHẬN VÀO KHO TÍN CHỈ SỞ HỮU (PORTFOLIO) CỦA NGƯỜI MUA
                                     current_user = st.session_state['current_user']
                                     if current_user not in st.session_state["user_portfolios"]:
                                         st.session_state["user_portfolios"][current_user] = []
                                     
-                                    # Tính năm hết hạn dựa vào thời hạn cam kết của dự án (hiện tại năm 2026)
                                     expiry_year = 2026 + p['duration']
                                     
-                                    # Kiểm tra xem người này đã mua dự án này trước đó chưa, nếu rồi thì cộng dồn
                                     found = False
                                     for item in st.session_state["user_portfolios"][current_user]:
                                         if item["project"] == p['name']:
@@ -296,7 +288,7 @@ def main_app():
                                         st.session_state["user_portfolios"][current_user].append({
                                             "project": p['name'],
                                             "amount": sl_mua,
-                                            "expiry": f"Hết hạn: Tháng 12/{expiry_year} (Cam kết {p['duration']} năm)"
+                                            "expiry": f"Tháng 12/{expiry_year} (Cam kết {p['duration']} năm)"
                                         })
                                         
                                     st.success(f"🎉 Mua thành công {sl_mua} tín chỉ! Đã cập nhật vào kho tài sản cá nhân.")
