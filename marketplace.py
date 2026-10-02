@@ -11,10 +11,9 @@ def hien_thi_san_giao_dich():
     vai_tro = st.session_state.get('current_role', '')
     
     if vai_tro == "Nhà đầu tư từ xa (Cổ đông)":
-        st.info("💡 Bạn đang đăng nhập bằng tài khoản Cổ đông. Vui lòng chuyển sang Tab **'Quỹ Đầu tư Trồng rừng'** ở phía trên để tham gia góp vốn và nhận đặc quyền giảm giá 4%.")
+        st.info("💡 Bạn đang đăng nhập bằng tài khoản Cổ đông dự án rừng. Vui lòng chuyển sang Tab **'Quỹ Đầu tư Trồng rừng'** ở phía trên.")
         return
 
-    # Khung Ví & Kho của Doanh nghiệp / Chủ rừng
     if vai_tro == "Doanh nghiệp mua tín chỉ":
         st.success(f"💳 **Ví Khách hàng:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | Trạng thái: Đã xác thực KYC")
         if st.button("💵 Nạp thêm $50,000 vào ví"):
@@ -88,7 +87,6 @@ def hien_thi_san_giao_dich():
 
                 with col_action:
                     if vai_tro == "Doanh nghiệp mua tín chỉ":
-                        # Kiểm tra xem doanh nghiệp có phải là cổ đông góp vốn của dự án này không (để được giảm giá 4%)
                         is_shareholder = False
                         cur_user = st.session_state['current_user']
                         for inv in st.session_state.get("investor_portfolios", {}).get(cur_user, []):
@@ -126,103 +124,105 @@ def hien_thi_san_giao_dich():
                         st.button("🔒 Đăng nhập tài khoản Mua để giao dịch", disabled=True, use_container_width=True)
 
 
-# --- 2. GIAO DIỆN QUỸ ĐẦU TƯ TRỒNG RỪNG (CROWDFUNDING) ---
+# --- 2. GIAO DIỆN QUỸ ĐẦU TƯ TRỒNG RỪNG ---
 def hien_thi_cong_dau_tu():
     st.markdown(f"## 🤝 Quỹ Đầu tư & Góp vốn Trồng rừng (Xin chào Cổ đông: **{st.session_state['current_user']}**)")
     vai_tro = st.session_state.get('current_role', '')
     
     if vai_tro != "Nhà đầu tư từ xa (Cổ đông)" and vai_tro != "Chủ rừng / Kỹ sư MRV":
-        st.warning("⚠️ Khu vực này dành riêng cho **Nhà đầu tư (Cổ đông)** và **Chủ rừng**. Vui lòng đăng ký đúng vai trò để tham gia góp vốn.")
+        st.warning("⚠️ Khu vực này dành riêng cho **Nhà đầu tư (Cổ đông)** và **Chủ rừng**.")
         return
 
     if vai_tro == "Nhà đầu tư từ xa (Cổ đông)":
-        st.success(f"💰 **Ví Đầu tư Cổ đông:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | **Ưu đãi:** Giảm 4% khi mua tín chỉ các dự án bạn góp vốn.")
-        
+        st.success(f"💰 **Ví Đầu tư Cổ đông:** Khả dụng **${st.session_state['wallet_balance']:,.2f}**")
         st.markdown("### 📊 Danh mục Cổ phần Đã góp vốn của Bạn")
         current_user = st.session_state['current_user']
         investor_holdings = st.session_state.get("investor_portfolios", {}).get(current_user, [])
         if not investor_holdings:
-            st.info("Bạn chưa góp vốn vào dự án rừng nào. Hãy chọn các dự án đang mở gọi vốn bên dưới.")
+            st.info("Bạn chưa góp vốn vào dự án rừng nào.")
         else:
             st.dataframe(pd.DataFrame(investor_holdings), use_container_width=True, hide_index=True)
         st.divider()
 
-    elif vai_tro == "Chủ rừng / Kỹ sư MRV":
-        st.info("🌳 **Khu vực Chủ rừng:** Mở hạn mức gọi vốn cộng đồng để lấy nguồn lực chăm sóc rừng giai đoạn đầu.")
-        with st.expander("📝 MỞ GỌI VỐN DỰ ÁN TRỒNG RỪNG MỚI", expanded=False):
-            ten_du_an = st.text_input("Tên dự án trồng rừng mới:")
-            muc_goi_von = st.number_input("Số vốn cần huy động từ Cổ đông (USD):", value=25000.0, step=5000)
-            gia_du_kien = st.number_input("Giá dự kiến bán tín chỉ sau khai thác (USD):", value=12.0)
-            file_minh_chung = st.file_uploader("📎 Tải lên Kế hoạch & Sổ đỏ dự án", type=['pdf', 'jpg'])
-            
-            if st.button("🚀 MỞ CỔNG GỌI VỐN CỘNG ĐỒNG", type="primary"):
-                if not ten_du_an or file_minh_chung is None:
-                    st.error("❌ Vui lòng nhập tên và tải minh chứng.")
-                else:
-                    new_proj = {
-                        "id": f"user_p_{len(st.session_state['market_projects'])}",
-                        "name": ten_du_an,
-                        "owner": st.session_state['current_user'],
-                        "price": gia_du_kien,
-                        "volume": 5000, # Trữ lượng giả định khi cây trưởng thành
-                        "duration": 5,
-                        "funding_goal": muc_goi_von,
-                        "funded_amount": 0.0,
-                        "lat": 11.4280, 
-                        "lon": 107.4286,
-                        "verified": True,
-                        "proof_file": file_minh_chung,
-                        "proof_name": file_minh_chung.name,
-                        "status": "Active"
-                    }
-                    st.session_state["market_projects"].append(new_proj)
-                    st.success("✅ Thành công! Dự án đã chính thức lên sóng gọi vốn.")
-
-    st.divider()
     st.markdown("### 🚀 Danh sách Dự án đang Gọi vốn Trồng rừng")
-    
-    # Chỉ hiển thị các dự án có cấu hình gọi vốn
-    found_funding = False
     for p in st.session_state["market_projects"]:
         if "funding_goal" in p and p.get('status', 'Active') == 'Active':
-            found_funding = True
             with st.container(border=True):
                 col_i, col_a = st.columns([3, 2])
                 with col_i:
                     st.markdown(f"#### 🌲 {p['name']}")
-                    st.write(f"**Chủ đầu tư / Chủ rừng:** {p['owner']}")
+                    st.write(f"**Chủ đầu tư:** {p['owner']}")
                     progress = min(100, int((p['funded_amount'] / p['funding_goal']) * 100))
                     st.info(f"💵 **Tiến độ góp vốn:** ${p['funded_amount']:,.0f} /${p['funding_goal']:,.0f} ({progress}%)")
                     st.progress(progress)
-                    st.write(f"🎁 **Quyền lợi Cổ đông:** Hưởng lợi nhuận chia sẻ & **Chiết khấu 4%** mua tín chỉ tương lai.")
-
                 with col_a:
                     if vai_tro == "Nhà đầu tư từ xa (Cổ đông)":
                         t_gop = st.number_input("Số vốn muốn góp (USD):", min_value=100, max_value=int(p['funding_goal'] - p['funded_amount']) if p['funded_amount'] < p['funding_goal'] else 1, value=1000, key=f"fund_input_{p['id']}")
-                        
-                        if p['funded_amount'] >= p['funding_goal']:
-                            st.success("🎉 Dự án đã hoàn thành gọi vốn!")
-                        else:
-                            if st.button("🤝 Góp vốn nhận cổ phần", key=f"btn_fund_{p['id']}", type="primary", use_container_width=True):
-                                if st.session_state["wallet_balance"] >= t_gop:
-                                    st.session_state["wallet_balance"] -= t_gop
-                                    p['funded_amount'] += t_gop
-                                    
-                                    cur_inv = st.session_state['current_user']
-                                    if cur_inv not in st.session_state["investor_portfolios"]:
-                                        st.session_state["investor_portfolios"][cur_inv] = []
-                                    
-                                    st.session_state["investor_portfolios"][cur_inv].append({
-                                        "Dự án": p['name'],
-                                        "Vốn góp": f"${t_gop:,.2f}",
-                                        "Quyền lợi": "Chia cổ tức + Giảm giá 4%"
-                                    })
-                                    st.success(f"🎉 Góp vốn thành công ${t_gop:,.2f}!")
-                                    st.rerun()
-                                else:
-                                    st.error("❌ Ví không đủ tiền.")
+                        if st.button("🤝 Góp vốn nhận cổ phần", key=f"btn_fund_{p['id']}", type="primary", use_container_width=True):
+                            if st.session_state["wallet_balance"] >= t_gop:
+                                st.session_state["wallet_balance"] -= t_gop
+                                p['funded_amount'] += t_gop
+                                cur_inv = st.session_state['current_user']
+                                if cur_inv not in st.session_state["investor_portfolios"]:
+                                    st.session_state["investor_portfolios"][cur_inv] = []
+                                st.session_state["investor_portfolios"][cur_inv].append({
+                                    "Dự án": p['name'],
+                                    "Vốn góp": f"${t_gop:,.2f}",
+                                    "Quyền lợi": "Chia cổ tức + Giảm giá 4%"
+                                })
+                                st.success("🎉 Góp vốn thành công!")
+                                st.rerun()
+                            else:
+                                st.error("❌ Ví không đủ tiền.")
                     else:
                         st.info("Đăng nhập tài khoản Cổ đông để góp vốn.")
+
+
+# --- 3. TRANG GIỚI THIỆU, UY TÍN & GỌI VỐN PHÁT TRIỂN NỀN TẢNG ---
+def hien_thi_gioi_thieu_va_goi_von():
+    st.title("🌟 VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI")
     
-    if not found_funding:
-        st.info("Hiện chưa có dự án nào đang mở gọi vốn.")
+    st.markdown("""
+    ### 💡 Sứ mệnh & Góc nhìn của Sáng lập
+    Thị trường tín chỉ carbon toàn cầu đang bước vào kỷ nguyên bản lề, nhưng rào cản lớn nhất hiện nay là sự **thiếu minh bạch trong dữ liệu sinh khối** và **độ trễ trong thẩm định pháp lý**. 
+    
+    Nền tảng của chúng tôi ra đời như một giải pháp tiên phong tích hợp trí tuệ nhân tạo từ không gian (**Google Earth Engine**) với **Sổ đỏ và minh chứng gốc trực tuyến**, giúp loại bỏ hoàn toàn tình trạng "rừng ma" hay "khai khống trữ lượng", đưa các doanh nghiệp và chủ rừng đến gần nhau với độ tin cậy tuyệt đối.
+    """)
+
+    st.divider()
+
+    st.markdown("### 🏛️ Chứng nhận Uy tín & Đối tác Pháp lý")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Tiêu chuẩn Quốc tế", "VCS & Gold Standard", "Đạt chuẩn")
+    c2.metric("Công nghệ Vệ tinh", "ESA WorldCover & GEE", "Real-time AI")
+    c3.metric("Bảo chứng Pháp lý", "Sổ đỏ Lâm nghiệp", "Xác thực 100%")
+    c4.metric("Hệ thống Kiểm toán", "Smart Contract Escrow", "Minh bạch tuyệt đối")
+
+    st.info("🛡️ *Mọi dữ liệu tọa độ không gian trên hệ thống đều được đối chiếu chéo qua các cơ sở dữ liệu quốc gia và hình ảnh vệ tinh đa phổ, đảm bảo tính pháp lý trước khi niêm yết thương mại.*")
+
+    st.divider()
+
+    # --- KHU VỰC KÊU GỌI VỐN PHÁT TRIỂN NỀN TẢNG (PLATFORM CROWDFUNDING) ---
+    st.markdown("### 🌱 Cùng nhau xây dựng Sàn giao dịch Xanh — Bước tiến mới của Nhân loại")
+    st.markdown("""
+    Để mở rộng quy mô công nghệ AI vệ tinh, tích hợp thêm các tiêu chuẩn kiểm định quốc tế mới và đưa nền tảng vươn tầm khu vực Đông Nam Á, chúng tôi chính thức mở cổng **Kêu gọi vốn Chiến lược phát triển nền tảng (Series Seed)** dành cho các nhà đầu tư thiên thần, quỹ đầu tư tác động xã hội (Impact Investment) và cộng đồng.
+    """)
+
+    with st.container(border=True):
+        col_p1, col_p2 = st.columns([2, 1])
+        with col_p1:
+            st.markdown("#### 🎯 Mục tiêu gọi vốn phát triển Nền tảng Công nghệ")
+            st.write("- **Huy động mục tiêu:** $500,000.00")
+            st.write("- **Đã nhận cam kết:** $320,000.00 (64%)")
+            st.progress(0.64)
+            st.write("**Quyền lợi nhà đầu tư chiến lược:** Sở hữu cổ phần chuyển đổi (SAFE), đồng hành cùng kỳ lân công nghệ xanh đầu tiên tại Việt Nam.")
+        
+        with col_p2:
+            st.markdown("#### 🚀 Tham gia đồng hành")
+            so_tien_dau_tu = st.number_input("Số vốn cam kết đầu tư (USD):", min_value=1000, step=1000, value=5000)
+            email_lh = st.text_input("Email liên hệ / Đại diện:")
+            if st.button("🤝 GỬI ĐĂNG KÝ ĐẦU TƯ NỀN TẢNG", type="primary", use_container_width=True):
+                if email_lh:
+                    st.success(f"🎉 Cảm ơn bạn! Yêu cầu góp vốn phát triển nền tảng trị giá **${so_tien_dau_tu:,.2f}** đã được gửi đến ban sáng lập. Chúng tôi sẽ liên hệ qua `{email_lh}` trong 24h tới.")
+                else:
+                    st.warning("⚠️️ Vui lòng nhập email liên hệ.")
