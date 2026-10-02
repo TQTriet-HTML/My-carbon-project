@@ -11,55 +11,54 @@ from social import hien_thi_mang_xa_hoi
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- ĐẠI TU GIAO DIỆN (UI OVERHAUL) BẰNG CSS ---
+# --- CSS HOẠT HỌA (HOVER EFFECTS) & GIAO DIỆN CHUYÊN NGHIỆP ---
 def inject_custom_css():
     st.markdown("""
         <style>
-        /* Ép font chữ sang các họ sans-serif hiện đại, chuyên nghiệp */
-        html, body, [class*="css"]  {
-            font-family: 'Inter', 'Roboto', 'Segoe UI', sans-serif !important;
+        /* Ép font chữ sang họ sans-serif hiện đại, thanh thoát */
+        html, body, [class*="css"] {
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important;
         }
         
-        /* Tinh chỉnh tiêu đề chính để không bị rớt dòng (giảm size một chút) */
+        /* TINH CHỈNH TIÊU ĐỀ: Ép về 1 dòng duy nhất, tự động thu nhỏ nếu màn hình hẹp */
         .main-title {
-            font-size: 2.2rem !important;
-            font-weight: 700 !important;
+            font-size: clamp(22px, 2.5vw, 32px) !important;
+            font-weight: 800 !important;
+            color: #E2E8F0;
             margin-bottom: 0px !important;
             padding-bottom: 0px !important;
-            color: #E2E8F0;
+            white-space: nowrap !important; /* Tuyệt đối không rớt dòng */
         }
 
-        /* Định dạng lại nút Đăng xuất cho gọn gàng và đẹp mắt */
+        /* Nút Đăng xuất căn chỉnh thẳng hàng */
         .logout-btn-container {
             display: flex;
             justify-content: flex-end;
             align-items: center;
             height: 100%;
-            margin-top: 15px;
+            margin-top: 5px;
         }
         
-        /* Hiệu ứng nổi lên cho các khối container (Card) */
-        div[data-testid="stVerticalBlock"] > div[style*="border"] {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border-radius: 10px;
-            background-color: #1A202C; /* Màu nền tối sang trọng */
+        /* HIỆU ỨNG TƯƠNG TÁC (HOVER) CHO CÁC KHỐI CHỨA (CARD/CONTAINER) */
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            transition: all 0.3s ease-in-out !important;
+            border-radius: 12px !important;
         }
-        div[data-testid="stVerticalBlock"] > div[style*="border"]:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-            border-color: #38A169 !important; /* Viền xanh lá khi hover */
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+            transform: translateY(-6px) !important; /* Bật nổi lên 6px */
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.25) !important; /* Bóng đổ ánh xanh */
+            border-color: #48bb78 !important; /* Viền sáng lên */
         }
         
-        /* Chỉnh nút bấm primary (màu chính) */
-        button[data-testid="baseButton-primary"] {
-            border-radius: 6px !important;
-            font-weight: 600 !important;
-            transition: all 0.2s ease;
+        /* HIỆU ỨNG TƯƠNG TÁC CHO TẤT CẢ NÚT BẤM (BUTTON) */
+        div.stButton > button {
+            transition: all 0.3s ease-in-out !important;
+            border-radius: 8px !important;
         }
-        button[data-testid="baseButton-primary"]:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.1);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        div.stButton > button:hover {
+            transform: translateY(-3px) !important; /* Nổi lên */
+            box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important;
+            border-color: #48bb78 !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -76,14 +75,7 @@ with st.sidebar:
     if ngon_ngu != "Tiếng Việt":
         st.info(f"⏳ Đang triển khai AI dịch thuật tự động cho **{ngon_ngu}**.")
     st.divider()
-    
-    st.markdown("### Kết nối với chúng tôi")
-    st.markdown("[📘 Facebook Fanpage](https://facebook.com)")
-    st.markdown("[💬 Nhóm Zalo Cộng đồng](https://zalo.me)")
-    st.markdown("[💼 LinkedIn B2B](https://linkedin.com)")
-    
-    st.divider()
-    st.caption("Carbon Exchange Platform v2.0")
+    st.caption("Carbon Exchange Platform v2.5")
 
 # Khởi tạo trạng thái phiên
 if "logged_in" not in st.session_state:
@@ -135,15 +127,13 @@ if "market_projects" not in st.session_state:
     ]
 
 def main_app():
-    # Sử dụng cột để cấu trúc lại phần Tiêu đề và Nút Đăng xuất cho thẳng hàng, gọn gàng
-    col_title, col_logout = st.columns([5, 1])
+    col_title, col_logout = st.columns([6, 1])
     with col_title:
-        # Sử dụng thẻ div với class main-title đã định dạng bằng CSS thay vì thẻ markdown mặc định
+        # Tiêu đề được ép vào class .main-title để CSS xử lý
         st.markdown('<div class="main-title">🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
         st.caption(f"Chào mừng trở lại, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
         
     with col_logout:
-        # Đặt nút đăng xuất vào một container để căn chỉnh tốt hơn
         st.markdown('<div class="logout-btn-container">', unsafe_allow_html=True)
         if st.button("🚪 Đăng xuất", type="secondary", use_container_width=True):
             st.session_state["logged_in"] = False
