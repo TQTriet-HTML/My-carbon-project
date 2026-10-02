@@ -138,15 +138,39 @@ def main_app():
             else:
                 st.info("Khoanh vùng để thẩm định dự án.")
 
-    ## TAB 2: GIAO DIỆN SÀN GIAO DỊCH MỚI
+   TAB 2: GIAO DIỆN SÀN GIAO DỊCH VÀ QUẢN LÝ TÀI KHOẢN
     with tab_market:
-        st.markdown("## 🏢 Trung tâm Giao dịch Tín chỉ Carbon Doanh nghiệp")
+        st.markdown("## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ Carbon")
         
+        # --- PHÂN QUYỀN GIAO DIỆN ---
+        vai_tro = st.session_state.get('current_role', '')
+        
+        if vai_tro == "Doanh nghiệp mua tín chỉ":
+            st.success("💳 **Ví Doanh nghiệp:** Khả dụng **$150,000.00** | Trạng thái: Đã xác thực KYC")
+            
+        elif vai_tro == "Chủ rừng / Kỹ sư MRV":
+            st.info("🌳 **Quản lý Dự án:** Bạn hiện có **0** dự án đang niêm yết. Hãy nộp hồ sơ dự án mới bên dưới.")
+            with st.expander("📝 TẠO HỒ SƠ NIÊM YẾT DỰ ÁN MỚI", expanded=False):
+                st.markdown("#### 1. Thông tin pháp lý & Minh chứng")
+                ten_du_an = st.text_input("Tên dự án rừng của bạn:")
+                st.file_uploader("📎 Tải lên Minh chứng (Sổ đỏ, Giấy phép, Quyết định giao rừng - PDF/JPG)", type=['pdf', 'jpg', 'png'])
+                
+                st.markdown("#### 2. Không gian & Tọa độ sinh thái")
+                st.caption("Vui lòng sang Tab 'Hệ thống MRV', khoanh vùng khu rừng của bạn để hệ thống AI trích xuất tọa độ tự động.")
+                st.text_input("Tọa độ Đa giác (GeoJSON) - (Hệ thống tự động đồng bộ từ bản đồ):", disabled=True, placeholder="Chưa có dữ liệu. Vui lòng khoanh vùng bản đồ.")
+                
+                st.markdown("#### 3. Báo cáo Tín chỉ & Cam kết")
+                st.number_input("Khối lượng tín chỉ đề xuất bán (tấn):", min_value=0)
+                st.button("🚀 GỬI HỒ SƠ LÊN HỘI ĐỒNG THẨM ĐỊNH", type="primary")
+
+        st.divider()
+        
+        # --- BẢNG THỐNG KÊ CHUNG ---
+        st.markdown("### 📊 Thống kê Hệ sinh thái")
         user_db = load_users()
         so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
         so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
         
-        st.markdown("### 📊 Thống kê Hệ sinh thái")
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
         m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
@@ -155,45 +179,36 @@ def main_app():
         
         st.divider()
         
-        # Đã chuyển đổi sang định dạng Datetime để trục X tự động nằm ngang và đúng thứ tự
-        st.markdown("### 📈 Biến động Giá Tín chỉ Carbon (6 tháng qua)")
-        dates = pd.date_range(end=pd.Timestamp.today(), periods=6, freq="ME") 
-        chart_data = pd.DataFrame({
-            "Giá Carbon (USD/tấn)": [8.5, 9.2, 10.1, 11.5, 12.0, 12.5]
-        }, index=dates)
-        st.line_chart(chart_data, color="#31a354")
-        
-        st.divider()
-        
+        # --- BIỂU ĐỒ & THỊ TRƯỜNG ---
         col_news, col_projects = st.columns([1, 2])
         
         with col_news:
             st.markdown("### 📰 Tin tức Thị trường")
             with st.container(height=400):
-                # Các bản tin đã được gắn link thực tế, người dùng có thể click vào để đọc
-                st.info("🕒 **Hôm nay:** [EU chính thức áp dụng cơ chế điều chỉnh biên giới carbon (CBAM)](https://vneconomy.vn/eu-chinh-thuc-ap-dung-co-che-dieu-chinh-bien-gioi-carbon-cbam.htm)")
-                st.warning("🕒 **Gần đây:** [Lần đầu tiên Việt Nam bán tín chỉ carbon rừng thu về hơn 1.200 tỷ đồng](https://baochinhphu.vn/lan-dau-tien-viet-nam-ban-tin-chi-carbon-rung-thu-ve-hon-1200-ty-dong-102240321142224016.htm)")
-                st.success("🕒 **Cập nhật:** [Việt Nam hoàn thiện khung pháp lý, chuẩn bị vận hành sàn giao dịch tín chỉ carbon](https://tuoitre.vn/viet-nam-chuan-bi-van-hanh-san-giao-dich-tin-chi-carbon-20230927092121.htm)")
-                st.info("🕒 **Báo cáo:** [Tiềm năng thị trường tín chỉ carbon nông nghiệp tại Đồng bằng sông Cửu Long](https://dangcongsan.vn/kinh-te/tiem-nang-lon-tu-thi-truong-tin-chi-carbon-nong-nghiep-663000.html)")
+                st.info("🕒 **Hôm nay:** [Báo Chính Phủ: Thị trường carbon giúp Việt Nam thu về hàng ngàn tỷ đồng](https://baochinhphu.vn/thong-diep-quoc-gia-ve-ung-pho-bien-doi-khi-hau-va-thi-truong-carbon-102240101150000000.htm)")
+                st.warning("🕒 **Gần đây:** [VnEconomy: Chuẩn bị vận hành thí điểm sàn giao dịch tín chỉ carbon](https://vneconomy.vn/thi-truong-tin-chi-carbon.html)")
+                st.success("🕒 **Cập nhật:** [Báo Tuổi Trẻ: Đẩy mạnh các dự án tín chỉ carbon rừng tại Tây Nguyên](https://tuoitre.vn/tin-chi-carbon.html)")
 
         with col_projects:
-            st.markdown("### 🛒 Danh mục Tín chỉ chào bán (Dữ liệu tham khảo thực tế)")
+            st.markdown("### 🛒 Danh mục Tín chỉ chào bán (Dữ liệu tham khảo)")
             
-            # Đưa dữ liệu của các dự án lớn có thật tại Việt Nam vào làm mẫu
             with st.expander("🌳 Dự án giảm phát thải vùng Bắc Trung Bộ (ERPA) - 10.3 triệu tín chỉ", expanded=True):
                 st.write("**Chủ sở hữu:** Bộ NN&PTNT (Chuyển nhượng cho Ngân hàng Thế giới WB)")
                 st.write("**Tiêu chuẩn:** FCPF (Forest Carbon Partnership Facility)")
                 st.write("**Mức giá chào bán:** $5.00 / tín chỉ")
-                if st.button("Hồ sơ vệ tinh MRV", key="mrv_btb"): st.success("✅ Dữ liệu sinh khối hợp lệ")
-                st.button("🛒 Đặt mua khối lượng lớn", key="buy_btb", type="primary")
+                c_btn1, c_btn2, c_btn3 = st.columns(3)
+                with c_btn1: st.button("🗺️ Xem Sổ đỏ Không gian", key="map_btb")
+                with c_btn2: st.button("📄 Xem Giấy phép & Chứng nhận", key="doc_btb")
+                with c_btn3: st.button("🛒 Trích tiền ví Đặt mua", key="buy_btb", type="primary", disabled=(vai_tro != "Doanh nghiệp mua tín chỉ"))
                 
             with st.expander("🌲 Dự án Rừng ngập mặn kết hợp nuôi tôm sinh thái Cà Mau - 250,000 tín chỉ"):
                 st.write("**Chủ sở hữu:** Ban quản lý rừng phòng hộ Cà Mau")
                 st.write("**Tiêu chuẩn:** Gold Standard (GS)")
                 st.write("**Mức giá chào bán:** $15.00 / tín chỉ")
-                if st.button("Hồ sơ vệ tinh MRV", key="mrv_cm"): st.success("✅ Dữ liệu sinh khối hợp lệ")
-                st.button("🛒 Đặt mua khối lượng lớn", key="buy_cm", type="primary")
-
+                c_btn1, c_btn2, c_btn3 = st.columns(3)
+                with c_btn1: st.button("🗺️ Xem Sổ đỏ Không gian", key="map_cm")
+                with c_btn2: st.button("📄 Xem Giấy phép & Chứng nhận", key="doc_cm")
+                with c_btn3: st.button("🛒 Trích tiền ví Đặt mua", key="buy_cm", type="primary", disabled=(vai_tro != "Doanh nghiệp mua tín chỉ"))
 # 5. ĐIỀU HƯỚNG MÀN HÌNH
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
