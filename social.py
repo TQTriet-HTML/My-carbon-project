@@ -5,20 +5,6 @@ def hien_thi_mang_xa_hoi():
     st.markdown("## 🌐 Carbon Connect - Mạng xã hội Tín chỉ Xanh")
     st.caption("Cộng đồng kết nối, chia sẻ kiến thức và thảo luận về thị trường Net-Zero toàn cầu.")
     
-    # --- BỔ SUNG: LIÊN KẾT ĐẾN CÁC MẠNG XÃ HỘI BÊN NGOÀI ---
-    st.markdown("#### 🔗 Theo dõi & Tham gia Cộng đồng của chúng tôi trên các nền tảng:")
-    col_fb, col_zl, col_li, col_yt = st.columns(4)
-    with col_fb:
-        st.markdown("[![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://facebook.com)")
-    with col_zl:
-        st.markdown("[![Zalo](https://img.shields.io/badge/Zalo-0180C7?style=for-the-badge&logo=zalo&logoColor=white)](https://zalo.me)")
-    with col_li:
-        st.markdown("[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)")
-    with col_yt:
-        st.markdown("[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com)")
-    
-    st.divider()
-
     # 1. KHU VỰC ĐĂNG BÀI
     with st.container(border=True):
         st.markdown("#### ✍️ Chia sẻ góc nhìn của bạn")
@@ -92,3 +78,17 @@ def hien_thi_mang_xa_hoi():
                                 "text": new_cmt
                             })
                             st.rerun()
+
+    # --- 3. LIÊN KẾT MẠNG XÃ HỘI (ĐƯỢC CHUYỂN XUỐNG CUỐI TRANG) ---
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.divider()
+    st.markdown("#### 🔗 Theo dõi & Tham gia Cộng đồng của chúng tôi trên các nền tảng:")
+    col_fb, col_zl, col_li, col_yt = st.columns(4)
+    with col_fb:
+        st.markdown("[![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://facebook.com)")
+    with col_zl:
+        st.markdown("[![Zalo](https://img.shields.io/badge/Zalo-0180C7?style=for-the-badge&logo=zalo&logoColor=white)](https://zalo.me)")
+    with col_li:
+        st.markdown("[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)")
+    with col_yt:
+        st.markdown("[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com)")
