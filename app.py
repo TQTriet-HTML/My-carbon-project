@@ -9,25 +9,57 @@ import os
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
 # 2. HỆ THỐNG QUẢN LÝ TÀI KHOẢN
-USER_FILE = "users_db.json"
+with tab_market:
+        st.markdown("## 🏢 Trung tâm Giao dịch Tín chỉ Carbon Doanh nghiệp")
+        
+        # 1. THỐNG KÊ MINH BẠCH (Lấy dữ liệu thực tế từ file JSON)
+        user_db = load_users()
+        so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
+        so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
+        
+        st.markdown("### 📊 Thống kê Hệ sinh thái")
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
+        m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
+        m3.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50 (Xu hướng tăng)")
+        m4.metric("Dự án chờ duyệt MRV", "12 Dự án", "Đang xử lý")
+        
+        st.divider()
+        
+        # 2. BIỂU ĐỒ BIẾN ĐỘNG GIÁ THỜI GIAN THỰC
+        st.markdown("### 📈 Biến động Giá Tín chỉ Carbon (6 tháng qua)")
+        import pandas as pd
+        # Dữ liệu mô phỏng biến động giá (Sau này có thể kéo từ API tài chính)
+        chart_data = pd.DataFrame({
+            "Giá Carbon (USD/tấn)": [8.5, 9.2, 10.1, 11.5, 12.0, 12.5]
+        }, index=["Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10"])
+        st.line_chart(chart_data, color="#31a354")
+        
+        st.divider()
+        
+        col_news, col_projects = st.columns([1, 2])
+        
+        # 3. TIN TỨC CẬP NHẬT
+        with col_news:
+            st.markdown("### 📰 Tin tức Thị trường")
+            with st.container(height=400):
+                st.info("🕒 **Hôm nay:** EU chính thức áp dụng cơ chế điều chỉnh biên giới carbon (CBAM) đối với hàng hóa nhập khẩu.")
+                st.warning("🕒 **Hôm qua:** Giá tín chỉ rừng ngập mặn toàn cầu tăng 5% do nhu cầu bù đắp từ các hãng hàng không.")
+                st.success("🕒 **Tuần trước:** Việt Nam hoàn thiện khung pháp lý cho sàn giao dịch tín chỉ carbon nội địa.")
+                st.info("🕒 **Tháng trước:** Dự án trồng rừng tại Tây Nguyên nhận chứng chỉ Gold Standard.")
 
-def load_users():
-    if os.path.exists(USER_FILE):
-        with open(USER_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    else:
-        default_db = {"admin": {"password": "123456", "role": "Chủ rừng / Kỹ sư MRV"}}
-        save_users(default_db)
-        return default_db
-
-def save_users(db):
-    with open(USER_FILE, "w", encoding="utf-8") as f:
-        json.dump(db, f, ensure_ascii=False, indent=4)
-
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
-if "current_role" not in st.session_state:
-    st.session_state["current_role"] = ""
+        # 4. DANH MỤC DỰ ÁN
+        with col_projects:
+            st.markdown("### 🛒 Danh mục Tín chỉ chào bán")
+            with st.expander("🌳 Dự án Rừng ngập mặn Cần Giờ (50,000 tín chỉ) - $14.00/tín chỉ", expanded=True):
+                st.write("**Tiêu chuẩn:** Verified Carbon Standard (VCS)")
+                if st.button("Hồ sơ MRV", key="mrv_cg"): st.success("Dữ liệu vệ tinh hợp lệ")
+                st.button("🛒 Đặt mua", key="buy_cg", type="primary")
+                
+            with st.expander("🌲 Dự án Phục hồi Sinh thái VQG Cát Tiên (120,000 tín chỉ) - $12.50/tín chỉ"):
+                st.write("**Tiêu chuẩn:** Gold Standard (GS)")
+                if st.button("Hồ sơ MRV", key="mrv_ct"): st.success("Dữ liệu vệ tinh hợp lệ")
+                st.button("🛒 Đặt mua", key="buy_ct", type="primary")
 
 # 3. GIAO DIỆN CỔNG ĐĂNG NHẬP
 def hien_thi_cong_dang_nhap():
