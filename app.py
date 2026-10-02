@@ -40,7 +40,6 @@ if "wallet_balance" not in st.session_state:
 if "user_portfolios" not in st.session_state:
     st.session_state["user_portfolios"] = {}
 
-# Danh sách dự án ban đầu (có sẵn minh chứng dạng mô phỏng mẫu)
 if "market_projects" not in st.session_state:
     st.session_state["market_projects"] = [
         {
@@ -177,7 +176,7 @@ def main_app():
         st.markdown(f"## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ (Xin chào: **{st.session_state['current_user']}**)")
         vai_tro = st.session_state.get('current_role', '')
         
-        # 1. KHU VỰC VÍ & KHO SỞ HỮU
+        # 1. KHU VỰC VÍ & KHO SỞ HỮU CỦA NGƯỜI MUA
         if vai_tro == "Doanh nghiệp mua tín chỉ":
             st.success(f"💳 **Ví Khách hàng:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | Trạng thái: Đã xác thực KYC")
             if st.button("💵 Nạp thêm $50,000 vào ví"):
@@ -204,7 +203,6 @@ def main_app():
                 gia_ban = st.number_input("Giá bán mỗi tín chỉ (USD):", value=10.0)
                 cam_ket_nam = st.number_input("Thời hạn cam kết bảo vệ rừng (Năm):", min_value=1, max_value=30, value=5)
                 
-                # Bắt buộc tải tệp thực tế
                 file_minh_chung = st.file_uploader("📎 Tải lên Sổ đỏ / Giấy tờ pháp lý gốc (Bắt buộc - Ảnh/PDF)", type=['pdf', 'jpg', 'png'])
                 
                 if st.button("🚀 XÁC THỰC & ĐƯA LÊN SÀN", type="primary"):
@@ -213,7 +211,6 @@ def main_app():
                     elif file_minh_chung is None:
                         st.error("❌ HỒ SƠ BỊ TỪ CHỐI: Bạn bắt buộc phải tải lên tệp pháp lý gốc (Sổ đỏ/Giấy phép).")
                     else:
-                        # Lưu trữ chính xác file do người bán tải lên
                         new_proj = {
                             "id": f"user_p_{len(st.session_state['market_projects'])}",
                             "name": ten_du_an,
@@ -224,7 +221,7 @@ def main_app():
                             "lat": 11.4280, 
                             "lon": 107.4286,
                             "verified": True,
-                            "proof_file": file_minh_chung, # Lưu file gốc
+                            "proof_file": file_minh_chung,
                             "proof_name": file_minh_chung.name
                         }
                         st.session_state["market_projects"].append(new_proj)
@@ -232,7 +229,21 @@ def main_app():
 
         st.divider()
 
-        # BIỂU ĐỒ GIÁ
+        # 2. KHU VỰC THỐNG KÊ HỆ SINH THÁI (ĐÃ ĐƯỢC PHỤC HỒI)
+        st.markdown("### 📊 Thống kê Hệ sinh thái Thời gian thực")
+        user_db = load_users()
+        so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
+        so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
+        
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
+        m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
+        m3.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50 (Xu hướng tăng)")
+        m4.metric("Dự án chờ duyệt MRV", f"{len(st.session_state['market_projects'])} Dự án", "Đang vận hành")
+
+        st.divider()
+
+        # 3. BIỂU ĐỒ BIẾN ĐỘNG GIÁ THỊ TRƯỜNG
         st.markdown("### 📈 Biến động Giá Thị trường Tín chỉ Carbon (Chuẩn VCS/GS toàn cầu)")
         dates_price = pd.date_range(end=pd.Timestamp.today(), periods=6, freq="ME")
         market_price_data = pd.DataFrame({
@@ -242,7 +253,7 @@ def main_app():
 
         st.divider()
         
-        # 2. DANH MỤC TRÊN SÀN
+        # 4. DANH MỤC TRÊN SÀN (MUA LẺ / SỈ)
         st.markdown("### 🛒 Danh mục Tín chỉ đang giao dịch")
         
         for p in st.session_state["market_projects"]:
@@ -257,19 +268,17 @@ def main_app():
                         st.write(f"**Trữ lượng còn lại:** {int(p['volume']):,} tấn | **Giá chốt:** ${p['price']:,.2f} / tín chỉ")
                         st.write(f"⏳ **Thời hạn cam kết hiệu lực:** {p['duration']} năm")
                         
-                        # Nút xem minh chứng gốc do người bán cung cấp
                         if st.button("📄 Xem Minh chứng Pháp lý Gốc (Sổ đỏ)", key=f"btn_proof_{p['id']}"):
                             st.session_state[f"show_proof_{p['id']}"] = not st.session_state.get(f"show_proof_{p['id']}", False)
                         
                         if st.session_state.get(f"show_proof_{p['id']}", False):
                             st.markdown(f"**Tệp minh chứng đính kèm:** `{p.get('proof_name', 'Không có tên tệp')}`")
                             if p.get('proof_file') is not None:
-                                # Nếu là file ảnh do người bán upload trực tiếp, hiển thị trực tiếp ảnh đó lên cho người mua xem
                                 file_obj = p['proof_file']
                                 if file_obj.type in ["image/jpeg", "image/png", "image/jpg"]:
                                     st.image(file_obj, caption="Ảnh chụp Sổ đỏ / Giấy tờ gốc do Chủ rừng cung cấp", use_container_width=True)
                                 else:
-                                    st.info("📥 Đây là tệp tài liệu PDF pháp lý. Bạn có thể yêu cầu tải xuống khi ký hợp đồng chính thức.")
+                                    st.info("📥 Đây là tệp tài liệu PDF pháp lý do người bán tải lên.")
                             else:
                                 st.success("📁 Đây là dự án mẫu tiêu chuẩn cấp quốc gia (Đã được lưu trữ hồ sơ gốc tại cơ quan quản lý).")
     
