@@ -3,13 +3,28 @@ import ee
 import geemap.foliumap as geemap
 from streamlit_folium import st_folium
 import os
-import pandas as pd
 
 from auth import hien_thi_cong_dang_nhap
 from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
+from community import hien_thi_vinh_danh_va_gop_y
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
+# --- NỀN MÓNG ĐA NGÔN NGỮ (GLOBALIZATION) ---
+with st.sidebar:
+    st.title("🌐 Ngôn ngữ / Language")
+    ngon_ngu = st.selectbox(
+        "Chọn ngôn ngữ hiển thị:", 
+        ["Tiếng Việt", "English (Global)", "中文 (Chinese)", "Русский (Russian)", "Français (French)"]
+    )
+    if ngon_ngu != "Tiếng Việt":
+        st.info(f"⏳ Hệ thống đang triển khai AI dịch thuật tự động cho gói ngôn ngữ **{ngon_ngu}**. Tạm thời hiển thị Tiếng Việt.")
+    
+    st.divider()
+    st.caption("Carbon Exchange Platform v1.2")
+    st.caption("Sẵn sàng cho kỷ nguyên Net-Zero toàn cầu.")
+
+# Khởi tạo trạng thái
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -41,22 +56,6 @@ if "market_projects" not in st.session_state:
             "verified": True,
             "proof_file": None,
             "proof_name": "Quyết định phê duyệt FCPF.pdf",
-            "status": "Active"
-        },
-        {
-            "id": "p2",
-            "name": "Dự án Rừng ngập mặn nuôi tôm Cà Mau",
-            "owner": "BQL rừng phòng hộ Cà Mau",
-            "price": 15.0,
-            "volume": 250000,
-            "duration": 3, 
-            "funding_goal": 30000.0,
-            "funded_amount": 30000.0,
-            "lat": 8.8242,
-            "lon": 104.9452,
-            "verified": True,
-            "proof_file": None,
-            "proof_name": "Giấy chứng nhận QSDĐ.pdf",
             "status": "Active"
         }
     ]
@@ -101,12 +100,13 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # Thêm Tab thứ 4: Giới thiệu & Gọi vốn phát triển nền tảng
-    tab_mrv, tab_market, tab_invest, tab_about = st.tabs([
-        "🛰️ Hệ thống MRV (Đo đạc)", 
-        "💹 Sàn Giao dịch Tín chỉ", 
+    # Đã thêm Tab thứ 5: Cộng đồng & Bảng Vàng
+    tab_mrv, tab_market, tab_invest, tab_community, tab_about = st.tabs([
+        "🛰️ Hệ thống MRV", 
+        "💹 Sàn Giao dịch", 
         "🤝 Quỹ Đầu tư Trồng rừng",
-        "🌟 Về chúng tôi & Gọi vốn"
+        "🏆 Cộng đồng & Bảng Vàng",
+        "🌟 Về chúng tôi"
     ])
 
     with tab_mrv:
@@ -132,6 +132,9 @@ def main_app():
 
     with tab_invest:
         hien_thi_cong_dau_tu()
+
+    with tab_community:
+        hien_thi_vinh_danh_va_gop_y()
 
     with tab_about:
         hien_thi_gioi_thieu_va_goi_von()
