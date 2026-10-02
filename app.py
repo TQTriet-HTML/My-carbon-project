@@ -4,62 +4,31 @@ import geemap.foliumap as geemap
 from streamlit_folium import st_folium
 import json
 import os
+import pandas as pd
 
 # 1. CẤU HÌNH TRANG WEB
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
 # 2. HỆ THỐNG QUẢN LÝ TÀI KHOẢN
-with tab_market:
-        st.markdown("## 🏢 Trung tâm Giao dịch Tín chỉ Carbon Doanh nghiệp")
-        
-        # 1. THỐNG KÊ MINH BẠCH (Lấy dữ liệu thực tế từ file JSON)
-        user_db = load_users()
-        so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
-        so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
-        
-        st.markdown("### 📊 Thống kê Hệ sinh thái")
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
-        m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
-        m3.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50 (Xu hướng tăng)")
-        m4.metric("Dự án chờ duyệt MRV", "12 Dự án", "Đang xử lý")
-        
-        st.divider()
-        
-        # 2. BIỂU ĐỒ BIẾN ĐỘNG GIÁ THỜI GIAN THỰC
-        st.markdown("### 📈 Biến động Giá Tín chỉ Carbon (6 tháng qua)")
-        import pandas as pd
-        # Dữ liệu mô phỏng biến động giá (Sau này có thể kéo từ API tài chính)
-        chart_data = pd.DataFrame({
-            "Giá Carbon (USD/tấn)": [8.5, 9.2, 10.1, 11.5, 12.0, 12.5]
-        }, index=["Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10"])
-        st.line_chart(chart_data, color="#31a354")
-        
-        st.divider()
-        
-        col_news, col_projects = st.columns([1, 2])
-        
-        # 3. TIN TỨC CẬP NHẬT
-        with col_news:
-            st.markdown("### 📰 Tin tức Thị trường")
-            with st.container(height=400):
-                st.info("🕒 **Hôm nay:** EU chính thức áp dụng cơ chế điều chỉnh biên giới carbon (CBAM) đối với hàng hóa nhập khẩu.")
-                st.warning("🕒 **Hôm qua:** Giá tín chỉ rừng ngập mặn toàn cầu tăng 5% do nhu cầu bù đắp từ các hãng hàng không.")
-                st.success("🕒 **Tuần trước:** Việt Nam hoàn thiện khung pháp lý cho sàn giao dịch tín chỉ carbon nội địa.")
-                st.info("🕒 **Tháng trước:** Dự án trồng rừng tại Tây Nguyên nhận chứng chỉ Gold Standard.")
+USER_FILE = "users_db.json"
 
-        # 4. DANH MỤC DỰ ÁN
-        with col_projects:
-            st.markdown("### 🛒 Danh mục Tín chỉ chào bán")
-            with st.expander("🌳 Dự án Rừng ngập mặn Cần Giờ (50,000 tín chỉ) - $14.00/tín chỉ", expanded=True):
-                st.write("**Tiêu chuẩn:** Verified Carbon Standard (VCS)")
-                if st.button("Hồ sơ MRV", key="mrv_cg"): st.success("Dữ liệu vệ tinh hợp lệ")
-                st.button("🛒 Đặt mua", key="buy_cg", type="primary")
-                
-            with st.expander("🌲 Dự án Phục hồi Sinh thái VQG Cát Tiên (120,000 tín chỉ) - $12.50/tín chỉ"):
-                st.write("**Tiêu chuẩn:** Gold Standard (GS)")
-                if st.button("Hồ sơ MRV", key="mrv_ct"): st.success("Dữ liệu vệ tinh hợp lệ")
-                st.button("🛒 Đặt mua", key="buy_ct", type="primary")
+def load_users():
+    if os.path.exists(USER_FILE):
+        with open(USER_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    else:
+        default_db = {"admin": {"password": "123456", "role": "Chủ rừng / Kỹ sư MRV"}}
+        save_users(default_db)
+        return default_db
+
+def save_users(db):
+    with open(USER_FILE, "w", encoding="utf-8") as f:
+        json.dump(db, f, ensure_ascii=False, indent=4)
+
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+if "current_role" not in st.session_state:
+    st.session_state["current_role"] = ""
 
 # 3. GIAO DIỆN CỔNG ĐĂNG NHẬP
 def hien_thi_cong_dang_nhap():
@@ -95,7 +64,7 @@ def hien_thi_cong_dang_nhap():
                 save_users(user_db)
                 st.success(f"✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
 
-# 4. HỆ THỐNG LÕI (TỐI ƯU HIỆU NĂNG LOAD NHANH)
+# 4. HỆ THỐNG LÕI 
 def main_app():
     col_title, col_logout = st.columns([5, 1])
     with col_title:
@@ -141,7 +110,7 @@ def main_app():
         
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # HIỂN THỊ TAB NGAY LẬP TỨC KHÔNG BỊ CHẶN BỞI GEE
+    # KHAI BÁO TẠO 2 TAB CHÍNH
     tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B"])
 
     with tab_mrv:
@@ -149,7 +118,6 @@ def main_app():
         with c_nam1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4, key="ns1") 
         with c_nam2: nam_so_sanh = st.selectbox("Năm so sánh:", range(2016, 2027), index=8, key="ns2") 
 
-        # Đưa lệnh gọi GEE vào trong spinner riêng của tab MRV
         with st.spinner(f'Đang kết nối vệ tinh và xử lý mô hình AI cho năm {nam_co_so} và {nam_so_sanh}...'):
             carbon_base = tao_ban_do_carbon(nam_co_so)
             carbon_compare = tao_ban_do_carbon(nam_so_sanh)
@@ -170,13 +138,52 @@ def main_app():
             else:
                 st.info("Khoanh vùng để thẩm định dự án.")
 
+    # TAB 2: GIAO DIỆN SÀN GIAO DỊCH MỚI
     with tab_market:
         st.markdown("## 🏢 Trung tâm Giao dịch Tín chỉ Carbon Doanh nghiệp")
+        
+        user_db = load_users()
+        so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
+        so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
+        
+        st.markdown("### 📊 Thống kê Hệ sinh thái")
         m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Tổng khối lượng sẵn có", "245,000 tấn", "+12,000 tấn")
-        m2.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50")
-        m3.metric("Doanh nghiệp tìm mua", "84 Đối tác", "+3")
-        m4.metric("Dự án chờ duyệt MRV", "12 Dự án")
+        m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
+        m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
+        m3.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50 (Xu hướng tăng)")
+        m4.metric("Dự án chờ duyệt MRV", "12 Dự án", "Đang xử lý")
+        
+        st.divider()
+        
+        st.markdown("### 📈 Biến động Giá Tín chỉ Carbon (6 tháng qua)")
+        chart_data = pd.DataFrame({
+            "Giá Carbon (USD/tấn)": [8.5, 9.2, 10.1, 11.5, 12.0, 12.5]
+        }, index=["Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10"])
+        st.line_chart(chart_data, color="#31a354")
+        
+        st.divider()
+        
+        col_news, col_projects = st.columns([1, 2])
+        
+        with col_news:
+            st.markdown("### 📰 Tin tức Thị trường")
+            with st.container(height=400):
+                st.info("🕒 **Hôm nay:** EU chính thức áp dụng cơ chế điều chỉnh biên giới carbon (CBAM) đối với hàng hóa nhập khẩu.")
+                st.warning("🕒 **Hôm qua:** Giá tín chỉ rừng ngập mặn toàn cầu tăng 5% do nhu cầu bù đắp từ các hãng hàng không.")
+                st.success("🕒 **Tuần trước:** Việt Nam hoàn thiện khung pháp lý cho sàn giao dịch tín chỉ carbon nội địa.")
+                st.info("🕒 **Tháng trước:** Dự án trồng rừng tại Tây Nguyên nhận chứng chỉ Gold Standard.")
+
+        with col_projects:
+            st.markdown("### 🛒 Danh mục Tín chỉ chào bán")
+            with st.expander("🌳 Dự án Rừng ngập mặn Cần Giờ (50,000 tín chỉ) - $14.00/tín chỉ", expanded=True):
+                st.write("**Tiêu chuẩn:** Verified Carbon Standard (VCS)")
+                if st.button("Hồ sơ MRV", key="mrv_cg"): st.success("Dữ liệu vệ tinh hợp lệ")
+                st.button("🛒 Đặt mua", key="buy_cg", type="primary")
+                
+            with st.expander("🌲 Dự án Phục hồi Sinh thái VQG Cát Tiên (120,000 tín chỉ) - $12.50/tín chỉ"):
+                st.write("**Tiêu chuẩn:** Gold Standard (GS)")
+                if st.button("Hồ sơ MRV", key="mrv_ct"): st.success("Dữ liệu vệ tinh hợp lệ")
+                st.button("🛒 Đặt mua", key="buy_ct", type="primary")
 
 # 5. ĐIỀU HƯỚNG MÀN HÌNH
 if not st.session_state["logged_in"]:
