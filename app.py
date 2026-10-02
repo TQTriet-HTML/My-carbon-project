@@ -1,33 +1,17 @@
 import streamlit as st
 import ee
 import geemap.foliumap as geemap
-import folium
 from streamlit_folium import st_folium
-import json
 import os
 import pandas as pd
-from datetime import datetime
 
-# ==========================================
-# 1. CẤU HÌNH TRANG WEB & DATABASE ẢO
-# ==========================================
+# Import các file module chúng ta vừa tạo
+from auth import hien_thi_cong_dang_nhap
+from marketplace import hien_thi_san_giao_dich
+
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-USER_FILE = "users_db.json"
-
-def load_users():
-    if os.path.exists(USER_FILE):
-        with open(USER_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    else:
-        default_db = {"admin": {"password": "1234", "role": "Chủ rừng / Kỹ sư MRV"}}
-        save_users(default_db)
-        return default_db
-
-def save_users(db):
-    with open(USER_FILE, "w", encoding="utf-8") as f:
-        json.dump(db, f, ensure_ascii=False, indent=4)
-
+# Khởi tạo trạng thái phiên
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -36,86 +20,9 @@ if "current_role" not in st.session_state:
     st.session_state["current_role"] = ""
 if "wallet_balance" not in st.session_state:
     st.session_state["wallet_balance"] = 150000.0  
-
 if "user_portfolios" not in st.session_state:
     st.session_state["user_portfolios"] = {}
 
-# Quản lý danh sách báo cáo vi phạm: {project_id: [{"user":..., "reason":...}]}
-if "project_reports" not in st.session_state:
-    st.session_state["project_reports"] = {}
-
-if "market_projects" not in st.session_state:
-    st.session_state["market_projects"] = [
-        {
-            "id": "p1",
-            "name": "Dự án giảm phát thải vùng Bắc Trung Bộ (ERPA)",
-            "owner": "Bộ NN&PTNT",
-            "price": 5.0,
-            "volume": 10300000,
-            "duration": 5, 
-            "lat": 16.4637,
-            "lon": 107.5908,
-            "verified": True,
-            "proof_file": None,
-            "proof_name": "Quyết định phê duyệt FCPF & Sổ đỏ tổng thể.pdf",
-            "status": "Active" # Trạng thái hoạt động hoặc bị đình chỉ
-        },
-        {
-            "id": "p2",
-            "name": "Dự án Rừng ngập mặn nuôi tôm Cà Mau",
-            "owner": "BQL rừng phòng hộ Cà Mau",
-            "price": 15.0,
-            "volume": 250000,
-            "duration": 3, 
-            "lat": 8.8242,
-            "lon": 104.9452,
-            "verified": True,
-            "proof_file": None,
-            "proof_name": "Giấy chứng nhận QSDĐ lâm nghiệp Cà Mau.pdf",
-            "status": "Active"
-        }
-    ]
-
-# ==========================================
-# 2. GIAO DIỆN CỔNG ĐĂNG NHẬP
-# ==========================================
-def hien_thi_cong_dang_nhap():
-    st.title("🔐 CỔNG ĐĂNG NHẬP NỀN TẢNG")
-    st.markdown("Vui lòng đăng nhập hoặc tạo tài khoản để truy cập Sàn giao dịch & Hệ thống MRV.")
-    
-    user_db = load_users()
-    tab_login, tab_register = st.tabs(["Đăng nhập", "Tạo tài khoản mới"])
-    
-    with tab_login:
-        user = st.text_input("Tên đăng nhập", key="login_user")
-        pwd = st.text_input("Mật khẩu", type="password", key="login_pwd")
-        if st.button("Đăng nhập", type="primary"):
-            if user in user_db and user_db[user]["password"] == pwd:
-                st.session_state["logged_in"] = True
-                st.session_state["current_user"] = user
-                st.session_state["current_role"] = user_db[user]["role"]
-                st.rerun()
-            else:
-                st.error("❌ Sai tên đăng nhập hoặc mật khẩu!")
-                
-    with tab_register:
-        new_user = st.text_input("Chọn tên đăng nhập mới", key="reg_user")
-        new_pwd = st.text_input("Nhập mật khẩu", type="password", key="reg_pwd")
-        role = st.selectbox("Vai trò của bạn", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV"])
-        
-        if st.button("Đăng ký tài khoản"):
-            if new_user == "" or new_pwd == "":
-                st.warning("⚠️ Vui lòng nhập đầy đủ thông tin!")
-            elif new_user in user_db:
-                st.warning("⚠️ Tên đăng nhập này đã có người sử dụng!")
-            else:
-                user_db[new_user] = {"password": new_pwd, "role": role}
-                save_users(user_db)
-                st.success("✅ Tạo tài khoản thành công! Hãy chuyển sang tab Đăng nhập.")
-
-# ==========================================
-# 3. HỆ THỐNG LÕI (MRV & GIAO DỊCH)
-# ==========================================
 def main_app():
     col_title, col_logout = st.columns([5, 1])
     with col_title:
@@ -123,8 +30,6 @@ def main_app():
     with col_logout:
         if st.button("🚪 Đăng xuất", use_container_width=True):
             st.session_state["logged_in"] = False
-            st.session_state["current_user"] = ""
-            st.session_state["current_role"] = ""
             st.rerun()
             
     try:
@@ -135,7 +40,7 @@ def main_app():
             f.write(ee_token)
         ee.Initialize()
     except Exception as e:
-        st.error("Vui lòng thiết lập cấu hình Earth Engine Token.")
+        st.error("Lỗi xác thực Earth Engine Token.")
         st.stop()
 
     @st.cache_resource
@@ -158,7 +63,7 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B"])
+    tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B & CROWDFUNDING"])
 
     with tab_mrv:
         st.info("Công cụ đo đạc vệ tinh sinh khối rừng")
@@ -179,200 +84,10 @@ def main_app():
             st.write("Thẩm định sinh khối")
 
     with tab_market:
-        st.markdown(f"## 🏢 Trung tâm Giao dịch & Quản lý Tín chỉ (Xin chào: **{st.session_state['current_user']}**)")
-        vai_tro = st.session_state.get('current_role', '')
-        
-        # 1. VÍ VÀ KHO SỞ HỮU
-        if vai_tro == "Doanh nghiệp mua tín chỉ":
-            st.success(f"💳 **Ví Khách hàng:** Khả dụng **${st.session_state['wallet_balance']:,.2f}** | Trạng thái: Đã xác thực KYC")
-            if st.button("💵 Nạp thêm $50,000 vào ví"):
-                st.session_state["wallet_balance"] += 50000.0
-                st.rerun()
-                
-            st.markdown("### 📦 Kho Tín chỉ Carbon Đang Sở hữu của Bạn")
-            current_user = st.session_state['current_user']
-            user_holdings = st.session_state["user_portfolios"].get(current_user, [])
-            
-            if not user_holdings:
-                st.info("Kho của bạn đang trống. Hãy chọn mua các dự án bên dưới để tích lũy tín chỉ bù đắp carbon.")
-            else:
-                df_portfolio = pd.DataFrame(user_holdings)
-                df_portfolio.columns = ["Dự án sở hữu", "Số lượng (tấn)", "Thời hạn hiệu lực"]
-                st.dataframe(df_portfolio, use_container_width=True, hide_index=True)
-            st.divider()
-            
-        elif vai_tro == "Chủ rừng / Kỹ sư MRV":
-            st.info("🌳 **Khu vực Chủ rừng:** Nộp hồ sơ minh chứng gốc để thẩm định và niêm yết lên sàn.")
-            with st.expander("📝 TẠO HỒ SƠ NIÊM YẾT DỰ ÁN MỚI", expanded=False):
-                ten_du_an = st.text_input("Tên dự án rừng của bạn:")
-                kl_ban = st.number_input("Khối lượng tín chỉ muốn bán (tấn):", min_value=1, step=100)
-                gia_ban = st.number_input("Giá bán mỗi tín chỉ (USD):", value=10.0)
-                cam_ket_nam = st.number_input("Thời hạn cam kết bảo vệ rừng (Năm):", min_value=1, max_value=30, value=5)
-                file_minh_chung = st.file_uploader("📎 Tải lên Sổ đỏ / Giấy tờ pháp lý gốc (Bắt buộc - Ảnh/PDF)", type=['pdf', 'jpg', 'png'])
-                
-                if st.button("🚀 XÁC THỰC & ĐƯA LÊN SÀN", type="primary"):
-                    if not ten_du_an:
-                        st.error("❌ Vui lòng nhập tên dự án.")
-                    elif file_minh_chung is None:
-                        st.error("❌ HỒ SƠ BỊ TỪ CHỐI: Bạn bắt buộc phải tải lên tệp pháp lý gốc.")
-                    else:
-                        new_proj = {
-                            "id": f"user_p_{len(st.session_state['market_projects'])}",
-                            "name": ten_du_an,
-                            "owner": st.session_state['current_user'],
-                            "price": gia_ban,
-                            "volume": kl_ban,
-                            "duration": cam_ket_nam,
-                            "lat": 11.4280, 
-                            "lon": 107.4286,
-                            "verified": True,
-                            "proof_file": file_minh_chung,
-                            "proof_name": file_minh_chung.name,
-                            "status": "Active"
-                        }
-                        st.session_state["market_projects"].append(new_proj)
-                        st.success("✅ Thành công! Dự án đã được đưa lên sàn.")
+        # Gọi hàm sàn giao dịch từ file marketplace.py
+        hien_thi_san_giao_dich()
 
-        st.divider()
-
-        # 2. THỐNG KÊ HỆ SINH THÁI
-        st.markdown("### 📊 Thống kê Hệ sinh thái Thời gian thực")
-        user_db = load_users()
-        so_doanh_nghiep = sum(1 for u in user_db.values() if u["role"] == "Doanh nghiệp mua tín chỉ")
-        so_chu_rung = sum(1 for u in user_db.values() if u["role"] == "Chủ rừng / Kỹ sư MRV")
-        
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Doanh nghiệp Đăng ký", f"{so_doanh_nghiep} Tài khoản", "Khách hàng mua")
-        m2.metric("Chủ rừng / Chuyên gia", f"{so_chu_rung} Tài khoản", "Nguồn cung cấp")
-        m3.metric("Giá tham chiếu (VCS)", "$12.50", "+$0.50 (Xu hướng tăng)")
-        m4.metric("Dự án hoạt động", f"{len([p for p in st.session_state['market_projects'] if p['status']=='Active'])} Dự án", "An toàn")
-
-        st.divider()
-
-        # 3. BIỂU ĐỒ GIÁ
-        st.markdown("### 📈 Biến động Giá Thị trường Tín chỉ Carbon (Chuẩn VCS/GS toàn cầu)")
-        dates_price = pd.date_range(end=pd.Timestamp.today(), periods=6, freq="ME")
-        market_price_data = pd.DataFrame({
-            "Giá tham chiếu (USD/tấn)": [11.2, 11.8, 12.1, 11.9, 12.3, 12.5]
-        }, index=dates_price)
-        st.line_chart(market_price_data, color="#2ca02c")
-
-        st.divider()
-        
-        # 4. DANH MỤC TRÊN SÀN & TÍNH NĂNG BÁO CÁO
-        st.markdown("### 🛒 Danh mục Tín chỉ đang giao dịch")
-        
-        for p in st.session_state["market_projects"]:
-            if p['volume'] > 0:
-                # Kiểm tra trạng thái dự án
-                is_suspended = (p.get('status', 'Active') == 'Suspended')
-                
-                with st.container(border=True):
-                    col_info, col_action = st.columns([3, 2])
-                    
-                    with col_info:
-                        if is_suspended:
-                            st.error(f"⛔ **{p['name']}** (DỰ ÁN ĐÃ BỊ ĐÌNH CHỈ DO BỊ BÁO CÁO VI PHẠM)")
-                        else:
-                            st.markdown(f"#### 🌳 {p['name']}")
-                            
-                        trang_thai = "✅ Đã xác thực Pháp lý & Vệ tinh" if p.get('verified', False) else "⚠ Chưa cung cấp minh chứng"
-                        st.write(f"**Chủ sở hữu:** {p['owner']} | **Trạng thái:** {trang_thai}")
-                        st.write(f"**Trữ lượng còn lại:** {int(p['volume']):,} tấn | **Giá chốt:** ${p['price']:,.2f} / tín chỉ")
-                        st.write(f"⏳ **Thời hạn cam kết hiệu lực:** {p['duration']} năm")
-                        
-                        # Hiển thị số lượng báo cáo nếu có
-                        num_reports = len(st.session_state["project_reports"].get(p['id'], []))
-                        if num_reports > 0:
-                            st.warning(f"🚨 Dự án này đang nhận được **{num_reports}** cảnh cáo / báo cáo vi phạm từ người dùng!")
-                        
-                        # Nút xem minh chứng
-                        if st.button("📄 Xem Minh chứng Pháp lý Gốc", key=f"btn_proof_{p['id']}"):
-                            st.session_state[f"show_proof_{p['id']}"] = not st.session_state.get(f"show_proof_{p['id']}", False)
-                        
-                        if st.session_state.get(f"show_proof_{p['id']}", False):
-                            st.markdown(f"**Tệp minh chứng:** `{p.get('proof_name', 'Không có')}`")
-                            if p.get('proof_file') is not None:
-                                file_obj = p['proof_file']
-                                if file_obj.type in ["image/jpeg", "image/png", "image/jpg"]:
-                                    st.image(file_obj, caption="Ảnh Sổ đỏ gốc do Chủ rừng cung cấp", use_container_width=True)
-                                else:
-                                    st.info("📥 Tài liệu PDF pháp lý đính kèm.")
-                            else:
-                                st.success("📁 Dự án mẫu tiêu chuẩn cấp quốc gia.")
-
-                        # --- TÍNH NĂNG BÁO CÁO VI PHẠM ---
-                        with st.expander("🚨 Báo cáo / Khiếu nại dự án này", expanded=False):
-                            report_reason = st.text_input("Lý do báo cáo (Sai thông tin, tranh chấp đất, nghi ngờ giả mạo...):", key=f"reason_{p['id']}")
-                            col_rep1, col_rep2 = st.columns(2)
-                            with col_rep1:
-                                if st.button("Gửi báo cáo", key=f"send_report_{p['id']}"):
-                                    if report_reason:
-                                        if p['id'] not in st.session_state["project_reports"]:
-                                            st.session_state["project_reports"][p['id']] = []
-                                        st.session_state["project_reports"][p['id']].append({
-                                            "user": st.session_state['current_user'],
-                                            "reason": report_reason,
-                                            "time": str(datetime.now())
-                                        })
-                                        st.success("✅ Đã gửi báo cáo đến Hội đồng quản trị sàn!")
-                                        st.rerun()
-                                    else:
-                                        st.warning("Vui lòng nhập lý do báo cáo.")
-                            with col_rep2:
-                                # Nút Admin giả lập để đình chỉ dự án nếu có báo cáo
-                                if st.button("🔒 Đình chỉ dự án (Admin)", key=f"suspend_{p['id']}"):
-                                    p['status'] = 'Suspended'
-                                    st.error("⛔ Đã đình chỉ dự án thành công!")
-                                    st.rerun()
-    
-                    with col_action:
-                        if is_suspended:
-                            st.error("⛔ Giao dịch đã bị khóa do dự án nằm trong diện điều tra vi phạm.")
-                        else:
-                            if vai_tro == "Doanh nghiệp mua tín chỉ":
-                                sl_mua = st.number_input(
-                                    "Nhập số lượng muốn mua (tấn):", 
-                                    min_value=1, 
-                                    max_value=int(p['volume']), 
-                                    value=min(10, int(p['volume'])), 
-                                    key=f"sl_input_{p['id']}"
-                                )
-                                tong_tien = sl_mua * p['price']
-                                st.info(f"Tổng thanh toán: **${tong_tien:,.2f}**")
-                                
-                                if st.button(f"🛒 Thanh toán", key=f"buy_{p['id']}", type="primary", use_container_width=True):
-                                    if st.session_state["wallet_balance"] >= tong_tien:
-                                        st.session_state["wallet_balance"] -= tong_tien
-                                        p['volume'] -= sl_mua
-                                        
-                                        current_user = st.session_state['current_user']
-                                        if current_user not in st.session_state["user_portfolios"]:
-                                            st.session_state["user_portfolios"][current_user] = []
-                                        
-                                        expiry_year = 2026 + p['duration']
-                                        
-                                        found = False
-                                        for item in st.session_state["user_portfolios"][current_user]:
-                                            if item["project"] == p['name']:
-                                                item["amount"] += sl_mua
-                                                found = True
-                                                break
-                                        if not found:
-                                            st.session_state["user_portfolios"][current_user].append({
-                                                "project": p['name'],
-                                                "amount": sl_mua,
-                                                "expiry": f"Tháng 12/{expiry_year} (Cam kết {p['duration']} năm)"
-                                            })
-                                            
-                                        st.success(f"🎉 Mua thành công {sl_mua} tín chỉ!")
-                                        st.rerun()
-                                    else:
-                                        st.error("❌ Ví không đủ tiền.")
-                            elif vai_tro == "Chủ rừng / Kỹ sư MRV":
-                                st.button("🔒 Đăng nhập tài khoản mua để giao dịch", key=f"lock_{p['id']}", disabled=True, use_container_width=True)
-
-# 4. ĐIỀU HƯỚNG MÀN HÌNH
+# Điều hướng chính
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
 else:
