@@ -5,13 +5,12 @@ from streamlit_folium import st_folium
 import os
 import pandas as pd
 
-# Import các file module chúng ta vừa tạo
 from auth import hien_thi_cong_dang_nhap
-from marketplace import hien_thi_san_giao_dich
+from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# Khởi tạo trạng thái phiên
+# Khởi tạo toàn bộ trạng thái phiên để tránh lỗi KeyError
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -22,6 +21,46 @@ if "wallet_balance" not in st.session_state:
     st.session_state["wallet_balance"] = 150000.0  
 if "user_portfolios" not in st.session_state:
     st.session_state["user_portfolios"] = {}
+if "investor_portfolios" not in st.session_state:
+    st.session_state["investor_portfolios"] = {}
+if "project_reports" not in st.session_state:
+    st.session_state["project_reports"] = {}
+
+if "market_projects" not in st.session_state:
+    st.session_state["market_projects"] = [
+        {
+            "id": "p1",
+            "name": "Dự án giảm phát thải vùng Bắc Trung Bộ (ERPA)",
+            "owner": "Bộ NN&PTNT",
+            "price": 5.0,
+            "volume": 10300000,
+            "duration": 5, 
+            "funding_goal": 50000.0,
+            "funded_amount": 15000.0,
+            "lat": 16.4637,
+            "lon": 107.5908,
+            "verified": True,
+            "proof_file": None,
+            "proof_name": "Quyết định phê duyệt FCPF.pdf",
+            "status": "Active"
+        },
+        {
+            "id": "p2",
+            "name": "Dự án Rừng ngập mặn nuôi tôm Cà Mau",
+            "owner": "BQL rừng phòng hộ Cà Mau",
+            "price": 15.0,
+            "volume": 250000,
+            "duration": 3, 
+            "funding_goal": 30000.0,
+            "funded_amount": 30000.0,
+            "lat": 8.8242,
+            "lon": 104.9452,
+            "verified": True,
+            "proof_file": None,
+            "proof_name": "Giấy chứng nhận QSDĐ.pdf",
+            "status": "Active"
+        }
+    ]
 
 def main_app():
     col_title, col_logout = st.columns([5, 1])
@@ -63,7 +102,12 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    tab_mrv, tab_market = st.tabs(["🛰️ HỆ THỐNG MRV (Đo đạc)", "💹 SÀN GIAO DỊCH B2B & CROWDFUNDING"])
+    # Chia thành 3 Tab chức năng rõ rệt
+    tab_mrv, tab_market, tab_invest = st.tabs([
+        "🛰️ Hệ thống MRV (Đo đạc)", 
+        "💹 Sàn Giao dịch Tín chỉ (B2B/B2C)", 
+        "🤝 Quỹ Đầu tư Trồng rừng (Cổ đông)"
+    ])
 
     with tab_mrv:
         st.info("Công cụ đo đạc vệ tinh sinh khối rừng")
@@ -84,10 +128,11 @@ def main_app():
             st.write("Thẩm định sinh khối")
 
     with tab_market:
-        # Gọi hàm sàn giao dịch từ file marketplace.py
         hien_thi_san_giao_dich()
 
-# Điều hướng chính
+    with tab_invest:
+        hien_thi_cong_dau_tu()
+
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap()
 else:
