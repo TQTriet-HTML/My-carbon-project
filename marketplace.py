@@ -7,7 +7,8 @@ from auth import load_users
 
 # --- 1. GIAO DIỆN SÀN GIAO DỊCH TÍN CHỈ (B2B / B2C) ---
 def hien_thi_san_giao_dich():
-    st.markdown(f"## 🏢 Trung tâm Giao dịch Tín chỉ Carbon (Xin chào: **{st.session_state['current_user']}**)")
+    st.markdown(f"## 🏢 Trung tâm Giao dịch Tín chỉ Carbon")
+    st.caption(f"Xin chào: **{st.session_state['current_user']}** | Phiên giao dịch trực tuyến bảo mật")
     vai_tro = st.session_state.get('current_role', '')
     
     if vai_tro == "Nhà đầu tư từ xa (Cổ đông)":
@@ -126,7 +127,8 @@ def hien_thi_san_giao_dich():
 
 # --- 2. GIAO DIỆN QUỸ ĐẦU TƯ TRỒNG RỪNG ---
 def hien_thi_cong_dau_tu():
-    st.markdown(f"## 🤝 Quỹ Đầu tư & Góp vốn Trồng rừng (Xin chào Cổ đông: **{st.session_state['current_user']}**)")
+    st.markdown(f"## 🤝 Quỹ Đầu tư & Góp vốn Trồng rừng")
+    st.caption(f"Xin chào Cổ đông: **{st.session_state['current_user']}**")
     vai_tro = st.session_state.get('current_role', '')
     
     if vai_tro != "Nhà đầu tư từ xa (Cổ đông)" and vai_tro != "Chủ rừng / Kỹ sư MRV":
@@ -178,7 +180,7 @@ def hien_thi_cong_dau_tu():
                         st.info("Đăng nhập tài khoản Cổ đông để góp vốn.")
 
 
-# --- 3. TRANG GIỚI THIỆU, UY TÍN & GỌI VỐN PHÁT TRIỂN NỀN TẢNG ---
+# --- 3. TRANG GIỚI THIỆU & GỌI VỐN PHÁT TRIỂN NỀN TẢNG (SỬ DỤNG CARD THAY CHO METRIC ĐỂ KHÔNG BỊ CẮT CHỮ) ---
 def hien_thi_gioi_thieu_va_goi_von():
     st.title("🌟 VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI")
     
@@ -192,17 +194,52 @@ def hien_thi_gioi_thieu_va_goi_von():
     st.divider()
 
     st.markdown("### 🏛️ Chứng nhận Uy tín & Đối tác Pháp lý")
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Tiêu chuẩn Quốc tế", "VCS & Gold Standard", "Đạt chuẩn")
-    c2.metric("Công nghệ Vệ tinh", "ESA WorldCover & GEE", "Real-time AI")
-    c3.metric("Bảo chứng Pháp lý", "Sổ đỏ Lâm nghiệp", "Xác thực 100%")
-    c4.metric("Hệ thống Kiểm toán", "Smart Contract Escrow", "Minh bạch tuyệt đối")
+    
+    # Sử dụng các khối Card Markdown được thiết kế riêng để hiển thị trọn vẹn văn bản dài, không bị lỗi cắt cụt chữ
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
+        <div style="background-color: #1e2530; padding: 15px; border-radius: 8px; border: 1px solid #2d3748; height: 140px;">
+            <p style="color: #a0aec0; font-size: 13px; margin-bottom: 5px;">Tiêu chuẩn Quốc tế</p>
+            <h4 style="color: #ffffff; font-size: 16px; margin-top: 0; line-height: 1.3;">VCS & Gold Standard</h4>
+            <p style="color: #48bb78; font-size: 12px; margin-top: 10px;">✓ Đạt chuẩn toàn cầu</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col2:
+        st.markdown("""
+        <div style="background-color: #1e2530; padding: 15px; border-radius: 8px; border: 1px solid #2d3748; height: 140px;">
+            <p style="color: #a0aec0; font-size: 13px; margin-bottom: 5px;">Công nghệ Vệ tinh</p>
+            <h4 style="color: #ffffff; font-size: 16px; margin-top: 0; line-height: 1.3;">ESA WorldCover & GEE</h4>
+            <p style="color: #48bb78; font-size: 12px; margin-top: 10px;">✓ Real-time AI</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col3:
+        st.markdown("""
+        <div style="background-color: #1e2530; padding: 15px; border-radius: 8px; border: 1px solid #2d3748; height: 140px;">
+            <p style="color: #a0aec0; font-size: 13px; margin-bottom: 5px;">Bảo chứng Pháp lý</p>
+            <h4 style="color: #ffffff; font-size: 16px; margin-top: 0; line-height: 1.3;">Sổ đỏ Lâm nghiệp Gốc</h4>
+            <p style="color: #48bb78; font-size: 12px; margin-top: 10px;">✓ Xác thực 100%</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col4:
+        st.markdown("""
+        <div style="background-color: #1e2530; padding: 15px; border-radius: 8px; border: 1px solid #2d3748; height: 140px;">
+            <p style="color: #a0aec0; font-size: 13px; margin-bottom: 5px;">Hệ thống Kiểm toán</p>
+            <h4 style="color: #ffffff; font-size: 16px; margin-top: 0; line-height: 1.3;">Smart Contract Escrow</h4>
+            <p style="color: #48bb78; font-size: 12px; margin-top: 10px;">✓ Minh bạch tuyệt đối</p>
+        </div>
+        """, unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
     st.info("🛡️ *Mọi dữ liệu tọa độ không gian trên hệ thống đều được đối chiếu chéo qua các cơ sở dữ liệu quốc gia và hình ảnh vệ tinh đa phổ, đảm bảo tính pháp lý trước khi niêm yết thương mại.*")
 
     st.divider()
 
-    # --- KHU VỰC KÊU GỌI VỐN PHÁT TRIỂN NỀN TẢNG (PLATFORM CROWDFUNDING) ---
+    # --- KHU VỰC KÊU GỌI VỐN PHÁT TRIỂN NỀN TẢNG ---
     st.markdown("### 🌱 Cùng nhau xây dựng Sàn giao dịch Xanh — Bước tiến mới của Nhân loại")
     st.markdown("""
     Để mở rộng quy mô công nghệ AI vệ tinh, tích hợp thêm các tiêu chuẩn kiểm định quốc tế mới và đưa nền tảng vươn tầm khu vực Đông Nam Á, chúng tôi chính thức mở cổng **Kêu gọi vốn Chiến lược phát triển nền tảng (Series Seed)** dành cho các nhà đầu tư thiên thần, quỹ đầu tư tác động xã hội (Impact Investment) và cộng đồng.
@@ -225,4 +262,4 @@ def hien_thi_gioi_thieu_va_goi_von():
                 if email_lh:
                     st.success(f"🎉 Cảm ơn bạn! Yêu cầu góp vốn phát triển nền tảng trị giá **${so_tien_dau_tu:,.2f}** đã được gửi đến ban sáng lập. Chúng tôi sẽ liên hệ qua `{email_lh}` trong 24h tới.")
                 else:
-                    st.warning("⚠️️ Vui lòng nhập email liên hệ.")
+                    st.warning("⚠ Vui lòng nhập email liên hệ.")
