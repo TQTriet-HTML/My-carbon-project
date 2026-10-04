@@ -114,19 +114,27 @@ def inject_custom_css():
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
 
-        /* CĂN GIỮA HOÀN TOÀN CÁC CHỈ SỐ METRIC (YÊU CẦU QUAN TRỌNG) */
+        /* CĂN GIỮA HOÀN TOÀN CÁC CHỈ SỐ METRIC */
         [data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 900 !important; color: #ffffff !important; text-align: center !important; width: 100% !important; display: block !important;}
         [data-testid="stMetricLabel"] { text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}
         [data-testid="stMetricDelta"] { justify-content: center !important; font-weight: 700 !important;}
 
+        /* ĐỒNG BỘ HIỆU ỨNG LỚT SÁNG & LÓA SÁNG CHO SIDEBAR KHI ĐÃ ĐĂNG NHẬP */
         .sidebar-badge { 
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
             padding: 16px; border-radius: 10px; margin-bottom: 12px; 
             border: 1px solid rgba(72, 187, 120, 0.4) !important; 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(72, 187, 120, 0.05);
-            transition: all 0.3s ease; position: relative; overflow: hidden !important;
+            transition: all 0.4s ease; position: relative; overflow: hidden !important;
         }
-        .sidebar-badge:hover { transform: translateX(4px); border-color: #48bb78 !important; box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3); }
+        .sidebar-badge:hover { transform: translateY(-2px); border-color: #48bb78 !important; box-shadow: 0 8px 25px rgba(72, 187, 120, 0.35); }
+        .sidebar-badge::after {
+            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.3), transparent);
+            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
+        }
+        .sidebar-badge:hover::after { left: 150%; }
+
         .sb-title { color: #ffffff; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 4px; }
         .sb-desc.highlight { color: #48bb78; font-weight: 600; }
@@ -154,6 +162,7 @@ if "market_projects" not in st.session_state:
 
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
+if "confirm_logout" not in st.session_state: st.session_state["confirm_logout"] = False
 
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
@@ -179,9 +188,44 @@ def main_app():
         st.markdown(f'<div class="main-title">{l["title"]}</div>', unsafe_allow_html=True)
         st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({role_display})")
     with col_l:
-        if st.button(l["logout"], type="secondary", use_container_width=True):
-            st.session_state["logged_in"] = False
-            st.rerun()
+        # Nút đăng xuất có cơ chế xác nhận chống bấm nhầm & hiệu ứng khối đỏ loét sáng
+        st.markdown("""
+            <style>
+            button[kind="secondary"] {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important;
+                border: 1px solid rgba(239, 68, 68, 0.6) !important;
+                color: #fca5a5 !important;
+                font-weight: 700 !important;
+                border-radius: 8px !important;
+                transition: all 0.3s ease !important;
+                position: relative; overflow: hidden !important;
+            }
+            button[kind="secondary"]:hover {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important;
+                border-color: #ef4444 !important;
+                color: white !important;
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
+                transform: translateY(-2px);
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        
+        if not st.session_state["confirm_logout"]:
+            if st.button(l["logout"], type="secondary", use_container_width=True):
+                st.session_state["confirm_logout"] = True
+                st.rerun()
+        else:
+            st.warning("Bạn có chắc chắn muốn đăng xuất không?" if st.session_state["current_lang"]=="Tiếng Việt" else "Are you sure to logout?")
+            c_yes, c_no = st.columns(2)
+            with c_yes:
+                if st.button("Có" if st.session_state["current_lang"]=="Tiếng Việt" else "Yes", type="primary", use_container_width=True):
+                    st.session_state["logged_in"] = False
+                    st.session_state["confirm_logout"] = False
+                    st.rerun()
+            with c_no:
+                if st.button("Không" if st.session_state["current_lang"]=="Tiếng Việt" else "No", type="secondary", use_container_width=True):
+                    st.session_state["confirm_logout"] = False
+                    st.rerun()
             
     st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
@@ -205,7 +249,6 @@ def main_app():
     tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs(l["tabs"])
 
     with tab_mrv:
-        # Bóp khoảng trống hai bên bằng cột giả
         _, col_center, _ = st.columns([0.05, 0.9, 0.05])
         with col_center:
             st.markdown(f"<div style='text-align:center; color:#48bb78; font-weight:800; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;'>{l['mrv_success']}</div>", unsafe_allow_html=True)
