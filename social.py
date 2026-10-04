@@ -2,93 +2,88 @@ import streamlit as st
 from datetime import datetime
 
 def hien_thi_mang_xa_hoi():
-    st.markdown("## 🌐 Carbon Connect - Mạng xã hội Tín chỉ Xanh")
-    st.caption("Cộng đồng kết nối, chia sẻ kiến thức và thảo luận về thị trường Net-Zero toàn cầu.")
-    
-    # 1. KHU VỰC ĐĂNG BÀI
+    st.markdown("## 🌐 Mạng Xã Hội Tín Chỉ Carbon")
+    st.caption("Nơi cộng đồng kết nối, chia sẻ kiến thức và lan tỏa giá trị Net-Zero toàn cầu")
+
+    # Khởi tạo kho dữ liệu bài viết (nếu chưa có)
+    if "social_posts" not in st.session_state or not st.session_state["social_posts"]:
+        st.session_state["social_posts"] = [
+            {
+                "id": "post_1",
+                "author": "Chuyên gia Lâm nghiệp Lê Văn A",
+                "role": "Chủ rừng / Kỹ sư MRV",
+                "content": "Tôi vừa thử nghiệm công nghệ vệ tinh Sentinel-2 mới cập nhật trên nền tảng. Độ chính xác nhận diện thảm thực vật cực kỳ ấn tượng, kết quả đo đạc sinh khối sát với thực tế đến 98%. Dự kiến tháng sau sẽ niêm yết lô 50,000 tấn!",
+                "time": "04/10/2026 09:30",
+                "likes": 12,
+                "comments": [{"user": "Đại diện Vinamilk", "text": "Tuyệt vời, chúng tôi rất mong chờ lô tín chỉ tiếp theo của anh để khớp lệnh."}]
+            },
+            {
+                "id": "post_2",
+                "author": "Quỹ Đầu tư Tác động ESG",
+                "role": "Nhà đầu tư từ xa (Cổ đông)",
+                "content": "Chúng tôi vừa cam kết rót vốn thêm 2 triệu USD vào các dự án rừng ngập mặn Cà Mau trên nền tảng. Rất hy vọng các Chủ rừng sẽ tiếp tục giữ vững chất lượng sinh khối.",
+                "time": "03/10/2026 15:45",
+                "likes": 35,
+                "comments": []
+            }
+        ]
+
+    # FORM ĐĂNG BÀI VIẾT MỚI (Tự làm sạch)
     with st.container(border=True):
-        st.markdown("#### ✍️ Chia sẻ góc nhìn của bạn")
-        noi_dung = st.text_area("Bạn đang nghĩ gì về thị trường Carbon hôm nay? (Hỗ trợ định dạng Markdown)", height=100)
-        
-        col_tag, col_btn = st.columns([3, 1])
-        with col_tag:
-            tag = st.selectbox("Gắn thẻ chủ đề:", ["#TinTucThitruong", "#KinhNghiemTrongRung", "#GoiVonDauTu", "#HoiDapMRV", "#NetZero"])
-        with col_btn:
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("🚀 Đăng bài", type="primary", use_container_width=True):
-                if noi_dung:
-                    nguoi_dang = st.session_state.get('current_user', 'Khách ẩn danh')
-                    vai_tro = st.session_state.get('current_role', 'Người dùng')
-                    
-                    st.session_state["social_posts"].insert(0, {
-                        "id": f"post_{len(st.session_state['social_posts'])}",
-                        "author": nguoi_dang,
-                        "role": vai_tro,
-                        "content": noi_dung,
-                        "tag": tag,
+        st.markdown("#### ✍️ Tạo bài viết mới")
+        with st.form("form_new_post", clear_on_submit=True):
+            noi_dung = st.text_area("Chia sẻ dự án, suy nghĩ hoặc cập nhật tiến độ rừng của bạn:", placeholder="Hôm nay khu rừng của bạn thế nào?")
+            col_btn, _ = st.columns([2, 8])
+            with col_btn:
+                submitted = st.form_submit_button("📝 Đăng bài", type="primary", use_container_width=True)
+            
+            if submitted:
+                if noi_dung.strip():
+                    new_post = {
+                        "id": f"post_{len(st.session_state['social_posts']) + 1}",
+                        "author": st.session_state.get('current_user', 'Ẩn danh'),
+                        "role": st.session_state.get('current_role', 'Thành viên'),
+                        "content": noi_dung.strip(),
                         "time": datetime.now().strftime("%d/%m/%Y %H:%M"),
                         "likes": 0,
                         "comments": []
-                    })
-                    st.success("Tạo bài viết thành công!")
+                    }
+                    st.session_state["social_posts"].insert(0, new_post) # Đưa bài mới lên trên cùng
+                    st.success("🎉 Đăng bài thành công!")
                     st.rerun()
                 else:
-                    st.warning("Vui lòng nhập nội dung trước khi đăng.")
-
+                    st.warning("⚠ Vui lòng nhập nội dung trước khi đăng!")
+        
     st.divider()
-    
-    # 2. BẢNG TIN CỘNG ĐỒNG (NEWS FEED)
-    st.markdown("### 📰 Bảng tin Mới nhất")
-    
-    if not st.session_state.get("social_posts"):
-        st.info("Chưa có bài viết nào. Hãy là người đầu tiên khai trương mạng xã hội này!")
-    else:
-        for post in st.session_state["social_posts"]:
-            with st.container(border=True):
-                col_ava, col_name = st.columns([1, 15])
-                with col_ava:
-                    if post["role"] == "Chủ rừng / Kỹ sư MRV": st.markdown("## 👨‍🌾")
-                    elif post["role"] == "Doanh nghiệp mua tín chỉ": st.markdown("## 🏢")
-                    else: st.markdown("## 🤵")
-                with col_name:
-                    st.markdown(f"**{post['author']}** 🔹 *{post['role']}*")
-                    st.caption(f"🕒 {post['time']} | 🏷️ {post['tag']}")
-                
-                st.markdown(f"> {post['content']}")
-                
-                col_like, col_cmt, col_blank = st.columns([2, 2, 8])
-                with col_like:
-                    if st.button(f"❤ Thích ({post['likes']})", key=f"like_{post['id']}", help="Thích bài viết này"):
-                        post['likes'] += 1
+    st.markdown("### 📰 Bảng tin Cộng đồng")
+
+    # HIỂN THỊ CÁC BÀI VIẾT (DÙNG GLASS-CARD CHO ĐẸP)
+    for i, post in enumerate(st.session_state["social_posts"]):
+        st.markdown(f"""
+            <div class="glass-card" style="padding: 15px 25px; margin-bottom: 10px;">
+                <h5 style="color: #63b3ed; margin-bottom: 5px; margin-top:0;">👤 {post['author']} <span style="font-size: 0.8rem; color: #a0aec0; font-weight: normal;">({post['role']})</span></h5>
+                <p style="color: #a0aec0; font-size: 0.8rem; margin-bottom: 12px;">🕒 {post['time']}</p>
+                <p style="color: #e2e8f0; font-size: 1.05rem; line-height: 1.6;">{post['content']}</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Tương tác (Like & Comment)
+        col_like, col_comment = st.columns([2, 10])
+        with col_like:
+            if st.button(f"👍 Thích ({post['likes']})", key=f"like_{post['id']}_{i}", use_container_width=True):
+                post['likes'] += 1
+                st.rerun()
+        
+        with st.expander(f"💬 Xem / Viết Bình luận ({len(post['comments'])})"):
+            for cmt in post['comments']:
+                st.markdown(f"**{cmt['user']}**: <span style='color:#cbd5e0;'>{cmt['text']}</span>", unsafe_allow_html=True)
+            
+            with st.form(f"comment_form_{post['id']}_{i}", clear_on_submit=True):
+                cmt_text = st.text_input("Bình luận của bạn:", placeholder="Viết phản hồi...")
+                if st.form_submit_button("Gửi Bình luận", type="primary"):
+                    if cmt_text.strip():
+                        post['comments'].append({
+                            "user": st.session_state.get('current_user', 'Ẩn danh'),
+                            "text": cmt_text.strip()
+                        })
                         st.rerun()
-                with col_cmt:
-                    if st.button(f"💬 Bình luận ({len(post['comments'])})", key=f"cmt_btn_{post['id']}"):
-                        st.session_state[f"show_cmt_{post['id']}"] = not st.session_state.get(f"show_cmt_{post['id']}", False)
-                
-                if st.session_state.get(f"show_cmt_{post['id']}", False):
-                    st.markdown("---")
-                    for cmt in post['comments']:
-                        st.markdown(f"**{cmt['user']}**: {cmt['text']}")
-                    
-                    new_cmt = st.text_input("Viết bình luận...", key=f"new_cmt_{post['id']}")
-                    if st.button("Gửi bình luận", key=f"send_cmt_{post['id']}"):
-                        if new_cmt:
-                            post['comments'].append({
-                                "user": st.session_state.get('current_user', 'Khách'),
-                                "text": new_cmt
-                            })
-                            st.rerun()
-
-    # --- 3. LIÊN KẾT MẠNG XÃ HỘI (ĐƯỢC CHUYỂN XUỐNG CUỐI TRANG) ---
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.divider()
-    st.markdown("#### 🔗 Theo dõi & Tham gia Cộng đồng của chúng tôi trên các nền tảng:")
-    col_fb, col_zl, col_li, col_yt = st.columns(4)
-    with col_fb:
-        st.markdown("[![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://facebook.com)")
-    with col_zl:
-        st.markdown("[![Zalo](https://img.shields.io/badge/Zalo-0180C7?style=for-the-badge&logo=zalo&logoColor=white)](https://zalo.me)")
-    with col_li:
-        st.markdown("[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)")
-    with col_yt:
-        st.markdown("[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com)")
