@@ -3,7 +3,7 @@ import folium
 from streamlit_folium import st_folium
 import pandas as pd
 from datetime import datetime
-from auth import load_users
+# Đã xóa dòng from auth import load_users gây lỗi
 
 # --- 1. GIAO DIỆN SÀN GIAO DỊCH TÍN CHỈ (B2B / B2C) ---
 def hien_thi_san_giao_dich():
@@ -184,7 +184,6 @@ def hien_thi_cong_dau_tu():
 def hien_thi_gioi_thieu_va_goi_von():
     st.title("🌟 VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI")
 
-    # Nội dung HTML có class CSS đã được định nghĩa trong app.py
     st.markdown("""
         <div class="thank-you-banner">
             <span class="text-green">Thay mặt Đội ngũ Sáng lập, chúng tôi xin gửi </span>
@@ -195,10 +194,15 @@ def hien_thi_gioi_thieu_va_goi_von():
     
     st.markdown("""
     ### 💡 Sứ mệnh & Góc nhìn của Sáng lập
-    Thị trường tín chỉ carbon toàn cầu đang bước vào kỷ nguyên bản lề, nhưng rào cản lớn nhất hiện nay là sự **thiếu minh bạch trong dữ liệu sinh khối** và **độ trễ trong thẩm định pháp lý**. 
-    
-    Nền tảng của chúng tôi ra đời như một giải pháp tiên phong tích hợp trí tuệ nhân tạo từ không gian (**Google Earth Engine**) với **Sổ đỏ và minh chứng gốc trực tuyến**, giúp loại bỏ hoàn toàn tình trạng "rừng ma" hay "khai khống trữ lượng", đưa các doanh nghiệp và chủ rừng đến gần nhau với độ tin cậy tuyệt đối.
-    """)
+    <div class="mission-container">
+        <p class="mission-text">
+            Thị trường tín chỉ carbon toàn cầu đang bước vào kỷ nguyên bản lề, nhưng rào cản lớn nhất hiện nay là sự <b>thiếu minh bạch trong dữ liệu sinh khối</b> và <b>độ trễ trong thẩm định pháp lý</b>.
+        </p>
+        <p class="mission-text">
+            Nền tảng của chúng tôi ra đời như một giải pháp tiên phong tích hợp trí tuệ nhân tạo từ không gian (<b>Google Earth Engine</b>) với <b>Sổ đỏ và minh chứng gốc trực tuyến</b>, giúp loại bỏ hoàn toàn tình trạng "rừng ma" hay "khai khống trữ lượng", đưa các doanh nghiệp và chủ rừng đến gần nhau với độ tin cậy tuyệt đối.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.divider()
 
@@ -211,7 +215,7 @@ def hien_thi_gioi_thieu_va_goi_von():
         <div class="partner-card">
             <div class="pc-title">Tiêu chuẩn Quốc tế</div>
             <div class="pc-value">VCS & Gold Standard</div>
-            <div class="pc-status">✔️ Đạt chuẩn toàn cầu</div>
+            <div class="pc-status">✔️️ Đạt chuẩn toàn cầu</div>
         </div>
         """, unsafe_allow_html=True)
         
