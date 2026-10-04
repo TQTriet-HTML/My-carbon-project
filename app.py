@@ -30,7 +30,8 @@ LANG_DICT = {
         "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
         "mrv_loading": "AI đang quét và tính toán sinh khối vùng khoanh...",
         "mrv_biomass": "Sinh khối",
-        "mrv_calc_btn": "PHÂN TÍCH VÙNG KHOANH MỚI",
+        "mrv_calc_btn": "PHÂN TÍCH VÙNG KHOANH",
+        "mrv_reset_btn": "ĐẶT LẠI DỮ LIỆU",
         "mrv_result_title": "KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG SINH KHỐI",
         "mrv_base_val": "Sinh khối Năm cơ sở",
         "mrv_comp_val": "Sinh khối Năm so sánh",
@@ -52,7 +53,8 @@ LANG_DICT = {
         "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
         "mrv_loading": "AI scanning and calculating selected biomass...",
         "mrv_biomass": "Biomass",
-        "mrv_calc_btn": "ANALYZE NEW SELECTED AREA",
+        "mrv_calc_btn": "ANALYZE SELECTED AREA",
+        "mrv_reset_btn": "RESET DATA",
         "mrv_result_title": "QUANTITATIVE BIOMASS ANALYSIS RESULTS",
         "mrv_base_val": "Base Year Biomass",
         "mrv_comp_val": "Comparison Year Biomass",
@@ -96,13 +98,11 @@ def inject_custom_css():
             border-color: #48bb78 !important; 
             box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important;
         }
-        /* Chặn triệt để trạng thái aria-invalid (viền đỏ lỗi mặc định của Streamlit) */
         [aria-invalid="true"], [data-baseweb="select"] [aria-invalid="true"] {
             border-color: #48bb78 !important; 
             box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important;
         }
 
-        /* --- THIẾT KẾ LẠI KHUNG KẾT QUẢ SÁNG SỦA, SANG TRỌNG VÀ THUYẾT PHỤC --- */
         .highlight-result-box {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95));
             border: 2px solid #48bb78;
@@ -153,15 +153,14 @@ if "market_projects" not in st.session_state:
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
 
-# Khởi tạo bộ nhớ lưu trữ kết quả tính toán động theo vùng khoanh
 if "mrv_calc_state" not in st.session_state:
     st.session_state["mrv_calc_state"] = False
 
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.title(l["lang_select"])
-    st.caption("Carbon Exchange Platform v11.5 Pro")
-    st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", on_change=change_lang, label_visibility="collapsed")
+    st.caption("Carbon Exchange Platform v12.0 Pro")
+    st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", label_visibility="collapsed")
     st.divider()
     
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
@@ -210,23 +209,28 @@ def main_app():
     with tab_mrv:
         st.success(l["mrv_success"])
         c1, c2 = st.columns(2)
-        # Sử dụng on_change callback để tự động reset kết quả khi người dùng thay đổi mốc năm hoặc khoanh vùng mới
-        def reset_calc():
-            st.session_state["mrv_calc_state"] = False
-
-        with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4, on_change=reset_calc) 
-        with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8, on_change=reset_calc) 
+        with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4) 
+        with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8) 
         
-        btn_calc = st.button(l["mrv_calc_btn"], type="primary", use_container_width=True)
+        # --- BỔ SUNG HAI NÚT: PHÂN TÍCH VÀ ĐẶT LẠI DỮ LIỆU CHỦ ĐỘNG ---
+        col_b1, col_b2 = st.columns(2)
+        with col_b1:
+            btn_calc = st.button(l["mrv_calc_btn"], type="primary", use_container_width=True)
+        with col_b2:
+            btn_reset = st.button(l["mrv_reset_btn"], type="secondary", use_container_width=True)
+            
+        if btn_reset:
+            st.session_state["mrv_calc_state"] = False
+            st.rerun()
+            
         if btn_calc:
             st.session_state["mrv_calc_state"] = True
 
-        # NẾU ĐÃ BẤM TÍNH TOÁN HOẶC ĐANG CÓ TRẠNG THÁI ACTIVE
         if st.session_state["mrv_calc_state"]:
-            # Thuật toán AI động: Mô phỏng thay đổi dựa trên hash của mốc năm và diện tích vùng khoanh đa dạng
-            dien_tich_hecta = 12000.0 + ((nam_co_so * 3 + nam_so_sanh * 7) % 8000) # Biến động theo vùng khoanh/năm
-            base_val = int(dien_tich_hecta * 98.5 + (nam_co_so - 2020) * 31000)
-            comp_val = int(dien_tich_hecta * 98.5 + (nam_so_sanh - 2020) * 31000 + (nam_so_sanh - nam_co_so) * 46000)
+            # Thuật toán sinh khối động theo năm và thay đổi vùng khoanh giả lập
+            dien_tich_hecta = 10000.0 + ((nam_co_so * 5 + nam_so_sanh * 9 + int(st.session_state.get('wallet_balance', 0))) % 9000)
+            base_val = int(dien_tich_hecta * 102.0 + (nam_co_so - 2020) * 29000)
+            comp_val = int(dien_tich_hecta * 102.0 + (nam_so_sanh - 2020) * 29000 + (nam_so_sanh - nam_co_so) * 45000)
             diff = comp_val - base_val
             
             gia_trung_binh_usd = 10.5 
@@ -237,14 +241,12 @@ def main_app():
             else:
                 tong_tien_str = f"${tong_usd:,.2f} USD"
             
-            # ĐƯA VÀO KHUNG KẾT QUẢ SÁNG SỦA, SANG TRỌNG VÀ THUYẾT PHỤC
             st.markdown(f"""
                 <div class="highlight-result-box">
                     <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 20px; font-weight: 700; letter-spacing: 0.5px;">{l['mrv_result_title']}</h3>
                 </div>
             """, unsafe_allow_html=True)
             
-            # Ghi đè trực tiếp lên 3 cột hiển thị
             col_r1, col_r2, col_r3 = st.columns(3)
             
             col_r1.metric(
