@@ -1,14 +1,15 @@
 import streamlit as st
 
-# Khởi tạo Cơ sở dữ liệu người dùng vào Session State để LƯU TRỮ THẬT
-if "users_db" not in st.session_state:
-    st.session_state["users_db"] = {
-        "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
-        "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
-        "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
-    }
-
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
+    # --- 1. KHỞI TẠO CƠ SỞ DỮ LIỆU NGAY TRONG HÀM (KHẮC PHỤC LỖI KEYERROR) ---
+    if "users_db" not in st.session_state:
+        st.session_state["users_db"] = {
+            "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
+            "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
+            "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
+        }
+
+    # --- 2. TỪ ĐIỂN ĐA NGÔN NGỮ ---
     T = {
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
@@ -64,6 +65,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     
     t = T.get(lang, T["Tiếng Việt"])
 
+    # --- 3. CSS TÙY CHỈNH ---
     st.markdown("""
         <style>
         .stApp {
@@ -74,7 +76,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background-attachment: fixed;
         }
         
-        /* HOẠT HỌA SÓNG CHUẨN XÁC */
         @keyframes autoWave {
             0%, 20%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
             10% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
@@ -110,7 +111,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # --- SỬA LỖI SLOGAN: Áp dụng delay đều kể cả khoảng trắng ---
+    # --- 4. KẾT XUẤT GIAO DIỆN ---
     slogan = t["slogan"]
     html_slogan = ""
     for i, c in enumerate(slogan):
@@ -132,12 +133,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             matkhau = st.text_input(t["password"], type="password", placeholder="***")
             
             if st.button(t["btn_login"], type="primary", use_container_width=True):
-                # SO SÁNH VỚI DATABASE TRONG SESSION_STATE
                 db = st.session_state["users_db"]
                 if tendangnhap in db and db[tendangnhap]["password"] == matkhau:
                     st.session_state["logged_in"] = True
                     st.session_state["current_user"] = tendangnhap
-                    # Map vai trò về tiếng Việt để core app hoạt động đúng
                     st.session_state["current_role"] = db[tendangnhap]["role"]
                     st.rerun()
                 else:
@@ -152,12 +151,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             new_role = st.selectbox(t["role"], t["roles"])
             
             if st.button(t["btn_register"], type="primary", use_container_width=True):
-                if new_user in st.session_state["users_db"]:
-                    st.error("⚠️️ Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.")
-                elif not new_user or not new_pass:
+                if not new_user or not new_pass:
                     st.warning("⚠️ Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!")
+                elif new_user in st.session_state["users_db"]:
+                    st.error("⚠ Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.")
                 else:
-                    # LƯU NGƯỜI DÙNG MỚI VÀO DATABASE
                     st.session_state["users_db"][new_user] = {
                         "password": new_pass,
                         "role": new_role
