@@ -1,7 +1,6 @@
 import streamlit as st
 import ee
 import geemap.foliumap as geemap
-# DÙNG FOLIUM_STATIC ĐỂ BẢN ĐỒ TẢI NGAY LẬP TỨC THAY VÌ ST_FOLIUM
 from streamlit_folium import folium_static 
 import os
 
@@ -49,7 +48,6 @@ LANG_DICT = {
     }
 }
 
-# TỪ ĐIỂN DỊCH VAI TRÒ (ROLE TRANSLATION)
 ROLE_DICT = {
     "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
     "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
@@ -75,7 +73,6 @@ def inject_custom_css():
             border-color: #48bb78 !important; box-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important;
         }
 
-        /* GLOW & SWEEP SHINE TỪ BẢN TRƯỚC */
         div[data-testid="stVerticalBlockBorderWrapper"] { transition: all 0.3s ease-in-out !important; position: relative; overflow: hidden !important;}
         div[data-testid="stVerticalBlockBorderWrapper"]:hover { 
             transform: translateY(-5px) !important; border-color: #48bb78 !important;
@@ -113,6 +110,7 @@ def inject_custom_css():
 
 inject_custom_css()
 
+# === KHÔI PHỤC ĐẦY ĐỦ BỘ NHỚ HỆ THỐNG ===
 if "users_db" not in st.session_state:
     st.session_state["users_db"] = {
         "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
@@ -123,6 +121,12 @@ if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
 if "current_user" not in st.session_state: st.session_state["current_user"] = ""
 if "current_role" not in st.session_state: st.session_state["current_role"] = ""
 if "wallet_balance" not in st.session_state: st.session_state["wallet_balance"] = 150000.0  
+if "user_portfolios" not in st.session_state: st.session_state["user_portfolios"] = {}
+if "investor_portfolios" not in st.session_state: st.session_state["investor_portfolios"] = {}
+if "market_projects" not in st.session_state:
+    st.session_state["market_projects"] = [
+        {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
+    ]
 
 # --- SIDEBAR ĐƯỢC DỊCH 100% ---
 with st.sidebar:
@@ -144,7 +148,6 @@ with st.sidebar:
 def main_app():
     l = LANG_DICT[st.session_state["current_lang"]]
     
-    # DỊCH VAI TRÒ NGƯỜI DÙNG Ở TIÊU ĐỀ
     role_display = ROLE_DICT.get(st.session_state['current_role'], st.session_state['current_role']) if st.session_state["current_lang"] == "English" else st.session_state['current_role']
     
     col_t, col_l = st.columns([7, 1])
@@ -169,11 +172,9 @@ def main_app():
 
     @st.cache_resource(ttl=3600)
     def tao_ban_do_carbon(nam):
-        # ĐÃ ĐỔI TỌA ĐỘ VỀ RỪNG NAM CÁT TIÊN ĐỂ KHÔNG CÒN BỊ LỦNG LỖ
         vung = ee.Geometry.Point([107.4286, 11.4280]).buffer(15000) 
         s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(vung).filterDate(f'{nam}-01-01', f'{nam}-12-31').median()
         ndvi = s2.normalizedDifference(['B8', 'B4'])
-        # Hạ ngưỡng Mask xuống 0.2 để cover mượt mà toàn bộ thảm thực vật
         carbon = ndvi.updateMask(ndvi.gt(0.2)).multiply(120).rename('Carbon_Proxy')
         return carbon.clip(vung)
 
@@ -190,13 +191,11 @@ def main_app():
                 map_base = tao_ban_do_carbon(nam_co_so)
                 map_comp = tao_ban_do_carbon(nam_so_sanh)
                 
-            # Tạo bản đồ trung tâm tại Rừng Nam Cát Tiên
             m = geemap.Map(center=[11.4280, 107.4286], zoom=11)
             vis = {'min': 0, 'max': 100, 'palette': ['#ffffcc', '#c2e699', '#78c679', '#31a354', '#006837']}
             m.addLayer(map_base, vis, f"{l['mrv_biomass']} {nam_co_so}")
             m.addLayer(map_comp, vis, f"{l['mrv_biomass']} {nam_so_sanh}")
             
-            # SỬ DỤNG folium_static ĐỂ RENDER SIÊU TỐC VÀ KHÔNG BỊ GIẬT LAG
             folium_static(m, width=1200, height=550)
         except:
             st.warning("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ.")
