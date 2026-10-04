@@ -11,7 +11,7 @@ def hien_thi_san_giao_dich():
             "title": "DASHBOARD QUẢN LÝ TÀI KHOẢN", "wrong_tab_inv": "Bạn đang sử dụng tài khoản Đầu tư. Vui lòng chuyển Tab 'Đầu tư Trồng rừng'.",
             "wallet": "Số Dư Ví Hệ Thống", "total_credits": "Tổng Tín Chỉ Sở Hữu", "esg_rating": "Hạng Tín Nhiệm (ESG)",
             "expander_inv": "XEM CHI TIẾT KHO TÍN CHỈ", "empty_inv": "Kho của bạn đang trống.", "area": "Diện Tích Sở Hữu",
-            "sellable": "Khối Lượng Có Thể Bán", "revenue": "Doanh Thu Giao Dịch", "forest_hint": "Xác thực sinh khối và niêm yết lên sàn thương mại.",
+            "sellable": "Khối Lượng Có Thể Bán", "revenue": "Doanh Thu Giao Dịch", "forest_hint": "Xác thực sinh khối và niêm yết tín chỉ lên sàn thương mại.",
             "list_new": "NIÊM YẾT LÔ TÍN CHỈ MỚI", "chart_title": "BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY", "market_title": "DANH MỤC TÍN CHỈ ĐANG CHÀO BÁN"
         },
         "English": {
@@ -62,7 +62,7 @@ def hien_thi_san_giao_dich():
                     with col_gia: gia_ban = st.number_input("Giá (USD):" if lang=="Tiếng Việt" else "Price (USD):", value=10.5, step=0.5)
                     with col_nam: cam_ket_nam = st.number_input("Cam kết (Năm):" if lang=="Tiếng Việt" else "Commitment:", min_value=1, max_value=30, value=5)
                     
-                    file_minh_chung = st.file_uploader("Tải lên Minh chứng Pháp lý" if lang=="Tiếng Việt" else "Upload Legal Proof", type=['pdf', 'jpg', 'png'])
+                    file_minh_chung = st.file_uploader("Tải lên Sổ đỏ / Quyền sử dụng đất" if lang=="Tiếng Việt" else "Upload Legal Proof", type=['pdf', 'jpg', 'png'])
                     submitted_ny = st.form_submit_button("CHUYỂN DỮ LIỆU LÊN SÀN" if lang=="Tiếng Việt" else "SUBMIT TO EXCHANGE", type="primary", use_container_width=True)
                     
                     if submitted_ny:
@@ -92,10 +92,10 @@ def hien_thi_san_giao_dich():
                     with col_info:
                         st.markdown(f"<h4 style='color:#48bb78; margin:0;'>{p['name']}</h4>", unsafe_allow_html=True)
                         if lang == "Tiếng Việt":
-                            st.write(f"**Chủ rừng:** {p['owner']} | **Trạng thái:** Đã kiểm định AI")
-                            st.write(f"**Trữ lượng:** {int(p['volume']):,} tấn | **Giá bán:** ${p['price']:,.2f} / tín chỉ")
+                            st.write(f"**Chủ dự án / Owner:** {p['owner']}")
+                            st.write(f"**Khối lượng:** {int(p['volume']):,} tấn | **Giá chốt:** ${p['price']:,.2f} / tín chỉ")
                         else:
-                            st.write(f"**Owner:** {p['owner']} | **Status:** AI Verified")
+                            st.write(f"**Owner:** {p['owner']}")
                             st.write(f"**Volume:** {int(p['volume']):,} tons | **Price:** ${p['price']:,.2f} / credit")
                     with col_action:
                         if vai_tro == "Doanh nghiệp mua tín chỉ":
@@ -123,12 +123,12 @@ def hien_thi_cong_dau_tu():
         st.markdown(f"<p style='text-align: center; color: #a0aec0;'>Tài khoản: <b>{st.session_state['current_user']}</b> | Khả dụng: <b>${st.session_state['wallet_balance']:,.2f}</b></p>", unsafe_allow_html=True)
         
         with st.container(border=True):
-            st.markdown(f"<h4 style='color:#48bb78; text-align:center;'>{'DANH MỤC ĐẦU TƯ CỦA BẠN' if lang == 'Tiếng Việt' else 'YOUR PORTFOLIO'}</h4>", unsafe_allow_html=True)
+            st.markdown(f"<h4 style='color:#48bb78; text-align:center;'>{'DANH MỤC CỔ PHẦN ĐÃ GÓP VỐN' if lang == 'Tiếng Việt' else 'YOUR PORTFOLIO'}</h4>", unsafe_allow_html=True)
             inv_hold = st.session_state.get("investor_portfolios", {}).get(st.session_state['current_user'], [])
-            if not inv_hold: st.info("Danh mục trống." if lang == "Tiếng Việt" else "Empty portfolio.")
+            if not inv_hold: st.info("Bạn chưa góp vốn vào dự án nào." if lang == "Tiếng Việt" else "Empty portfolio.")
             else: st.dataframe(pd.DataFrame(inv_hold), use_container_width=True, hide_index=True)
 
-        st.markdown(f"<h4 style='color: white; text-align: center; margin-top:20px;'>{'DỰ ÁN ĐANG KÊU GỌI VỐN' if lang == 'Tiếng Việt' else 'FUNDING PROJECTS'}</h4>", unsafe_allow_html=True)
+        st.markdown(f"<h4 style='color: white; text-align: center; margin-top:20px;'>{'DANH SÁCH DỰ ÁN ĐANG KÊU GỌI VỐN' if lang == 'Tiếng Việt' else 'FUNDING PROJECTS'}</h4>", unsafe_allow_html=True)
         for p in st.session_state["market_projects"]:
             if "funding_goal" in p and p.get('status') == 'Active':
                 with st.container(border=True):
@@ -137,13 +137,13 @@ def hien_thi_cong_dau_tu():
                         st.markdown(f"<h4 style='color:#63b3ed; margin:0;'>{p['name']}</h4>", unsafe_allow_html=True)
                         st.write(f"**Chủ dự án / Owner:** {p['owner']}")
                         prog = min(100, int((p['funded_amount'] / p['funding_goal']) * 100))
-                        st.write(f"**Tiến độ / Progress:** ${p['funded_amount']:,.0f} / ${p['funding_goal']:,.0f} ({prog}%)")
+                        st.write(f"**Tiến độ góp vốn:** ${p['funded_amount']:,.0f} / ${p['funding_goal']:,.0f} ({prog}%)")
                         st.progress(prog)
                     with c2:
                         with st.form(f"fund_f_{p['id']}", clear_on_submit=True):
                             max_f = int(p['funding_goal'] - p['funded_amount'])
                             t_gop = st.number_input("Số vốn góp / Amount:" , min_value=100, max_value=max_f if max_f > 0 else 1, value=min(1000, max_f))
-                            if st.form_submit_button("XÁC NHẬN ĐẦU TƯ / INVEST", type="primary", use_container_width=True):
+                            if st.form_submit_button("ĐẦU TƯ / INVEST", type="primary", use_container_width=True):
                                 if max_f <= 0: st.warning("Đã đủ vốn / Fully funded.")
                                 elif st.session_state["wallet_balance"] >= t_gop:
                                     st.session_state["wallet_balance"] -= t_gop
@@ -169,37 +169,66 @@ def hien_thi_gioi_thieu_va_goi_von():
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         animation: titleShine 4s linear infinite; margin-bottom: 30px; letter-spacing: 2px;
     }
-    .cert-col { text-align: center; padding: 15px; border-right: 1px solid rgba(255,255,255,0.1); }
-    .cert-col:last-child { border-right: none; }
-    .cert-title { color: #a0aec0; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; font-weight: 600;}
-    .cert-val { color: #ffffff; font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; }
-    .cert-status { color: #48bb78; font-size: 0.85rem; font-weight: 700; }
+    .cert-col { text-align: center; padding: 10px; }
+    .cert-title { color: #a0aec0; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; font-weight: 700;}
+    .cert-val { color: #ffffff; font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; }
+    .cert-status { color: #48bb78; font-size: 0.9rem; font-weight: 800; }
     </style>
     """, unsafe_allow_html=True)
 
+    # --- TỪ ĐIỂN TEXT PHẦN VỀ CHÚNG TÔI ---
+    T = {
+        "Tiếng Việt": {
+            "title": "VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI",
+            "thank_you": "Cảm ơn quý vị vì đã tin tưởng, đồng hành và cùng phát triển với nền tảng. Thay mặt đội ngũ phát triển xin gửi lời cảm ơn chân thành từ tận đáy lòng đến tất cả người đồng hành xanh trên nền tảng của chúng tôi!",
+            "mission": "Tích hợp trí tuệ nhân tạo (GEE) với Sổ đỏ để loại bỏ 'rừng ma', đưa doanh nghiệp và chủ rừng đến gần nhau với độ tin cậy tuyệt đối.",
+            "slogan_block": "Vì một ngày mai tươi sáng và thế giới xanh bền vững",
+            "cert_title": "CHỨNG NHẬN UY TÍN & ĐỐI TÁC",
+            "c1_t": "Tiêu chuẩn", "c1_v": "VCS & Gold Standard", "c1_s": "Đạt chuẩn toàn cầu",
+            "c2_t": "Công nghệ", "c2_v": "ESA WorldCover & GEE", "c2_s": "Real-time AI",
+            "c3_t": "Pháp lý", "c3_v": "Sổ đỏ Lâm nghiệp Gốc", "c3_s": "Xác thực chéo 100%",
+            "c4_t": "Kiểm toán", "c4_v": "Smart Contract Escrow", "c4_s": "Minh bạch tuyệt đối"
+        },
+        "English": {
+            "title": "ABOUT US & FUTURE VISION",
+            "thank_you": "Thank you for trusting, accompanying, and growing with our platform. On behalf of the development team, we send our deepest and most sincere gratitude to all our green companions!",
+            "mission": "Integrating AI (GEE) with Land Rights Certificates to eliminate 'ghost forests', bringing businesses and forest owners together with absolute trust.",
+            "slogan_block": "For a brighter tomorrow and a sustainable green world",
+            "cert_title": "PRESTIGIOUS CERTIFICATIONS & PARTNERS",
+            "c1_t": "Standard", "c1_v": "VCS & Gold Standard", "c1_s": "Global Standard",
+            "c2_t": "Technology", "c2_v": "ESA WorldCover & GEE", "c2_s": "Real-time AI",
+            "c3_t": "Legal", "c3_v": "Original Land Rights", "c3_s": "100% Cross-verified",
+            "c4_t": "Audit", "c4_v": "Smart Contract Escrow", "c4_s": "Absolute Transparency"
+        }
+    }
+    t = T[lang]
+
     _, c_mid, _ = st.columns([0.05, 0.9, 0.05])
     with c_mid:
-        if lang == "Tiếng Việt":
-            st.markdown('<div class="about-title">VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="about-title">{t["title"]}</div>', unsafe_allow_html=True)
+        
+        # KHỐI 1: Lời cảm ơn và Sứ mệnh (Đã sửa lời văn đàng hoàng, không dùng dấu 3 chấm)
+        with st.container(border=True):
+            st.markdown(f"<p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.7;'>{t['thank_you']}<br><br><span style='color:#48bb78; font-weight:800; font-size: 1.15rem;'>{'SỨ MỆNH' if lang=='Tiếng Việt' else 'MISSION'}:</span> {t['mission']}</p>", unsafe_allow_html=True)
+        
+        # KHỐI 2: Khối Slogan tách biệt bên dưới (Nhận hiệu ứng lóa sáng xanh đồng bộ)
+        with st.container(border=True):
+            st.markdown(f"<h4 style='text-align:center; color:#48bb78; font-weight:900; letter-spacing:1px; margin: 10px 0;'>{t['slogan_block']}</h4>", unsafe_allow_html=True)
+        
+        st.markdown(f"<h4 style='text-align:center; color:white; margin-top:40px; margin-bottom:25px;'>{t['cert_title']}</h4>", unsafe_allow_html=True)
+        
+        # KHỐI 3, 4, 5, 6: 4 Khối chứng nhận độc lập (Mỗi ô một khối kính)
+        c1, c2, c3, c4 = st.columns(4)
+        
+        with c1:
             with st.container(border=True):
-                st.markdown("<p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.6;'>Thay mặt Đội ngũ Sáng lập, chúng tôi xin gửi <b>LỜI CẢM ƠN CHÂN THÀNH NHẤT</b> đến Quý Chủ rừng, Doanh nghiệp và Nhà đầu tư tiên phong...<br><br><span style='color:#48bb78; font-weight:bold;'>SỨ MỆNH:</span> Tích hợp trí tuệ nhân tạo (GEE) với Sổ đỏ để loại bỏ 'rừng ma', đưa doanh nghiệp và chủ rừng đến gần nhau với độ tin cậy tuyệt đối.</p>", unsafe_allow_html=True)
-            
-            st.markdown("<h4 style='text-align:center; color:white; margin-top:30px; margin-bottom:20px;'>CHỨNG NHẬN UY TÍN & ĐỐI TÁC</h4>", unsafe_allow_html=True)
+                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c1_t"]}</div><div class="cert-val">{t["c1_v"]}</div><div class="cert-status">{t["c1_s"]}</div></div>', unsafe_allow_html=True)
+        with c2:
             with st.container(border=True):
-                c1, c2, c3, c4 = st.columns(4)
-                c1.markdown('<div class="cert-col"><div class="cert-title">Tiêu chuẩn</div><div class="cert-val">VCS & Gold Standard</div><div class="cert-status">Đạt chuẩn toàn cầu</div></div>', unsafe_allow_html=True)
-                c2.markdown('<div class="cert-col"><div class="cert-title">Công nghệ</div><div class="cert-val">ESA WorldCover & GEE</div><div class="cert-status">Real-time AI</div></div>', unsafe_allow_html=True)
-                c3.markdown('<div class="cert-col"><div class="cert-title">Pháp lý</div><div class="cert-val">Sổ đỏ Lâm nghiệp Gốc</div><div class="cert-status">Xác thực chéo 100%</div></div>', unsafe_allow_html=True)
-                c4.markdown('<div class="cert-col"><div class="cert-title">Kiểm toán</div><div class="cert-val">Smart Contract Escrow</div><div class="cert-status">Minh bạch tuyệt đối</div></div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="about-title">ABOUT US & FUTURE VISION</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c2_t"]}</div><div class="cert-val">{t["c2_v"]}</div><div class="cert-status">{t["c2_s"]}</div></div>', unsafe_allow_html=True)
+        with c3:
             with st.container(border=True):
-                st.markdown("<p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.6;'>On behalf of the Founding Team, we send our <b>DEEPEST GRATITUDE</b> to the Forest Owners, Businesses, and pioneering Investors...<br><br><span style='color:#48bb78; font-weight:bold;'>MISSION:</span> Integrating AI (GEE) with Land Rights Certificates to eliminate 'ghost forests', bringing businesses and forest owners together with absolute trust.</p>", unsafe_allow_html=True)
-            
-            st.markdown("<h4 style='text-align:center; color:white; margin-top:30px; margin-bottom:20px;'>PRESTIGIOUS CERTIFICATIONS & PARTNERS</h4>", unsafe_allow_html=True)
+                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c3_t"]}</div><div class="cert-val">{t["c3_v"]}</div><div class="cert-status">{t["c3_s"]}</div></div>', unsafe_allow_html=True)
+        with c4:
             with st.container(border=True):
-                c1, c2, c3, c4 = st.columns(4)
-                c1.markdown('<div class="cert-col"><div class="cert-title">Standard</div><div class="cert-val">VCS & Gold Standard</div><div class="cert-status">Global Standard</div></div>', unsafe_allow_html=True)
-                c2.markdown('<div class="cert-col"><div class="cert-title">Technology</div><div class="cert-val">ESA WorldCover & GEE</div><div class="cert-status">Real-time AI</div></div>', unsafe_allow_html=True)
-                c3.markdown('<div class="cert-col"><div class="cert-title">Legal</div><div class="cert-val">Original Land Rights</div><div class="cert-status">100% Cross-verified</div></div>', unsafe_allow_html=True)
-                c4.markdown('<div class="cert-col"><div class="cert-title">Audit</div><div class="cert-val">Smart Contract Escrow</div><div class="cert-status">Absolute Transparency</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c4_t"]}</div><div class="cert-val">{t["c4_v"]}</div><div class="cert-status">{t["c4_s"]}</div></div>', unsafe_allow_html=True)
