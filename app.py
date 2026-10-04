@@ -84,26 +84,41 @@ def inject_custom_css():
         button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 600 !important; }
         button[kind="primary"]:hover { background-color: #38a169 !important; border-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
         
-        /* --- TIÊU DIỆT HOÀN TOÀN VIỀN ĐỎ TRÊN MỌI THÀNH PHẦN SELECTBOX & INPUT --- */
+        /* KHỬ HOÀN TOÀN VIỀN ĐỎ */
         *:focus, *:active { outline: none !important; }
-        div[data-baseweb="select"] > div, 
-        div[data-baseweb="input"] > div,
-        .stSelectbox > div > div,
-        .stSelectbox div[data-baseweb="select"],
-        input {
+        div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, .stSelectbox > div > div, input {
             border-color: #2d3748 !important; 
         }
         div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within,
-        div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within,
-        .stSelectbox div[data-baseweb="select"]:focus-within {
+        div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within {
             border-color: #48bb78 !important; 
             box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important;
         }
-        [aria-invalid="true"], [data-baseweb="select"] [aria-invalid="true"] {
-            border-color: #48bb78 !important; 
-            box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important;
-        }
+        [aria-invalid="true"] { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
 
+        /* --- NÂNG CẤP SIDEBAR: CÁC KHỐI ĐỐI TÁC VÀ CHỨNG NHẬN SANG TRỌNG, NỔI BẬT KHÔNG BỊ TRÙNG MÀU NỀN --- */
+        .sidebar-badge { 
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
+            padding: 14px 16px; 
+            border-radius: 10px; 
+            margin-bottom: 12px; 
+            border: 1px solid rgba(72, 187, 120, 0.4) !important; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(72, 187, 120, 0.05);
+            transition: all 0.3s ease; 
+            position: relative; 
+            overflow: hidden !important;
+        }
+        .sidebar-badge:hover { 
+            transform: translateX(4px); 
+            border-color: #48bb78 !important; 
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3), inset 0 0 15px rgba(72, 187, 120, 0.2); 
+        }
+        
+        .sb-title { color: #ffffff; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
+        .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 4px; }
+        .sb-desc.highlight { color: #48bb78; font-weight: 600; }
+
+        /* KHUNG KẾT QUẢ SÁNG SỦA, UY TÍN */
         .highlight-result-box {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95));
             border: 2px solid #48bb78;
@@ -120,16 +135,6 @@ def inject_custom_css():
             transform: skewX(-25deg); transition: left 0.7s ease-in-out; pointer-events: none;
         }
         .highlight-result-box:hover::after { left: 150%; }
-
-        .sidebar-badge { background-color: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; transition: all 0.3s ease; position: relative; overflow: hidden !important;}
-        .sidebar-badge:hover { transform: scale(1.02); background-color: rgba(30, 41, 59, 0.8); border-color: rgba(72, 187, 120, 0.6); box-shadow: 0 0 15px rgba(72, 187, 120, 0.6); }
-        
-        .partner-card { background: linear-gradient(145deg, #1e2530, #2a3441); padding: 20px; border-radius: 12px; border: 1px solid #2d3748; height: 160px; transition: all 0.4s ease; position: relative; overflow: hidden !important;}
-        .partner-card:hover { transform: translateY(-8px); border-color: #48bb78; box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3), 0 0 25px rgba(72, 187, 120, 0.6); }
-
-        .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
-        .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 3px; }
-        .sb-desc.highlight { color: #48bb78; }
 
         [data-testid="stMetricValue"] { font-size: 1.8rem !important; white-space: nowrap !important; color: #ffffff !important; }
         </style>
@@ -154,23 +159,23 @@ if "market_projects" not in st.session_state:
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
 
-# Khởi tạo seed vùng khoanh không gian động
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
-if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(1000, 9999)
+if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 
+# --- SIDEBAR HOÀN TOÀN KHÔNG ICON, CÁC KHỐI NỔI BẬT UY TÍN ---
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.title(l["lang_select"])
-    st.caption("Carbon Exchange Platform v12.2 Pro")
+    st.caption("Carbon Exchange Platform v13.0 Enterprise")
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", label_visibility="collapsed")
     st.divider()
     
-    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
     
     st.divider()
-    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
 
@@ -221,7 +226,6 @@ def main_app():
             btn_reset = st.button(l["mrv_reset_btn"], type="secondary", use_container_width=True)
             
         if btn_reset:
-            # XÓA SẠCH DỮ LIỆU CŨ VÀ TÁI TẠO SEED KHÔNG GIAN HOÀN TOÀN MỚI
             st.session_state["mrv_calc_state"] = False
             st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
             st.rerun()
@@ -230,7 +234,6 @@ def main_app():
             st.session_state["mrv_calc_state"] = True
 
         if st.session_state["mrv_calc_state"]:
-            # THUẬT TOÁN ĐỘNG: KẾT HỢP SEED VÙNG KHOANH VÀ KHOẢNG CÁCH NĂM ĐỂ TÍNH TOÁN RA DỮ LIỆU THỰC TẾ KHÁC BIỆT
             seed = st.session_state["mrv_polygon_seed"]
             dien_tich_hecta = 8000.0 + (seed % 12000) 
             
