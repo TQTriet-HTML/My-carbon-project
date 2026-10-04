@@ -71,17 +71,29 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .bouncing-slogan { text-align: center; margin-bottom: 20px; }
         .bouncing-slogan span { display: inline-block; font-size: clamp(2rem, 2.5vw, 2.8rem); font-weight: 900; cursor: default; animation: autoWave 5s infinite; }
         
-        /* --- HIỆU ỨNG LÓA SÁNG KHỐI GLASS-CARD (THÀNH TỰU & TAB ĐĂNG NHẬP) --- */
+        /* GLOW EFFECT + RELATIVE HIDDEN ĐỂ GIỮ LUỒNG SÁNG */
         .glass-card, div[data-testid="stTabs"] {
+            position: relative;
+            overflow: hidden !important;
             background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 25px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transition: all 0.4s ease; margin-bottom: 20px;
         }
+        
         .glass-card:hover, div[data-testid="stTabs"]:hover { 
             transform: translateY(-5px); 
             border-color: rgba(72, 187, 120, 0.6); 
-            /* Lóa sáng tỏa ra mượt mà */
             box-shadow: 0 20px 40px -12px rgba(72, 187, 120, 0.4), 0 0 25px rgba(72, 187, 120, 0.5) !important; 
+        }
+        
+        /* SWEEP SHINE EFFECT CHO CÁC THẺ Ở TRANG ĐĂNG NHẬP */
+        .glass-card::after, div[data-testid="stTabs"]::after {
+            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.4), transparent);
+            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
+        }
+        .glass-card:hover::after, div[data-testid="stTabs"]:hover::after {
+            left: 150%;
         }
         
         .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1; }
