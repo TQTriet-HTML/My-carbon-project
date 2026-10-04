@@ -1,29 +1,34 @@
 import streamlit as st
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
-    # --- CSS KHÔNG ICON, HIỆU ỨNG SÁNG & HOẠT HỌA CAO CẤP ---
+    # --- CSS TOÀN CỤC CHO TRANG ĐĂNG NHẬP (KHÔNG ICON, HIỆU ỨNG SÁNG & HOẠT HỌA CAO CẤP) ---
     st.markdown("""
         <style>
         .stApp {
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        @keyframes glowText {
-            0% { text-shadow: 0 0 10px rgba(72,187,120,0.3); }
-            50% { text-shadow: 0 0 25px rgba(72,187,120,0.8), 0 0 10px rgba(56,161,105,0.5); }
-            100% { text-shadow: 0 0 10px rgba(72,187,120,0.3); }
+        /* HIỆU ỨNG CHỮ LƯỢN SÓNG (WAVE EFFECT) MỖI 10 GIÂY */
+        @keyframes wave-animation {
+            0%, 85% { transform: translateY(0); color: transparent; text-shadow: none; }
+            90% { transform: translateY(-8px); color: #68d391; text-shadow: 0 0 15px rgba(104, 211, 145, 0.8); }
+            95% { transform: translateY(4px); }
+            100% { transform: translateY(0); color: transparent; text-shadow: none; }
         }
         
-        .hero-title {
-            font-size: clamp(26px, 3.2vw, 42px) !important;
+        .wave-text {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .wave-text span {
+            display: inline-block;
+            font-size: clamp(26px, 3vw, 36px) !important;
             font-weight: 900 !important;
             letter-spacing: 2px !important;
-            text-align: center;
             background: linear-gradient(90deg, #48bb78, #68d391, #319795);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: glowText 4s infinite ease-in-out;
-            margin-bottom: 5px;
+            animation: wave-animation 10s infinite ease-in-out;
         }
 
         .hero-subtitle {
@@ -35,16 +40,18 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             letter-spacing: 0.5px;
         }
 
+        /* KHUNG ĐĂNG NHẬP KÍNH PHA LÊ SÁNG */
         div[data-testid="stVerticalBlockBorderWrapper"] {
             background: rgba(17, 24, 39, 0.85) !important;
             border: 1px solid rgba(72, 187, 120, 0.3) !important;
-            border-radius: 16px !important;
+            border-radius: 12px !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(72, 187, 120, 0.05) !important;
             backdrop-filter: blur(12px);
         }
 
+        /* NÚT BẤM ĐỎ GỐC CỦA HỆ THỐNG */
         button[kind="primary"] {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; 
             border: none !important;
             color: white !important;
             font-weight: 700 !important;
@@ -52,42 +59,178 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transition: all 0.3s ease !important;
         }
         button[kind="primary"]:hover {
-            box-shadow: 0 0 25px rgba(72, 187, 120, 0.8) !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6) !important;
             transform: translateY(-2px);
         }
 
         *:focus, *:active { outline: none !important; }
-        div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
-            border-color: #2d3748 !important;
-        }
+        div[data-baseweb="select"] > div, div[data-baseweb="input"] > div { border-color: #2d3748 !important; }
         div[data-baseweb="select"]:hover, div[data-baseweb="input"]:hover,
         div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:focus-within {
             border-color: #48bb78 !important;
             box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important;
         }
         [aria-invalid="true"] { border-color: #48bb78 !important; }
+
+        /* CSS THÀNH TỰU VÀ DỰ ÁN TIÊU BIỂU (THAY THẾ TÁC DỤNG CỦA ICON) */
+        .side-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(72, 187, 120, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .section-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #48bb78;
+            padding-left: 10px;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #63b3ed;
+            margin-bottom: 0;
+            line-height: 1.2;
+        }
+        .stat-label {
+            color: #a0aec0;
+            font-size: 0.85rem;
+        }
+        .project-title {
+            color: #48bb78;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .project-desc {
+            color: #cbd5e0;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        .verified-badge {
+            display: inline-block;
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid #48bb78;
+            color: #48bb78;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* TIN TỨC CHẠY (NEWS TICKER) */
+        .news-ticker-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(72, 187, 120, 0.3);
+            color: #e2e8f0;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+        .news-label {
+            font-weight: 800;
+            color: #fc8181;
+            margin-right: 15px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .news-marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .news-marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    if lang == "Tiếng Việt":
-        st.markdown('<div class="hero-title">HỆ THỐNG GIAO DỊCH TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
-        st.markdown('<div class="hero-subtitle">Nền tảng tiên phong kết nối công nghệ vệ tinh AI và tài chính lâm nghiệp bền vững</div>', unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="hero-title">CARBON CREDIT TRADING PLATFORM</div>', unsafe_allow_html=True)
-        st.markdown('<div class="hero-subtitle">Pioneering platform connecting AI satellite technology and sustainable forestry finance</div>', unsafe_allow_html=True)
+    # --- BỘ TỪ ĐIỂN TEXT CHUẨN XÁC VỚI HỆ THỐNG GỐC ---
+    T = {
+        "Tiếng Việt": {
+            "slogan": "MỘT CHẠM - MỘT THẾ GIỚI XANH",
+            "subtitle": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
+            "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN",
+            "sys_access": "Hệ thống Truy cập",
+            "user": "Tên đăng nhập", "pass": "Mật khẩu",
+            "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
+            "achieve": "THÀNH TỰU NỀN TẢNG",
+            "ach_1_val": "2.5M+", "ach_1_lbl": "Tấn Carbon Giao Dịch",
+            "ach_2_val": "15,000", "ach_2_lbl": "Hecta Rừng Được Bảo Vệ",
+            "projects": "DỰ ÁN TIÊU BIỂU",
+            "proj_name": "Dự án Rừng ngập mặn Cà Mau",
+            "proj_desc": "Bảo vệ sinh khối & đa dạng sinh học ven biển.",
+            "proj_badge": "Đã xác thực AI (Verified)",
+            "news_lbl": "TIN MỚI NHẤT:",
+            "news_txt": "Thị trường Tín chỉ Carbon Việt Nam chính thức bước vào giai đoạn vận hành thí điểm."
+        },
+        "English": {
+            "slogan": "ONE TOUCH - ONE GREEN WORLD",
+            "subtitle": "Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
+            "tab_login": "LOGIN", "tab_reg": "CREATE ACCOUNT",
+            "sys_access": "System Access",
+            "user": "Username", "pass": "Password",
+            "btn_login": "Login to Platform", "btn_reg": "Register Account",
+            "achieve": "PLATFORM ACHIEVEMENTS",
+            "ach_1_val": "2.5M+", "ach_1_lbl": "Tons Carbon Traded",
+            "ach_2_val": "15,000", "ach_2_lbl": "Hectares Protected",
+            "projects": "FEATURED PROJECTS",
+            "proj_name": "Ca Mau Mangrove Project",
+            "proj_desc": "Protecting biomass & coastal biodiversity.",
+            "proj_badge": "AI Verified",
+            "news_lbl": "LATEST NEWS:",
+            "news_txt": "Vietnam's Carbon Credit Market officially begins pilot operation."
+        }
+    }
+    t = T[lang]
 
-    col1, col2, col3 = st.columns([1, 1.4, 1])
+    # --- TẠO HIỆU ỨNG CHỮ LƯỢN SÓNG (WAVE TEXT) THEO TỪNG TỪ BẰNG HTML SPAN ---
+    words = t["slogan"].split()
+    wave_html = '<div class="wave-text">'
+    delay = 0.0
+    for word in words:
+        if word == "-":
+            wave_html += f'<span style="animation-delay: {delay}s;"> {word} </span>'
+        else:
+            wave_html += f'<span style="animation-delay: {delay}s;">{word}&nbsp;</span>'
+        delay += 0.1
+    wave_html += '</div>'
+
+    st.markdown(wave_html, unsafe_allow_html=True)
+    st.markdown(f'<div class="hero-subtitle">{t["subtitle"]}</div>', unsafe_allow_html=True)
+
+    # --- KHÔI PHỤC LAYOUT 2 CỘT NHƯ GỐC ---
+    col_form, col_space, col_info = st.columns([1.1, 0.1, 1.1])
     
-    with col2:
+    with col_form:
         with st.container(border=True):
-            tab_dang_nhap, tab_dang_ky = st.tabs(["ĐĂNG NHẬP" if lang=="Tiếng Việt" else "LOGIN", "TẠO TÀI KHOẢN" if lang=="Tiếng Việt" else "REGISTER"])
+            st.markdown(f'<h3 style="color: white; margin-top: 0; font-weight: 700; font-size: 1.2rem;">{t["sys_access"]}</h3>', unsafe_allow_html=True)
+            tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
             
             with tab_dang_nhap:
                 with st.form("form_login"):
-                    u_name = st.text_input("Tên đăng nhập" if lang=="Tiếng Việt" else "Username", placeholder="admin, buyer, investor")
-                    u_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password", placeholder="••••••")
+                    u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
+                    u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
                     
-                    submitted = st.form_submit_button("XÁC THỰC TRUY CẬP" if lang=="Tiếng Việt" else "AUTHENTICATE ACCESS", type="primary", use_container_width=True)
+                    submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
                     
                     if submitted:
                         db = st.session_state["users_db"]
@@ -95,10 +238,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                             st.session_state["logged_in"] = True
                             st.session_state["current_user"] = u_name
                             st.session_state["current_role"] = db[u_name]["role"]
-                            st.success("Đăng nhập thành công!" if lang=="Tiếng Việt" else "Login successful!")
                             st.rerun()
                         else:
-                            st.error("Thông tin đăng nhập không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
+                            st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
 
             with tab_dang_ky:
                 with st.form("form_register"):
@@ -106,7 +248,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                     new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
                     role_sel = st.selectbox("Phân loại tài khoản" if lang=="Tiếng Việt" else "Account Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
                     
-                    reg_submitted = st.form_submit_button("ĐĂNG KÝ HỆ THỐNG" if lang=="Tiếng Việt" else "REGISTER SYSTEM", type="primary", use_container_width=True)
+                    reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
                     
                     if reg_submitted:
                         if new_user and new_pass:
@@ -114,6 +256,44 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                 st.error("Tài khoản đã tồn tại." if lang=="Tiếng Việt" else "Account already exists.")
                             else:
                                 st.session_state["users_db"][new_user] = {"password": new_pass, "role": role_sel}
-                                st.success("Tạo tài khoản thành công! Vui lòng chuyển sang tab Đăng nhập." if lang=="Tiếng Việt" else "Account created successfully! Please login.")
+                                st.success("Tạo thành công!" if lang=="Tiếng Việt" else "Created successfully!")
                         else:
-                            st.error("Vui lòng điền đầy đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+                            st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+
+    with col_info:
+        # THÀNH TỰU NỀN TẢNG
+        st.markdown(f"""
+        <div class="side-card">
+            <div class="section-title">{t['achieve']}</div>
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <div class="stat-value">{t['ach_1_val']}</div>
+                    <div class="stat-label">{t['ach_1_lbl']}</div>
+                </div>
+                <div>
+                    <div class="stat-value">{t['ach_2_val']}</div>
+                    <div class="stat-label">{t['ach_2_lbl']}</div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # DỰ ÁN TIÊU BIỂU
+        st.markdown(f"""
+        <div class="side-card">
+            <div class="section-title">{t['projects']}</div>
+            <div class="project-title">{t['proj_name']}</div>
+            <div class="project-desc">{t['proj_desc']}</div>
+            <span class="verified-badge">{t['proj_badge']}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # --- KHÔI PHỤC TIN TỨC CHẠY (NEWS TICKER) ---
+    st.markdown(f"""
+    <div class="news-ticker-container">
+        <div class="news-label">{t['news_lbl']}</div>
+        <div class="news-marquee">
+            <span>{t['news_txt']} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {t['news_txt']}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
