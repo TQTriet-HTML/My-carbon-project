@@ -28,7 +28,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "proj_1_name": "Dự án Rừng ngập mặn Cà Mau", "proj_1_desc": "Bảo vệ sinh khối & Đa dạng sinh học vùng ven biển."
         },
         "English": {
-            "slogan": "ONE TOUCH - ONE GREENER WORLD",
+            "slogan": "ONE TOUCH - ONE GREEN WORLD", # <--- ĐÃ ĐỔI THEO Ý CỦA BẠN
             "welcome": "🌱 Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
             "login_tab": "🔐 Login",
             "register_tab": "✨ Create Account",
@@ -64,7 +64,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background-size: cover; background-position: center; background-attachment: fixed;
         }
         
-        /* HOẠT HỌA SÓNG - ĐÃ SỬA CHU KỲ LÊN 5s ĐỂ KHÔNG BỊ KHỰNG CHỮ CUỐI */
+        /* HOẠT HỌA SÓNG */
         @keyframes autoWave {
             0%, 20%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
             10% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
@@ -88,7 +88,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # Hiệu ứng Slogan Delay chính xác 0.05s cho mượt mà tuyệt đối
+    # Hiệu ứng Slogan Delay chính xác 0.05s
     slogan = t["slogan"]
     html_slogan = "".join([f'<span style="animation-delay: {i*0.05}s">{"&nbsp;" if c==" " else c}</span>' for i, c in enumerate(slogan)])
     st.markdown(f'<div class="bouncing-slogan">{html_slogan}</div>', unsafe_allow_html=True)
