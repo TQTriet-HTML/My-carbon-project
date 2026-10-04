@@ -1,7 +1,6 @@
 import streamlit as st
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
-    # CƠ SỞ DỮ LIỆU ĐƯỢC BẢO VỆ TỪ APP.PY
     T = {
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
@@ -22,7 +21,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "achievements": "🏆 THÀNH TỰU NỀN TẢNG",
             "projects": "🌲 DỰ ÁN TIÊU BIỂU",
             "news": "🚀 <b>TIN TỨC MỚI NHẤT:</b>",
-            "news_1": "Thị trường Tín chỉ Carbon Việt Nam chính thức vận hành thử nghiệm vào 2025.",
+            "news_1": "Thị trường Tín chỉ Carbon Việt Nam chính thức vận hành thử nghiệm.",
             "news_2": "Cập nhật vệ tinh Sentinel-2 giúp theo dõi sinh khối với độ chính xác 98%.",
             "stat_1_val": "2.5M+", "stat_1_lbl": "Tấn Carbon giao dịch",
             "stat_2_val": "15,000", "stat_2_lbl": "Hecta Rừng bảo vệ",
@@ -42,12 +41,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "new_username": "New Username",
             "new_password": "New Password",
             "role": "Your Role:",
-            "roles": ["Doanh nghiệp mua tín chỉ", "Nhà đầu tư từ xa (Cổ đông)", "Chủ rừng / Kỹ sư MRV"], # Giữ nguyên Role core để không lỗi logic
+            "roles": ["Doanh nghiệp mua tín chỉ", "Nhà đầu tư từ xa (Cổ đông)", "Chủ rừng / Kỹ sư MRV"], 
             "btn_register": "🌟 Create Account & Start",
             "achievements": "🏆 PLATFORM ACHIEVEMENTS",
             "projects": "🌲 FEATURED PROJECTS",
             "news": "🚀 <b>LATEST NEWS:</b>",
-            "news_1": "Vietnam's Carbon Credit Market officially begins pilot operation in 2025.",
+            "news_1": "Vietnam's Carbon Credit Market officially begins pilot operation.",
             "news_2": "Sentinel-2 satellite update enables 98% accurate biomass tracking.",
             "stat_1_val": "2.5M+", "stat_1_lbl": "Tons Carbon Traded",
             "stat_2_val": "15,000", "stat_2_lbl": "Hectares Protected",
@@ -64,12 +63,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                               url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2532&auto=format&fit=crop');
             background-size: cover; background-position: center; background-attachment: fixed;
         }
+        
+        /* HOẠT HỌA SÓNG - ĐÃ SỬA CHU KỲ LÊN 5s ĐỂ KHÔNG BỊ KHỰNG CHỮ CUỐI */
         @keyframes autoWave {
             0%, 20%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
             10% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
         }
         .bouncing-slogan { text-align: center; margin-bottom: 20px; }
-        .bouncing-slogan span { display: inline-block; font-size: clamp(2rem, 2.5vw, 2.8rem); font-weight: 900; cursor: default; animation: autoWave 10s infinite; }
+        .bouncing-slogan span { display: inline-block; font-size: clamp(2rem, 2.5vw, 2.8rem); font-weight: 900; cursor: default; animation: autoWave 5s infinite; }
         
         .glass-card, div[data-testid="stTabs"] {
             background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -80,19 +81,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         
         .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1; }
         .stat-lbl { font-size: 0.95rem; color: #a0aec0; margin-top: 5px; }
-        .news-ticker-container {
-            position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(15, 23, 42, 0.95);
-            color: #a0aec0; padding: 12px 0; border-top: 1px solid #2d3748; font-size: 0.95rem; z-index: 9999;
-        }
+        .news-ticker-container { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(15, 23, 42, 0.95); color: #a0aec0; padding: 12px 0; border-top: 1px solid #2d3748; font-size: 0.95rem; z-index: 9999; }
         .news-ticker-content a { color: #63b3ed; text-decoration: none; font-weight: 600; margin: 0 30px; }
         .news-ticker-content a:hover { color: #48bb78; text-decoration: underline; }
         .welcome-text { text-align: center; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 35px; font-weight: 300; }
         </style>
     """, unsafe_allow_html=True)
 
-    # Hiệu ứng Slogan Delay chính xác 0.1s
+    # Hiệu ứng Slogan Delay chính xác 0.05s cho mượt mà tuyệt đối
     slogan = t["slogan"]
-    html_slogan = "".join([f'<span style="animation-delay: {i*0.1}s">{"&nbsp;" if c==" " else c}</span>' for i, c in enumerate(slogan)])
+    html_slogan = "".join([f'<span style="animation-delay: {i*0.05}s">{"&nbsp;" if c==" " else c}</span>' for i, c in enumerate(slogan)])
     st.markdown(f'<div class="bouncing-slogan">{html_slogan}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="welcome-text">{t["welcome"]}</div>', unsafe_allow_html=True)
 
@@ -145,10 +143,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                     <div><div class="stat-val" style="color: #63b3ed;">{t['stat_2_val']}</div><div class="stat-lbl">{t['stat_2_lbl']}</div></div>
                 </div>
             </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown(f"<h4 style='color: #e2e8f0; margin-top: 20px;'>{t['projects']}</h4>", unsafe_allow_html=True)
-        st.markdown(f"""
+            <h4 style='color: #e2e8f0; margin-top: 20px;'>{t['projects']}</h4>
             <div class="glass-card" style="padding: 15px 25px;">
                 <h5 style="color: #fff; margin-bottom: 5px;">🌳 {t['proj_1_name']}</h5>
                 <p style="color: #a0aec0; font-size: 0.9rem; margin-bottom: 10px;">{t['proj_1_desc']}</p>
