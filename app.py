@@ -31,18 +31,15 @@ if "current_lang" not in st.session_state:
     st.session_state["current_lang"] = "Tiếng Việt"
 
 def change_lang():
-    # Callback kích hoạt ngay lập tức khi người dùng đổi selectbox
     pass
 
 # --- CSS TỔNG HỢP ---
 def inject_custom_css():
     st.markdown("""
         <style>
-        /* Font chữ hệ thống rõ ràng, chuyên nghiệp */
         html, body, [class*="css"] {
             font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important;
         }
-        
         .main-title {
             font-size: clamp(22px, 2.5vw, 32px) !important;
             font-weight: 800 !important;
@@ -51,56 +48,37 @@ def inject_custom_css():
             padding-bottom: 0px !important;
             white-space: nowrap !important;
         }
-
         .logout-btn-container {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            height: 100%;
-            margin-top: 5px;
+            display: flex; justify-content: flex-end; align-items: center; height: 100%; margin-top: 5px;
         }
-        
-        /* Hiệu ứng nổi bồng bềnh chung */
         div[data-testid="stVerticalBlockBorderWrapper"] {
-            transition: all 0.3s ease-in-out !important;
-            border-radius: 12px !important;
+            transition: all 0.3s ease-in-out !important; border-radius: 12px !important;
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-            transform: translateY(-6px) !important;
-            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.25) !important;
-            border-color: #48bb78 !important;
+            transform: translateY(-6px) !important; box-shadow: 0 10px 25px rgba(72, 187, 120, 0.25) !important; border-color: #48bb78 !important;
         }
-        
         div.stButton > button {
-            transition: all 0.3s ease-in-out !important;
-            border-radius: 8px !important;
+            transition: all 0.3s ease-in-out !important; border-radius: 8px !important;
         }
         div.stButton > button:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important;
-            border-color: #48bb78 !important;
+            transform: translateY(-3px) !important; box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important; border-color: #48bb78 !important;
         }
         </style>
     """, unsafe_allow_html=True)
 
 inject_custom_css()
 
-# --- SIDEBAR: NGÔN NGỮ & LIÊN KẾT NGOÀI ---
 with st.sidebar:
     st.title(LANG_DICT[st.session_state["current_lang"]]["lang_select"])
-    
-    # Selectbox đổi ngôn ngữ gọi callback trực tiếp
     st.selectbox(
         "Chọn ngôn ngữ / Select language:", 
         ["Tiếng Việt", "English"],
         key="current_lang",
         on_change=change_lang
     )
-    
     st.divider()
-    st.caption("Carbon Exchange Platform v4.0")
+    st.caption("Carbon Exchange Platform v4.5")
 
-# Khởi tạo trạng thái phiên
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
@@ -138,7 +116,6 @@ if "market_projects" not in st.session_state:
     ]
 
 def main_app():
-    # Sử dụng từ điển để hiển thị chữ theo ngôn ngữ đã chọn
     lang = LANG_DICT[st.session_state["current_lang"]]
     
     col_title, col_logout = st.columns([6, 1])
@@ -150,11 +127,10 @@ def main_app():
         st.markdown('<div class="logout-btn-container">', unsafe_allow_html=True)
         if st.button(lang["logout"], type="secondary", use_container_width=True):
             st.session_state["logged_in"] = False
-            # Reset lại theme mờ (xoá thuộc tính nền)
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
             
-    # Xoá phông nền của trang Đăng nhập khi đã vào app chính
+    # Xóa hình nền khi đã đăng nhập
     st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
     try:
@@ -188,7 +164,6 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # Đưa tên các tab vào từ điển đa ngôn ngữ
     tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs(lang["tabs"])
 
     with tab_mrv:
@@ -215,7 +190,8 @@ def main_app():
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
+# LƯU Ý Ở ĐÂY: Truyền trạng thái ngôn ngữ vào trang đăng nhập
 if not st.session_state["logged_in"]:
-    hien_thi_cong_dang_nhap()
+    hien_thi_cong_dang_nhap(st.session_state["current_lang"])
 else:
     main_app()
