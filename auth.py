@@ -1,6 +1,13 @@
 import streamlit as st
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
+    if "users_db" not in st.session_state:
+        st.session_state["users_db"] = {
+            "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
+            "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
+            "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
+        }
+
     T = {
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
@@ -104,40 +111,45 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         
         with tab_login:
             st.markdown(t["login_title"])
-            tendangnhap = st.text_input(t["username"], placeholder="admin, investor, buyer")
-            matkhau = st.text_input(t["password"], type="password", placeholder="***")
-            
-            if st.button(t["btn_login"], type="primary", use_container_width=True):
-                # Lúc này users_db CHẮC CHẮN ĐÃ TỒN TẠI vì được gọi từ app.py
-                db = st.session_state["users_db"]
-                if tendangnhap in db and db[tendangnhap]["password"] == matkhau:
-                    st.session_state["logged_in"] = True
-                    st.session_state["current_user"] = tendangnhap
-                    st.session_state["current_role"] = db[tendangnhap]["role"]
-                    st.rerun()
-                else:
-                    st.error("❌ Sai tên đăng nhập hoặc mật khẩu / Incorrect credentials.")
+            # Gói vào form để hỗ trợ nhấn phím Enter (clear_on_submit=False để giữ lại tên đăng nhập nếu sai mật khẩu)
+            with st.form("login_form", clear_on_submit=False):
+                tendangnhap = st.text_input(t["username"], placeholder="admin, investor, buyer")
+                matkhau = st.text_input(t["password"], type="password", placeholder="***")
+                submitted_login = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
+                
+                if submitted_login:
+                    db = st.session_state["users_db"]
+                    if tendangnhap in db and db[tendangnhap]["password"] == matkhau:
+                        st.session_state["logged_in"] = True
+                        st.session_state["current_user"] = tendangnhap
+                        st.session_state["current_role"] = db[tendangnhap]["role"]
+                        st.rerun()
+                    else:
+                        st.error("❌ Sai tên đăng nhập hoặc mật khẩu / Incorrect credentials.")
                     
         with tab_register:
             st.markdown(t["register_title"])
             st.info(t["register_prompt"])
             
-            new_user = st.text_input(t["new_username"])
-            new_pass = st.text_input(t["new_password"], type="password")
-            new_role = st.selectbox(t["role"], t["roles"])
-            
-            if st.button(t["btn_register"], type="primary", use_container_width=True):
-                if not new_user or not new_pass:
-                    st.warning("⚠️ Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!")
-                elif new_user in st.session_state["users_db"]:
-                    st.error("⚠ Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.")
-                else:
-                    # Lưu an toàn vào DB gốc
-                    st.session_state["users_db"][new_user] = {
-                        "password": new_pass,
-                        "role": new_role
-                    }
-                    st.success(f"🎉 Tài khoản `{new_user}` đã được tạo thành công! Hãy chuyển sang Tab Đăng nhập.")
+            # Form Đăng ký có clear_on_submit=True giúp xóa sạch mọi chữ đã nhập sau khi gửi
+            with st.form("register_form", clear_on_submit=True):
+                new_user = st.text_input(t["new_username"])
+                new_pass = st.text_input(t["new_password"], type="password")
+                new_role = st.selectbox(t["role"], t["roles"])
+                
+                submitted_reg = st.form_submit_button(t["btn_register"], type="primary", use_container_width=True)
+                
+                if submitted_reg:
+                    if not new_user or not new_pass:
+                        st.warning("⚠️ Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!")
+                    elif new_user in st.session_state["users_db"]:
+                        st.error("⚠ Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.")
+                    else:
+                        st.session_state["users_db"][new_user] = {
+                            "password": new_pass,
+                            "role": new_role
+                        }
+                        st.success(f"🎉 Tài khoản `{new_user}` đã được tạo thành công! Hãy chuyển sang Tab Đăng nhập.")
 
     with col_info:
         st.markdown(f"<h4 style='color: #e2e8f0;'>{t['achievements']}</h4>", unsafe_allow_html=True)
