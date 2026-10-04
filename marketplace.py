@@ -176,7 +176,6 @@ def hien_thi_gioi_thieu_va_goi_von():
     </style>
     """, unsafe_allow_html=True)
 
-    # --- TỪ ĐIỂN TEXT PHẦN VỀ CHÚNG TÔI ---
     T = {
         "Tiếng Việt": {
             "title": "VỀ CHÚNG TÔI & TẦM NHÌN TƯƠNG LAI",
@@ -207,17 +206,15 @@ def hien_thi_gioi_thieu_va_goi_von():
     with c_mid:
         st.markdown(f'<div class="about-title">{t["title"]}</div>', unsafe_allow_html=True)
         
-        # KHỐI 1: Lời cảm ơn và Sứ mệnh (Đã sửa lời văn đàng hoàng, không dùng dấu 3 chấm)
+        # Tất cả các khối dưới đây đều sử dụng st.container(border=True) để tự động nhận hoạt họa lóa sáng và lướt sáng xanh lá chuẩn MRV
         with st.container(border=True):
             st.markdown(f"<p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.7;'>{t['thank_you']}<br><br><span style='color:#48bb78; font-weight:800; font-size: 1.15rem;'>{'SỨ MỆNH' if lang=='Tiếng Việt' else 'MISSION'}:</span> {t['mission']}</p>", unsafe_allow_html=True)
         
-        # KHỐI 2: Khối Slogan tách biệt bên dưới (Nhận hiệu ứng lóa sáng xanh đồng bộ)
         with st.container(border=True):
             st.markdown(f"<h4 style='text-align:center; color:#48bb78; font-weight:900; letter-spacing:1px; margin: 10px 0;'>{t['slogan_block']}</h4>", unsafe_allow_html=True)
         
         st.markdown(f"<h4 style='text-align:center; color:white; margin-top:40px; margin-bottom:25px;'>{t['cert_title']}</h4>", unsafe_allow_html=True)
         
-        # KHỐI 3, 4, 5, 6: 4 Khối chứng nhận độc lập (Mỗi ô một khối kính)
         c1, c2, c3, c4 = st.columns(4)
         
         with c1:
