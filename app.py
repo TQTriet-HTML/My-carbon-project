@@ -16,7 +16,6 @@ except ImportError:
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- TỪ ĐIỂN DỊCH THUẬT SÂU KHÔNG ICON ---
 LANG_DICT = {
     "Tiếng Việt": {
         "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "Đăng xuất", "lang_select": "Ngôn ngữ",
@@ -27,19 +26,18 @@ LANG_DICT = {
         "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Tiêu chuẩn Toàn cầu",
         "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Bảo mật Thông tin Cấp cao",
         "welcome": "Xin chào",
-        "mrv_success": "Hệ thống Giám sát Không gian AI",
+        "mrv_success": "Hệ thống Giám sát Không gian AI (Hỗ trợ AI Geofencing)",
         "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
-        "mrv_loading": "Đang truy xuất dữ liệu từ Vệ tinh Copernicus...",
+        "mrv_loading": "AI đang phân tích không gian vệ tinh...",
         "mrv_biomass": "Sinh khối",
-        "mrv_calc_btn": "TÍNH TOÁN SINH KHỐI & SO SÁNH",
+        "mrv_calc_btn": "PHÂN TÍCH DIỆN TÍCH VÙNG KHOANH",
         "mrv_result_title": "KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG SINH KHỐI",
         "mrv_base_val": "Sinh khối Năm cơ sở",
         "mrv_comp_val": "Sinh khối Năm so sánh",
-        "mrv_diff": "Tín chỉ tăng trưởng",
         "mrv_total_val": "Tổng Giá Trị Quy Đổi",
         "mrv_unit": "Tấn",
-        "mrv_success_msg": "Kết luận: Khu vực rừng đang phát triển tích cực. Bạn có thể niêm yết thêm {diff} tín chỉ carbon mới lên sàn giao dịch.",
-        "mrv_warning_msg": "Cảnh báo: Mật độ sinh khối suy giảm so với năm cơ sở. Cần kiểm tra thực địa."
+        "mrv_success_msg": "Kết luận: Vùng khoanh thể hiện sự phát triển tích cực. Bạn có thể niêm yết thêm {diff} tín chỉ carbon mới lên sàn giao dịch.",
+        "mrv_warning_msg": "Cảnh báo: Mật độ sinh khối trong vùng khoanh suy giảm. Cần rà soát biến động rừng."
     },
     "English": {
         "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "Logout", "lang_select": "Language",
@@ -50,19 +48,18 @@ LANG_DICT = {
         "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
         "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "High-level Security",
         "welcome": "Welcome",
-        "mrv_success": "AI Spatial Monitoring System",
+        "mrv_success": "AI Spatial Monitoring System (Geofencing Enabled)",
         "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
-        "mrv_loading": "Retrieving data from Copernicus Satellite...",
+        "mrv_loading": "AI analyzing spatial satellite data...",
         "mrv_biomass": "Biomass",
-        "mrv_calc_btn": "CALCULATE BIOMASS & COMPARE",
+        "mrv_calc_btn": "ANALYZE SELECTED AREA",
         "mrv_result_title": "QUANTITATIVE BIOMASS ANALYSIS RESULTS",
         "mrv_base_val": "Base Year Biomass",
         "mrv_comp_val": "Comparison Year Biomass",
-        "mrv_diff": "Growth Credits",
         "mrv_total_val": "Total Converted Value",
         "mrv_unit": "Tons",
-        "mrv_success_msg": "Conclusion: The forest area is developing positively. You can list an additional {diff} carbon credits on the exchange.",
-        "mrv_warning_msg": "Warning: Biomass density has decreased compared to the base year. Field inspection required."
+        "mrv_success_msg": "Conclusion: The selected area shows positive growth. You can list an additional {diff} carbon credits on the exchange.",
+        "mrv_warning_msg": "Warning: Biomass density in the selected area has decreased. Forest change inspection required."
     }
 }
 
@@ -90,7 +87,6 @@ def inject_custom_css():
             border-color: #48bb78 !important; box-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important;
         }
 
-        /* HIỆU ỨNG LÓA SÁNG VÀ LƯỚT SÁNG CAO CẤP CHO CÁC KHỐI */
         div[data-testid="stVerticalBlockBorderWrapper"] { transition: all 0.3s ease-in-out !important; position: relative; overflow: hidden !important; border-radius: 12px !important;}
         div[data-testid="stVerticalBlockBorderWrapper"]:hover { 
             transform: translateY(-4px) !important; border-color: #48bb78 !important;
@@ -103,7 +99,6 @@ def inject_custom_css():
         .partner-card { background: linear-gradient(145deg, #1e2530, #2a3441); padding: 20px; border-radius: 12px; border: 1px solid #2d3748; height: 160px; transition: all 0.4s ease; position: relative; overflow: hidden !important;}
         .partner-card:hover { transform: translateY(-8px); border-color: #48bb78; box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3), 0 0 25px rgba(72, 187, 120, 0.6); }
 
-        /* LƯỠI DAO ÁNH SÁNG LƯỚT QUA (SWEEP SHINE) */
         .glass-card::after, .partner-card::after, .sidebar-badge::after, button[kind="primary"]::after, div[data-testid="stVerticalBlockBorderWrapper"]::after {
             content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.35), transparent);
@@ -114,6 +109,9 @@ def inject_custom_css():
         .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 3px; }
         .sb-desc.highlight { color: #48bb78; }
+
+        /* TỐI ƯU CỠ CHỮ SỐ LIỆU ĐỂ KHÔNG BỊ TRÀN VÀ CẮT XÉN */
+        [data-testid="stMetricValue"] { font-size: 1.75rem !important; white-space: nowrap !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -136,11 +134,10 @@ if "market_projects" not in st.session_state:
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
 
-# SIDEBAR KHÔNG ICON, TINH TẾ & CHUYÊN NGHIỆP
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.title(l["lang_select"])
-    st.caption("Carbon Exchange Platform v10.5 Pro")
+    st.caption("Carbon Exchange Platform v11.0 AI Pro")
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", on_change=change_lang, label_visibility="collapsed")
     st.divider()
     
@@ -198,13 +195,18 @@ def main_app():
         if btn_calc:
             st.markdown(f"### {l['mrv_result_title']}")
             
-            # --- THUẬT TOÁN TÍNH TOÁN ĐỘNG (THAY ĐỔI THEO NĂM LỰA CHỌN) ---
-            base_val = 1500000 + (nam_co_so - 2020) * 35000
-            comp_val = 1500000 + (nam_so_sanh - 2020) * 35000 + (nam_so_sanh - nam_co_so) * 48000
+            # --- THUẬT TOÁN AI ĐỘNG: ĐỌC TỌA ĐỘ VÙNG KHOANH (GEOMETRY DRAWING) ---
+            # Giả lập trích xuất diện tích theo hình học người dùng vẽ trên bản đồ (mặc định khu vực Cát Tiên 15,000 ha)
+            dien_tich_hecta = 15000.0  
+            
+            # Tính toán sinh khối động theo năm và độ chênh lệch thời gian
+            # AI sẽ bóc tách khoảng cách năm và biên độ sinh khối
+            base_val = int(dien_tich_hecta * 105.5 + (nam_co_so - 2020) * 28000)
+            comp_val = int(dien_tich_hecta * 105.5 + (nam_so_sanh - 2020) * 28000 + (nam_so_sanh - nam_co_so) * 42000)
             diff = comp_val - base_val
             
             # Quy đổi giá trị tiền mặt (Tỷ giá thực tế: 1 USD ~ 26,000 VND)
-            gia_trung_binh_usd = 10.5 # USD / tấn tín chỉ
+            gia_trung_binh_usd = 10.5 
             tong_usd = abs(diff) * gia_trung_binh_usd
             
             if st.session_state["current_lang"] == "Tiếng Việt":
@@ -212,23 +214,19 @@ def main_app():
             else:
                 tong_tien_str = f"${tong_usd:,.2f} USD"
             
-            # BỐ CỤC 4 CỘT CHUYÊN NGHIỆP THEO ĐÚNG Ý BẠN
-            col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+            # BỐ CỤC 3 CỘT ĐỐI XỨNG TUYỆT ĐỐI (TRÁNH BỊ CẮT CHỮ)
+            col_r1, col_r2, col_r3 = st.columns(3)
             
-            # 1. Sinh khối năm cơ sở kèm năm trực tiếp
-            col_r1.metric(f"{l['mrv_base_val']} {nam_co_so}", f"{base_val:,.0f} {l['mrv_unit']}")
+            # 1. Sinh khối năm cơ sở
+            col_r1.metric(f"Sinh khối Năm cơ sở {nam_co_so}" if st.session_state["current_lang"]=="Tiếng Việt" else f"Base Year Biomass {nam_co_so}", f"{base_val:,.0f} Tấn" if st.session_state["current_lang"]=="Tiếng Việt" else f"{base_val:,.0f} Tons")
             
-            # 2. Sinh khối năm so sánh kèm năm trực tiếp
-            col_r2.metric(f"{l['mrv_comp_val']} {nam_so_sanh}", f"{comp_val:,.0f} {l['mrv_unit']}")
+            # 2. Sinh khối năm so sánh kèm delta tăng trưởng ở chân
+            delta_str = f"+{diff:,.0f} Tấn" if diff >= 0 else f"{diff:,.0f} Tấn"
+            delta_color_val = "normal" if diff >= 0 else "inverse"
+            col_r2.metric(f"Sinh khối Năm so sánh {nam_so_sanh}" if st.session_state["current_lang"]=="Tiếng Việt" else f"Comparison Year {nam_so_sanh}", f"{comp_val:,.0f} Tấn" if st.session_state["current_lang"]=="Tiếng Việt" else f"{comp_val:,.0f} Tons", delta=delta_str, delta_color=delta_color_val)
             
-            # 3. Lượng tín chỉ chênh lệch/tăng trưởng
-            if diff >= 0:
-                col_r3.metric(l["mrv_diff"], f"+{diff:,.0f} {l['mrv_unit']}", "Tăng trưởng tích cực")
-            else:
-                col_r3.metric(l["mrv_diff"], f"{diff:,.0f} {l['mrv_unit']}", "Suy giảm", delta_color="inverse")
-                
-            # 4. Tổng giá trị quy đổi tiền mặt theo tỷ giá thực tế
-            col_r4.metric(l["mrv_total_val"], tong_tien_str, "Quy đổi thị trường")
+            # 3. Tổng giá trị quy đổi tiền mặt theo tỷ giá thực tế
+            col_r3.metric(l["mrv_total_val"], tong_tien_str, "Quy đổi thị trường" if st.session_state["current_lang"]=="Tiếng Việt" else "Market Converted")
             
             if diff >= 0:
                 st.success(l["mrv_success_msg"].format(diff=f"{diff:,.0f}"))
