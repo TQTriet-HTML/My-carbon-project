@@ -36,7 +36,7 @@ if "current_lang" not in st.session_state:
 def change_lang():
     pass
 
-# --- CSS TỔNG HỢP VÀ KHẮC PHỤC LỖI VIỀN ĐỎ (RED FOCUS RING BUG) ---
+# --- TỐI ƯU CSS: TRIỆT TIÊU MÀU ĐỎ MẶC ĐỊNH ---
 def inject_custom_css():
     st.markdown("""
         <style>
@@ -55,7 +55,6 @@ def inject_custom_css():
             display: flex; justify-content: flex-end; align-items: center; height: 100%; margin-top: 5px;
         }
         
-        /* Hiệu ứng nổi bồng bềnh chung */
         div[data-testid="stVerticalBlockBorderWrapper"] {
             transition: all 0.3s ease-in-out !important; border-radius: 12px !important;
         }
@@ -68,19 +67,33 @@ def inject_custom_css():
         div.stButton > button:hover {
             transform: translateY(-3px) !important; box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important; border-color: #48bb78 !important;
         }
-        
-        /* --- ĐÈ CSS ĐỂ XOÁ VIỀN ĐỎ MẶC ĐỊNH CỦA STREAMLIT --- */
-        /* Áp dụng cho Selectbox (Hộp thả xuống ngôn ngữ) */
-        div[data-baseweb="select"] > div:focus-within {
+
+        /* --- XÓA SẠCH MÀU ĐỎ CỦA STREAMLIT BẰNG CSS CỰC MẠNH --- */
+        /* Đổi màu Nút bấm chính (Primary Button) */
+        button[kind="primary"] {
+            background-color: #48bb78 !important;
             border-color: #48bb78 !important;
-            box-shadow: 0 0 0 1px #48bb78 !important;
-            transition: all 0.3s ease;
+            color: white !important;
         }
-        /* Áp dụng cho Text Input (Ô nhập liệu đăng nhập) */
-        div[data-baseweb="input"] > div:focus-within {
+        button[kind="primary"]:hover {
+            background-color: #38a169 !important;
+            border-color: #38a169 !important;
+        }
+        
+        /* Tắt viền focus mặc định */
+        *:focus {
+            outline: none !important;
+        }
+        /* Áp dụng viền Xanh Lá cho mọi Ô nhập liệu và Hộp chọn */
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
+            transition: all 0.3s ease !important;
+        }
+        div[data-baseweb="input"] > div:focus-within, 
+        div[data-baseweb="select"] > div:focus-within,
+        div[data-baseweb="input"] > div:focus-visible, 
+        div[data-baseweb="select"] > div:focus-visible {
             border-color: #48bb78 !important;
             box-shadow: 0 0 0 1px #48bb78 !important;
-            transition: all 0.3s ease;
         }
 
         /* CSS Badges Sidebar */
@@ -101,7 +114,6 @@ def inject_custom_css():
 
 inject_custom_css()
 
-# --- SIDEBAR ---
 with st.sidebar:
     lang_dict = LANG_DICT[st.session_state["current_lang"]]
     st.title(lang_dict["lang_select"])
