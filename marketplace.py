@@ -3,7 +3,6 @@ import folium
 from streamlit_folium import st_folium
 import pandas as pd
 from datetime import datetime
-# Đã xóa dòng from auth import load_users gây lỗi
 
 # --- 1. GIAO DIỆN SÀN GIAO DỊCH TÍN CHỈ (B2B / B2C) ---
 def hien_thi_san_giao_dich():
@@ -122,7 +121,8 @@ def hien_thi_san_giao_dich():
                             else:
                                 st.error("❌ Ví không đủ tiền.")
                     else:
-                        st.button("🔒 Đăng nhập tài khoản Mua để giao dịch", disabled=True, use_container_width=True)
+                        # --- ĐÃ THÊM KEY VÀO ĐÂY ĐỂ TRÁNH TRÙNG LẶP ---
+                        st.button("🔒 Đăng nhập tài khoản Mua để giao dịch", key=f"lock_btn_{p['id']}", disabled=True, use_container_width=True)
 
 
 # --- 2. GIAO DIỆN QUỸ ĐẦU TƯ TRỒNG RỪNG ---
@@ -215,7 +215,7 @@ def hien_thi_gioi_thieu_va_goi_von():
         <div class="partner-card">
             <div class="pc-title">Tiêu chuẩn Quốc tế</div>
             <div class="pc-value">VCS & Gold Standard</div>
-            <div class="pc-status">✔️️ Đạt chuẩn toàn cầu</div>
+            <div class="pc-status">✔ Đạt chuẩn toàn cầu</div>
         </div>
         """, unsafe_allow_html=True)
         
