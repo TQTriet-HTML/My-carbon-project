@@ -1,14 +1,13 @@
 import streamlit as st
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
-    # --- CSS TOÀN CỤC CHO TRANG ĐĂNG NHẬP (KHÔNG ICON, HIỆU ỨNG SÁNG & HOẠT HỌA CAO CẤP) ---
+    # --- CSS KHÔNG ICON, HIỆU ỨNG SÁNG & HOẠT HỌA CAO CẤP ---
     st.markdown("""
         <style>
         .stApp {
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* HIỆU ỨNG CHỮ CHẠY HOẶC PHÁT SÁNG TIÊU ĐỀ */
         @keyframes glowText {
             0% { text-shadow: 0 0 10px rgba(72,187,120,0.3); }
             50% { text-shadow: 0 0 25px rgba(72,187,120,0.8), 0 0 10px rgba(56,161,105,0.5); }
@@ -36,7 +35,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             letter-spacing: 0.5px;
         }
 
-        /* KHUNG ĐĂNG NHẬP KÍNH PHA LÊ SÁNG */
         div[data-testid="stVerticalBlockBorderWrapper"] {
             background: rgba(17, 24, 39, 0.85) !important;
             border: 1px solid rgba(72, 187, 120, 0.3) !important;
@@ -45,7 +43,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             backdrop-filter: blur(12px);
         }
 
-        /* NÚT BẤM CHÍNH PHÁT SÁNG */
         button[kind="primary"] {
             background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
             border: none !important;
@@ -59,7 +56,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
-        /* KHỬ HOÀN TOÀN VIỀN ĐỎ */
         *:focus, *:active { outline: none !important; }
         div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
             border-color: #2d3748 !important;
@@ -73,7 +69,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # TIÊU ĐỀ HOÀN TOÀN DÙNG FONT & TYPOGRAPHY KHÔNG ICON
     if lang == "Tiếng Việt":
         st.markdown('<div class="hero-title">HỆ THỐNG GIAO DỊCH TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
         st.markdown('<div class="hero-subtitle">Nền tảng tiên phong kết nối công nghệ vệ tinh AI và tài chính lâm nghiệp bền vững</div>', unsafe_allow_html=True)
@@ -105,7 +100,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         else:
                             st.error("Thông tin đăng nhập không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
 
-            with tab_registration = tab_dang_ky:
+            with tab_dang_ky:
                 with st.form("form_register"):
                     new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
                     new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
