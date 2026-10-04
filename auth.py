@@ -10,41 +10,94 @@ USERS = {
 def load_users():
     return USERS
 
-def hien_thi_cong_dang_nhap():
-    # --- CSS SIÊU HOẠT HỌA CHO TRANG ĐĂNG NHẬP ---
+def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
+    # --- TỪ ĐIỂN ĐA NGÔN NGỮ CHO TRANG ĐĂNG NHẬP ---
+    T = {
+        "Tiếng Việt": {
+            "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
+            "welcome": "🌱 Chào mừng bạn đến với Nền tảng Giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ AI vệ tinh gặp gỡ sứ mệnh bảo vệ Trái Đất.",
+            "login_tab": "🔐 Đăng nhập",
+            "register_tab": "✨ Tạo tài khoản mới",
+            "login_title": "### 🚪 Truy cập Hệ thống",
+            "username": "Tên đăng nhập",
+            "password": "Mật khẩu",
+            "btn_login": "🚀 Đăng nhập vào Nền tảng",
+            "register_title": "### 🌱 Tham gia Cộng đồng Xanh",
+            "register_prompt": "💡 **Bạn đã có tài khoản chưa?**\n\nNếu chưa thì hãy tạo một tài khoản mới để góp phần vào công cuộc xây dựng một tương lai xanh nhé! Mỗi tài khoản mới là một nhịp cầu nối liền nhà đầu tư và chủ rừng.",
+            "new_username": "Tên đăng nhập mới",
+            "new_password": "Mật khẩu mới",
+            "role": "Vai trò của bạn:",
+            "roles": ["Doanh nghiệp mua tín chỉ", "Nhà đầu tư từ xa (Cổ đông)", "Chủ rừng / Kỹ sư MRV"],
+            "btn_register": "🌟 Khởi tạo Tài khoản & Bắt đầu",
+            "achievements": "🏆 THÀNH TỰU NỀN TẢNG",
+            "projects": "🌲 DỰ ÁN TIÊU BIỂU",
+            "news": "🚀 <b>TIN TỨC MỚI NHẤT:</b>",
+            "news_1": "Thị trường Tín chỉ Carbon Việt Nam chính thức vận hành thử nghiệm vào 2025.",
+            "news_2": "Google Earth Engine công bố bản cập nhật thuật toán sinh khối mới, tăng độ chính xác lên 98%.",
+            "stat_1_val": "2.5M+", "stat_1_lbl": "Tấn Carbon giao dịch",
+            "stat_2_val": "15,000", "stat_2_lbl": "Hecta Rừng bảo vệ",
+            "proj_1_name": "Dự án rừng ngập mặn Cà Mau", "proj_1_desc": "Bảo vệ sinh khối & Đa dạng sinh học vùng ven biển."
+        },
+        "English": {
+            "slogan": "ONE TOUCH - A GREENER WORLD",
+            "welcome": "🌱 Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
+            "login_tab": "🔐 Login",
+            "register_tab": "✨ Create Account",
+            "login_title": "### 🚪 System Access",
+            "username": "Username",
+            "password": "Password",
+            "btn_login": "🚀 Login to Platform",
+            "register_title": "### 🌱 Join the Green Community",
+            "register_prompt": "💡 **Don't have an account yet?**\n\nCreate a new account to contribute to building a green future! Each new account is a bridge connecting investors and forest owners.",
+            "new_username": "New Username",
+            "new_password": "New Password",
+            "role": "Your Role:",
+            "roles": ["Corporate Buyer", "Remote Investor (Shareholder)", "Forest Owner / MRV Engineer"],
+            "btn_register": "🌟 Create Account & Start",
+            "achievements": "🏆 PLATFORM ACHIEVEMENTS",
+            "projects": "🌲 FEATURED PROJECTS",
+            "news": "🚀 <b>LATEST NEWS:</b>",
+            "news_1": "Vietnam's Carbon Credit Market officially begins pilot operation in 2025.",
+            "news_2": "Google Earth Engine announces new biomass algorithm, increasing accuracy to 98%.",
+            "stat_1_val": "2.5M+", "stat_1_lbl": "Tons Carbon Traded",
+            "stat_2_val": "15,000", "stat_2_lbl": "Hectares Protected",
+            "proj_1_name": "Ca Mau Mangrove Project", "proj_1_desc": "Protecting biomass & coastal biodiversity."
+        }
+    }
+    
+    t = T.get(lang, T["Tiếng Việt"])
+
+    # --- CSS SIÊU HOẠT HỌA & GIAO DIỆN KÍNH (GLASSMORPHISM) ---
     st.markdown("""
         <style>
-        /* Đặt hình nền mờ ảo cho toàn bộ ứng dụng khi ở trang đăng nhập */
+        /* Hình nền mờ ảo cho trang đăng nhập */
         .stApp {
-            background-image: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), 
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
                               url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2532&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
         
-        /* Hiệu ứng Slogan nảy từng chữ */
+        /* Hiệu ứng tự động nảy (Wave) mỗi 10 giây */
+        @keyframes autoWave {
+            0%, 15%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
+            7% { transform: translateY(-15px) scale(1.15); color: #63b3ed; text-shadow: 0 8px 25px rgba(99, 179, 237, 0.8); }
+        }
         .bouncing-slogan {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .bouncing-slogan span {
             display: inline-block;
-            font-size: 2.2rem;
+            font-size: clamp(2rem, 3vw, 3rem);
             font-weight: 900;
-            color: #48bb78;
-            text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s;
             cursor: default;
-        }
-        .bouncing-slogan span:hover {
-            transform: translateY(-12px) scale(1.1);
-            color: #63b3ed;
-            text-shadow: 0 8px 20px rgba(99, 179, 237, 0.6);
+            animation: autoWave 10s infinite;
         }
 
-        /* Khối Đăng nhập & Tạo tài khoản (Glassmorphism + Shine Effect) */
-        div[data-testid="stTabs"] {
+        /* Giao diện khối kính cường lực chung (Đăng nhập & Thông tin) */
+        .glass-card, div[data-testid="stTabs"] {
             background: rgba(30, 41, 59, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -52,117 +105,111 @@ def hien_thi_cong_dang_nhap():
             border-radius: 16px;
             padding: 25px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+            margin-bottom: 20px;
         }
-        
-        div[data-testid="stTabs"]:hover {
-            transform: translateY(-8px);
+        .glass-card:hover, div[data-testid="stTabs"]:hover {
+            transform: translateY(-6px);
             box-shadow: 0 30px 60px -12px rgba(72, 187, 120, 0.3);
             border-color: rgba(72, 187, 120, 0.4);
         }
 
-        /* Tia sáng lướt qua khi Hover */
-        div[data-testid="stTabs"]::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -150%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
-            transform: skewX(-25deg);
-            transition: 0.7s;
-            z-index: 1;
-            pointer-events: none;
-        }
-        div[data-testid="stTabs"]:hover::before {
-            left: 150%;
-        }
+        /* Chỉ số thành tựu nổi bật */
+        .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1;}
+        .stat-lbl { font-size: 0.95rem; color: #a0aec0; margin-top: 5px; }
 
-        /* Thanh Bảng tin (News Ticker) cố định ở đáy màn hình */
+        /* Thanh Bảng tin (News Ticker) */
         .news-ticker-container {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 0; left: 0; width: 100%;
             background-color: rgba(15, 23, 42, 0.95);
             color: #a0aec0;
-            padding: 10px 0;
+            padding: 12px 0;
             border-top: 1px solid #2d3748;
             font-size: 0.95rem;
             z-index: 9999;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
         }
-        .news-ticker-content a {
-            color: #63b3ed;
-            text-decoration: none;
-            font-weight: 600;
-            margin: 0 30px;
-        }
-        .news-ticker-content a:hover {
-            color: #48bb78;
-            text-decoration: underline;
-        }
+        .news-ticker-content a { color: #63b3ed; text-decoration: none; font-weight: 600; margin: 0 30px; }
+        .news-ticker-content a:hover { color: #48bb78; text-decoration: underline; }
         
-        /* Chào mừng nhẹ nhàng */
-        .welcome-text {
-            text-align: center;
-            color: #e2e8f0;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            font-weight: 300;
-        }
+        .welcome-text { text-align: center; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 40px; font-weight: 300; }
         </style>
     """, unsafe_allow_html=True)
 
-    # --- RENDER SLOGAN "MỘT CÚ CHẠM - VẠN ĐIỀU XANH" ---
-    slogan = "MỘT CÚ CHẠM - VẠN ĐIỀU XANH"
-    html_slogan = "".join([f"<span>{c}</span>" if c != ' ' else "&nbsp;" for c in slogan])
+    # --- RENDER SLOGAN VỚI ĐỘ TRỄ TỪNG CHỮ ĐỂ TẠO SÓNG ---
+    slogan = t["slogan"]
+    # Mỗi chữ cái sẽ trễ 0.05s so với chữ trước đó, tạo thành dải sóng hoàn hảo
+    html_slogan = "".join([f'<span style="animation-delay: {i*0.05}s">{c}</span>' if c != ' ' else "&nbsp;" for i, c in enumerate(slogan)])
     st.markdown(f'<div class="bouncing-slogan">{html_slogan}</div>', unsafe_allow_html=True)
-    
-    st.markdown('<div class="welcome-text">🌱 Chào mừng bạn đến với Nền tảng Giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ AI vệ tinh gặp gỡ sứ mệnh bảo vệ Trái Đất.</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="welcome-text">{t["welcome"]}</div>', unsafe_allow_html=True)
 
-    # Căn giữa Form đăng nhập
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # --- CHIA 2 CỘT: TRÁI (FORM) - PHẢI (THÔNG TIN THƯƠNG HIỆU) ---
+    col_form, col_gap, col_info = st.columns([12, 1, 10])
     
-    with col2:
-        tab_login, tab_register = st.tabs(["🔐 Đăng nhập", "✨ Tạo tài khoản mới"])
+    with col_form:
+        tab_login, tab_register = st.tabs([t["login_tab"], t["register_tab"]])
         
         with tab_login:
-            st.markdown("### 🚪 Truy cập Hệ thống")
-            tendangnhap = st.text_input("Tên đăng nhập", placeholder="Nhập admin, investor, hoặc buyer")
-            matkhau = st.text_input("Mật khẩu", type="password", placeholder="Nhập 123")
+            st.markdown(t["login_title"])
+            tendangnhap = st.text_input(t["username"], placeholder="admin, investor, buyer")
+            matkhau = st.text_input(t["password"], type="password", placeholder="***")
             
-            if st.button("🚀 Đăng nhập vào Nền tảng", type="primary", use_container_width=True):
+            if st.button(t["btn_login"], type="primary", use_container_width=True):
                 users = load_users()
                 if tendangnhap in users and users[tendangnhap]["password"] == matkhau:
                     st.session_state["logged_in"] = True
                     st.session_state["current_user"] = tendangnhap
+                    # Map vai trò lại tiếng việt để hệ thống cốt lõi nhận diện đúng
                     st.session_state["current_role"] = users[tendangnhap]["role"]
                     st.rerun()
                 else:
-                    st.error("❌ Sai tên đăng nhập hoặc mật khẩu.")
+                    st.error("❌ Sai tên đăng nhập hoặc mật khẩu / Incorrect credentials.")
                     
         with tab_register:
-            st.markdown("### 🌱 Tham gia Cộng đồng Xanh")
-            st.info("💡 **Bạn đã có tài khoản chưa?**\n\nNếu chưa thì hãy tạo một tài khoản mới để góp phần vào công cuộc xây dựng một tương lai xanh nhé! Mỗi tài khoản mới là một nhịp cầu nối liền nhà đầu tư và chủ rừng.")
+            st.markdown(t["register_title"])
+            st.info(t["register_prompt"])
             
-            new_user = st.text_input("Tên đăng nhập mới")
-            new_pass = st.text_input("Mật khẩu mới", type="password")
-            new_role = st.selectbox("Vai trò của bạn:", ["Doanh nghiệp mua tín chỉ", "Nhà đầu tư từ xa (Cổ đông)", "Chủ rừng / Kỹ sư MRV"])
+            new_user = st.text_input(t["new_username"])
+            new_pass = st.text_input(t["new_password"], type="password")
+            new_role = st.selectbox(t["role"], t["roles"])
             
-            if st.button("🌟 Khởi tạo Tài khoản & Bắt đầu", type="primary", use_container_width=True):
-                st.success(f"🎉 Chúc mừng! Tài khoản `{new_user}` đã được tạo thành công. Vui lòng quay lại tab Đăng nhập.")
+            if st.button(t["btn_register"], type="primary", use_container_width=True):
+                st.success(f"🎉 Tài khoản `{new_user}` đã được tạo thành công! / Created successfully!")
 
-    # --- BẢNG TIN TỨC CHẠY DƯỚI CÙNG (MARQUEE) ---
-    st.markdown("""
+    with col_info:
+        st.markdown(f"<h4 style='color: #e2e8f0;'>{t['achievements']}</h4>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div class="stat-val">{t['stat_1_val']}</div>
+                        <div class="stat-lbl">{t['stat_1_lbl']}</div>
+                    </div>
+                    <div>
+                        <div class="stat-val" style="color: #63b3ed;">{t['stat_2_val']}</div>
+                        <div class="stat-lbl">{t['stat_2_lbl']}</div>
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"<h4 style='color: #e2e8f0; margin-top: 20px;'>{t['projects']}</h4>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="glass-card" style="padding: 15px 25px;">
+                <h5 style="color: #fff; margin-bottom: 5px;">🌳 {t['proj_1_name']}</h5>
+                <p style="color: #a0aec0; font-size: 0.9rem; margin-bottom: 10px;">{t['proj_1_desc']}</p>
+                <span style="background: #276749; color: #c6f6d5; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Đã xác thực AI (Verified)</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # --- BẢNG TIN TỨC CHẠY DƯỚI CÙNG ---
+    st.markdown(f"""
         <div class="news-ticker-container">
             <marquee class="news-ticker-content" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();">
-                🚀 <b>TIN TỨC MỚI NHẤT:</b> 
-                <a href="#">Thị trường Tín chỉ Carbon Việt Nam chính thức vận hành thử nghiệm vào 2025.</a> | 
-                <a href="#">Google Earth Engine công bố bản cập nhật thuật toán sinh khối mới, tăng độ chính xác lên 98%.</a> | 
-                <a href="#">Báo cáo Net-Zero 2026: Nhu cầu tín chỉ carbon toàn cầu dự kiến tăng 150%.</a> |
-                <a href="#">Quỹ Đầu tư Tác động (Impact Fund) cam kết rót 10 triệu USD vào các dự án trồng rừng ngập mặn.</a>
+                {t['news']}
+                <a href="#">{t['news_1']}</a> | 
+                <a href="#">{t['news_2']}</a>
             </marquee>
         </div>
     """, unsafe_allow_html=True)
