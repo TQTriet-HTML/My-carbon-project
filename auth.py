@@ -39,7 +39,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "proj_1_name": "Dự án rừng ngập mặn Cà Mau", "proj_1_desc": "Bảo vệ sinh khối & Đa dạng sinh học vùng ven biển."
         },
         "English": {
-            "slogan": "ONE TOUCH - A GREENER WORLD",
+            "slogan": "ONE TOUCH - GREEN WORLD",
             "welcome": "🌱 Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
             "login_tab": "🔐 Login",
             "register_tab": "✨ Create Account",
@@ -67,10 +67,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     
     t = T.get(lang, T["Tiếng Việt"])
 
-    # --- CSS SIÊU HOẠT HỌA & GIAO DIỆN KÍNH (GLASSMORPHISM) ---
+    # --- CSS HOẠT HỌA & GIAO DIỆN KÍNH ---
     st.markdown("""
         <style>
-        /* Hình nền mờ ảo cho trang đăng nhập */
         .stApp {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
                               url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2532&auto=format&fit=crop');
@@ -79,10 +78,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background-attachment: fixed;
         }
         
-        /* Hiệu ứng tự động nảy (Wave) mỗi 10 giây */
+        /* Hiệu ứng sóng Slogan tự động đồng bộ tỉ lệ thời gian */
         @keyframes autoWave {
-            0%, 15%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
-            7% { transform: translateY(-15px) scale(1.15); color: #63b3ed; text-shadow: 0 8px 25px rgba(99, 179, 237, 0.8); }
+            0%, 10%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
+            5% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
         }
         .bouncing-slogan {
             text-align: center;
@@ -90,13 +89,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         .bouncing-slogan span {
             display: inline-block;
-            font-size: clamp(2rem, 3vw, 3rem);
+            font-size: clamp(2rem, 2.8vw, 2.8rem);
             font-weight: 900;
             cursor: default;
-            animation: autoWave 10s infinite;
+            animation: autoWave 8s infinite;
         }
 
-        /* Giao diện khối kính cường lực chung (Đăng nhập & Thông tin) */
         .glass-card, div[data-testid="stTabs"] {
             background: rgba(30, 41, 59, 0.65);
             backdrop-filter: blur(12px);
@@ -114,11 +112,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: rgba(72, 187, 120, 0.4);
         }
 
-        /* Chỉ số thành tựu nổi bật */
-        .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1;}
+        .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1; }
         .stat-lbl { font-size: 0.95rem; color: #a0aec0; margin-top: 5px; }
 
-        /* Thanh Bảng tin (News Ticker) */
         .news-ticker-container {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
@@ -133,18 +129,27 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .news-ticker-content a { color: #63b3ed; text-decoration: none; font-weight: 600; margin: 0 30px; }
         .news-ticker-content a:hover { color: #48bb78; text-decoration: underline; }
         
-        .welcome-text { text-align: center; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 40px; font-weight: 300; }
+        .welcome-text { text-align: center; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 35px; font-weight: 300; }
         </style>
     """, unsafe_allow_html=True)
 
-    # --- RENDER SLOGAN VỚI ĐỘ TRỄ TỪNG CHỮ ĐỂ TẠO SÓNG ---
+    # --- TÍNH TOÁN ĐỘ TRỄ ĐỘNG CHO TỪNG KÝ TỰ (CHỐNG LỆCH NHỊP KÝ TỰ CUỐI) ---
     slogan = t["slogan"]
-    # Mỗi chữ cái sẽ trễ 0.05s so với chữ trước đó, tạo thành dải sóng hoàn hảo
-    html_slogan = "".join([f'<span style="animation-delay: {i*0.05}s">{c}</span>' if c != ' ' else "&nbsp;" for i, c in enumerate(slogan)])
+    total_chars = max(len(slogan), 1)
+    
+    # Phân bổ độ trễ tự động trong khoảng 2 giây đầu của chu kỳ 8 giây
+    html_slogan = ""
+    for i, c in enumerate(slogan):
+        if c == ' ':
+            html_slogan += "&nbsp;"
+        else:
+            delay = (i / total_chars) * 1.5 
+            html_slogan += f'<span style="animation-delay: {delay:.2f}s">{c}</span>'
+            
     st.markdown(f'<div class="bouncing-slogan">{html_slogan}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="welcome-text">{t["welcome"]}</div>', unsafe_allow_html=True)
 
-    # --- CHIA 2 CỘT: TRÁI (FORM) - PHẢI (THÔNG TIN THƯƠNG HIỆU) ---
+    # --- CHIA 2 CỘT ---
     col_form, col_gap, col_info = st.columns([12, 1, 10])
     
     with col_form:
@@ -160,7 +165,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if tendangnhap in users and users[tendangnhap]["password"] == matkhau:
                     st.session_state["logged_in"] = True
                     st.session_state["current_user"] = tendangnhap
-                    # Map vai trò lại tiếng việt để hệ thống cốt lõi nhận diện đúng
                     st.session_state["current_role"] = users[tendangnhap]["role"]
                     st.rerun()
                 else:
