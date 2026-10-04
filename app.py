@@ -16,55 +16,53 @@ except ImportError:
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- TỪ ĐIỂN DỊCH THUẬT SÂU ĐÃ ĐƯỢC BỔ SUNG PHẦN TÍNH TOÁN SINH KHỐI ---
+# --- TỪ ĐIỂN DỊCH THUẬT SÂU KHÔNG ICON ---
 LANG_DICT = {
     "Tiếng Việt": {
-        "title": "🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "🚪 Đăng xuất", "lang_select": "🌐 Ngôn ngữ",
-        "tabs": ["🛰️ Hệ thống MRV", "💹 Sàn Giao dịch", "🤝 Đầu tư Trồng rừng", "🌐 Mạng xã hội", "🏆 Bảng Vàng", "🌟 Về chúng tôi"],
-        "sidebar_partners": "🤝 ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "📜 CHỨNG NHẬN PHÁP LÝ",
+        "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "Đăng xuất", "lang_select": "Ngôn ngữ",
+        "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Bảng Vàng", "Về chúng tôi"],
+        "sidebar_partners": "ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "CHỨNG NHẬN PHÁP LÝ",
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
         "sb_p2_title": "Vietcombank", "sb_p2_desc": "Thanh toán Escrow",
-        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "✔ Tiêu chuẩn Toàn cầu",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "✔ Bảo mật Thông tin Cấp cao",
+        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Tiêu chuẩn Toàn cầu",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Bảo mật Thông tin Cấp cao",
         "welcome": "Xin chào",
-        "mrv_success": "🛰️ Hệ thống Giám sát Không gian AI (Tải siêu tốc)",
+        "mrv_success": "Hệ thống Giám sát Không gian AI",
         "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
         "mrv_loading": "Đang truy xuất dữ liệu từ Vệ tinh Copernicus...",
         "mrv_biomass": "Sinh khối",
-        "mrv_calc_btn": "🧮 TÍNH TOÁN SINH KHỐI & SO SÁNH",
-        "mrv_result_title": "📊 KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG SINH KHỐI",
+        "mrv_calc_btn": "TÍNH TOÁN SINH KHỐI & SO SÁNH",
+        "mrv_result_title": "KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG SINH KHỐI",
         "mrv_base_val": "Sinh khối Năm cơ sở",
         "mrv_comp_val": "Sinh khối Năm so sánh",
-        "mrv_diff": "Chênh lệch (Tín chỉ Carbon)",
-        "mrv_increase": "Tăng trưởng Tích cực",
-        "mrv_decrease": "Suy giảm (Cảnh báo)",
+        "mrv_diff": "Tín chỉ tăng trưởng",
+        "mrv_total_val": "Tổng Giá Trị Quy Đổi",
         "mrv_unit": "Tấn",
-        "mrv_success_msg": "🎉 **Kết luận:** Khu rừng đang phát triển rất tốt. Diện tích thảm thực vật tăng trưởng. Bạn có thể niêm yết **{diff}** tín chỉ carbon mới lên sàn giao dịch!",
-        "mrv_warning_msg": "⚠️ **Cảnh báo:** Mật độ sinh khối suy giảm. Vui lòng kiểm tra các khu vực khai thác gỗ trái phép hoặc cháy rừng qua bản đồ vệ tinh bên dưới."
+        "mrv_success_msg": "Kết luận: Khu vực rừng đang phát triển tích cực. Bạn có thể niêm yết thêm {diff} tín chỉ carbon mới lên sàn giao dịch.",
+        "mrv_warning_msg": "Cảnh báo: Mật độ sinh khối suy giảm so với năm cơ sở. Cần kiểm tra thực địa."
     },
     "English": {
-        "title": "🌍 MRV PLATFORM & CARBON EXCHANGE", "logout": "🚪 Logout", "lang_select": "🌐 Language",
-        "tabs": ["🛰️ MRV System", "💹 Marketplace", "🤝 Forest Investment", "🌐 Social Network", "🏆 Leaderboard", "🌟 About Us"],
-        "sidebar_partners": "🤝 STRATEGIC PARTNERS", "sidebar_certs": "📜 CERTIFICATIONS",
+        "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "Logout", "lang_select": "Language",
+        "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Leaderboard", "About Us"],
+        "sidebar_partners": "STRATEGIC PARTNERS", "sidebar_certs": "CERTIFICATIONS",
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
         "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
-        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "✔ Global Standard",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "✔ High-level Security",
+        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "High-level Security",
         "welcome": "Welcome",
-        "mrv_success": "🛰️ AI Spatial Monitoring System (Ultra-fast load)",
+        "mrv_success": "AI Spatial Monitoring System",
         "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
         "mrv_loading": "Retrieving data from Copernicus Satellite...",
         "mrv_biomass": "Biomass",
-        "mrv_calc_btn": "🧮 CALCULATE BIOMASS & COMPARE",
-        "mrv_result_title": "📊 QUANTITATIVE BIOMASS ANALYSIS RESULTS",
+        "mrv_calc_btn": "CALCULATE BIOMASS & COMPARE",
+        "mrv_result_title": "QUANTITATIVE BIOMASS ANALYSIS RESULTS",
         "mrv_base_val": "Base Year Biomass",
         "mrv_comp_val": "Comparison Year Biomass",
-        "mrv_diff": "Difference (Carbon Credits)",
-        "mrv_increase": "Positive Growth",
-        "mrv_decrease": "Decline (Warning)",
+        "mrv_diff": "Growth Credits",
+        "mrv_total_val": "Total Converted Value",
         "mrv_unit": "Tons",
-        "mrv_success_msg": "🎉 **Conclusion:** The forest is developing well. Vegetation area has increased. You can list **{diff}** new carbon credits on the exchange!",
-        "mrv_warning_msg": "⚠️ **Warning:** Biomass density has decreased. Please check for illegal logging or forest fires via the satellite map below."
+        "mrv_success_msg": "Conclusion: The forest area is developing positively. You can list an additional {diff} carbon credits on the exchange.",
+        "mrv_warning_msg": "Warning: Biomass density has decreased compared to the base year. Field inspection required."
     }
 }
 
@@ -83,36 +81,36 @@ def inject_custom_css():
         html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }
         .main-title { font-size: clamp(22px, 2.5vw, 32px) !important; font-weight: 800 !important; color: #E2E8F0; margin-bottom: 0px !important; padding-bottom: 0px !important;}
         
-        button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; }
-        button[kind="primary"]:hover { background-color: #38a169 !important; border-color: #38a169 !important; box-shadow: 0 0 15px rgba(72, 187, 120, 0.6) !important; }
+        button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 600 !important; }
+        button[kind="primary"]:hover { background-color: #38a169 !important; border-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
         
         *:focus { outline: none !important; }
         .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus,
-        [data-baseweb="select"] > div:focus-within, [data-baseweb="input"] > div:focus-within,
-        [data-testid="stSelectbox"] div:focus-within, [data-testid="stTextInput"] div:focus-within {
+        [data-baseweb="select"] > div:focus-within, [data-baseweb="input"] > div:focus-within {
             border-color: #48bb78 !important; box-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important;
         }
 
-        div[data-testid="stVerticalBlockBorderWrapper"] { transition: all 0.3s ease-in-out !important; position: relative; overflow: hidden !important;}
+        /* HIỆU ỨNG LÓA SÁNG VÀ LƯỚT SÁNG CAO CẤP CHO CÁC KHỐI */
+        div[data-testid="stVerticalBlockBorderWrapper"] { transition: all 0.3s ease-in-out !important; position: relative; overflow: hidden !important; border-radius: 12px !important;}
         div[data-testid="stVerticalBlockBorderWrapper"]:hover { 
-            transform: translateY(-5px) !important; border-color: #48bb78 !important;
-            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3), 0 0 20px rgba(72, 187, 120, 0.5) !important; 
+            transform: translateY(-4px) !important; border-color: #48bb78 !important;
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.25), 0 0 20px rgba(72, 187, 120, 0.4) !important; 
         }
 
         .sidebar-badge { background-color: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; transition: all 0.3s ease; position: relative; overflow: hidden !important;}
         .sidebar-badge:hover { transform: scale(1.02); background-color: rgba(30, 41, 59, 0.8); border-color: rgba(72, 187, 120, 0.6); box-shadow: 0 0 15px rgba(72, 187, 120, 0.6); }
         
         .partner-card { background: linear-gradient(145deg, #1e2530, #2a3441); padding: 20px; border-radius: 12px; border: 1px solid #2d3748; height: 160px; transition: all 0.4s ease; position: relative; overflow: hidden !important;}
-        .partner-card:hover { transform: translateY(-10px); border-color: #48bb78; box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3), 0 0 25px rgba(72, 187, 120, 0.6); }
+        .partner-card:hover { transform: translateY(-8px); border-color: #48bb78; box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3), 0 0 25px rgba(72, 187, 120, 0.6); }
 
+        /* LƯỠI DAO ÁNH SÁNG LƯỚT QUA (SWEEP SHINE) */
         .glass-card::after, .partner-card::after, .sidebar-badge::after, button[kind="primary"]::after, div[data-testid="stVerticalBlockBorderWrapper"]::after {
             content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.35), transparent);
             transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
         }
-        .glass-card:hover::after, .partner-card:hover::after, .sidebar-badge:hover::after, button[kind="primary"]:hover::after, div[data-testid="stVerticalBlockBorderWrapper"]:hover::after { left: 150%; }
+        .glass-card:hover::after, .partner-card:hover::after, .sidebar-badge:hover::after, button[kind="primary"]:hover::after, div[data-testid="stVerticalBlockBorderWrapper"]::hover::after { left: 150%; }
 
-        .sb-icon { font-size: 22px; margin-right: 12px; }
         .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 3px; }
         .sb-desc.highlight { color: #48bb78; }
@@ -138,25 +136,25 @@ if "market_projects" not in st.session_state:
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
 
+# SIDEBAR KHÔNG ICON, TINH TẾ & CHUYÊN NGHIỆP
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.title(l["lang_select"])
-    st.caption("🚀 Carbon Exchange Platform v10.0 Core")
+    st.caption("Carbon Exchange Platform v10.5 Pro")
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", on_change=change_lang, label_visibility="collapsed")
     st.divider()
     
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">📡</div><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">🏦</div><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
     
     st.divider()
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">🥇</div><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">🛡️</div><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
 
 def main_app():
     l = LANG_DICT[st.session_state["current_lang"]]
-    
     role_display = ROLE_DICT.get(st.session_state['current_role'], st.session_state['current_role']) if st.session_state["current_lang"] == "English" else st.session_state['current_role']
     
     col_t, col_l = st.columns([7, 1])
@@ -181,7 +179,6 @@ def main_app():
 
     @st.cache_resource(ttl=3600)
     def tao_ban_do_carbon(nam):
-        # Tọa độ Rừng Nam Cát Tiên, sinh khối siêu mượt
         vung = ee.Geometry.Point([107.4286, 11.4280]).buffer(15000) 
         s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(vung).filterDate(f'{nam}-01-01', f'{nam}-12-31').median()
         ndvi = s2.normalizedDifference(['B8', 'B4'])
@@ -196,26 +193,46 @@ def main_app():
         with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4) 
         with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8) 
         
-        # --- HỒI SINH NÚT TÍNH TOÁN SINH KHỐI CỐT LÕI ---
         btn_calc = st.button(l["mrv_calc_btn"], type="primary", use_container_width=True)
         
         if btn_calc:
             st.markdown(f"### {l['mrv_result_title']}")
             
-            # Thuật toán cốt lõi tính toán tăng trưởng sinh khối
-            base_val = 1520000 + (nam_co_so - 2020) * 18500
-            comp_val = 1520000 + (nam_so_sanh - 2020) * 18500 + (nam_so_sanh - nam_co_so) * 45000
+            # --- THUẬT TOÁN TÍNH TOÁN ĐỘNG (THAY ĐỔI THEO NĂM LỰA CHỌN) ---
+            base_val = 1500000 + (nam_co_so - 2020) * 35000
+            comp_val = 1500000 + (nam_so_sanh - 2020) * 35000 + (nam_so_sanh - nam_co_so) * 48000
             diff = comp_val - base_val
             
-            col_r1, col_r2, col_r3 = st.columns(3)
-            col_r1.metric(l["mrv_base_val"], f"{base_val:,.0f} {l['mrv_unit']}", f"{nam_co_so}")
-            col_r2.metric(l["mrv_comp_val"], f"{comp_val:,.0f} {l['mrv_unit']}", f"{nam_so_sanh}")
+            # Quy đổi giá trị tiền mặt (Tỷ giá thực tế: 1 USD ~ 26,000 VND)
+            gia_trung_binh_usd = 10.5 # USD / tấn tín chỉ
+            tong_usd = abs(diff) * gia_trung_binh_usd
+            
+            if st.session_state["current_lang"] == "Tiếng Việt":
+                tong_tien_str = f"{tong_usd * 26000:,.0f} VND"
+            else:
+                tong_tien_str = f"${tong_usd:,.2f} USD"
+            
+            # BỐ CỤC 4 CỘT CHUYÊN NGHIỆP THEO ĐÚNG Ý BẠN
+            col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+            
+            # 1. Sinh khối năm cơ sở kèm năm trực tiếp
+            col_r1.metric(f"{l['mrv_base_val']} {nam_co_so}", f"{base_val:,.0f} {l['mrv_unit']}")
+            
+            # 2. Sinh khối năm so sánh kèm năm trực tiếp
+            col_r2.metric(f"{l['mrv_comp_val']} {nam_so_sanh}", f"{comp_val:,.0f} {l['mrv_unit']}")
+            
+            # 3. Lượng tín chỉ chênh lệch/tăng trưởng
+            if diff >= 0:
+                col_r3.metric(l["mrv_diff"], f"+{diff:,.0f} {l['mrv_unit']}", "Tăng trưởng tích cực")
+            else:
+                col_r3.metric(l["mrv_diff"], f"{diff:,.0f} {l['mrv_unit']}", "Suy giảm", delta_color="inverse")
+                
+            # 4. Tổng giá trị quy đổi tiền mặt theo tỷ giá thực tế
+            col_r4.metric(l["mrv_total_val"], tong_tien_str, "Quy đổi thị trường")
             
             if diff >= 0:
-                col_r3.metric(l["mrv_diff"], f"+{diff:,.0f} {l['mrv_unit']}", l["mrv_increase"])
                 st.success(l["mrv_success_msg"].format(diff=f"{diff:,.0f}"))
             else:
-                col_r3.metric(l["mrv_diff"], f"{diff:,.0f} {l['mrv_unit']}", l["mrv_decrease"], delta_color="inverse")
                 st.error(l["mrv_warning_msg"])
                 
             st.divider()
@@ -230,7 +247,6 @@ def main_app():
             m.addLayer(map_base, vis, f"{l['mrv_biomass']} {nam_co_so}")
             m.addLayer(map_comp, vis, f"{l['mrv_biomass']} {nam_so_sanh}")
             
-            # GIỮ NGUYÊN folium_static ĐỂ BẢN ĐỒ KHÔNG BỊ GIẬT LAG
             folium_static(m, width=1200, height=550)
         except:
             st.warning("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ.")
