@@ -206,26 +206,63 @@ def hien_thi_gioi_thieu_va_goi_von():
     with c_mid:
         st.markdown(f'<div class="about-title">{t["title"]}</div>', unsafe_allow_html=True)
         
-        # Tất cả các khối dưới đây đều sử dụng st.container(border=True) để tự động nhận hoạt họa lóa sáng và lướt sáng xanh lá chuẩn MRV
-        with st.container(border=True):
-            st.markdown(f"<p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.7;'>{t['thank_you']}<br><br><span style='color:#48bb78; font-weight:800; font-size: 1.15rem;'>{'SỨ MỆNH' if lang=='Tiếng Việt' else 'MISSION'}:</span> {t['mission']}</p>", unsafe_allow_html=True)
+        # Bọc thêm class="glass-block" để kích hoạt hiệu ứng lóa sáng & lướt sáng xanh lá
+        st.markdown(f"""
+            <div class="glass-block">
+                <p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.7; margin:0;'>
+                    {t['thank_you']}<br><br>
+                    <span style='color:#48bb78; font-weight:800; font-size: 1.15rem;'>{'SỨ MỆNH' if lang=='Tiếng Việt' else 'MISSION'}:</span> {t['mission']}
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
         
-        with st.container(border=True):
-            st.markdown(f"<h4 style='text-align:center; color:#48bb78; font-weight:900; letter-spacing:1px; margin: 10px 0;'>{t['slogan_block']}</h4>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="glass-block">
+                <h4 style='text-align:center; color:#48bb78; font-weight:900; letter-spacing:1px; margin: 0;'>{t['slogan_block']}</h4>
+            </div>
+        """, unsafe_allow_html=True)
         
         st.markdown(f"<h4 style='text-align:center; color:white; margin-top:40px; margin-bottom:25px;'>{t['cert_title']}</h4>", unsafe_allow_html=True)
         
         c1, c2, c3, c4 = st.columns(4)
         
         with c1:
-            with st.container(border=True):
-                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c1_t"]}</div><div class="cert-val">{t["c1_v"]}</div><div class="cert-status">{t["c1_s"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="glass-block" style="padding: 15px !important;">
+                    <div class="cert-col">
+                        <div class="cert-title">{t["c1_t"]}</div>
+                        <div class="cert-val">{t["c1_v"]}</div>
+                        <div class="cert-status">{t["c1_s"]}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         with c2:
-            with st.container(border=True):
-                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c2_t"]}</div><div class="cert-val">{t["c2_v"]}</div><div class="cert-status">{t["c2_s"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="glass-block" style="padding: 15px !important;">
+                    <div class="cert-col">
+                        <div class="cert-title">{t["c2_t"]}</div>
+                        <div class="cert-val">{t["c2_v"]}</div>
+                        <div class="cert-status">{t["c2_s"]}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         with c3:
-            with st.container(border=True):
-                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c3_t"]}</div><div class="cert-val">{t["c3_v"]}</div><div class="cert-status">{t["c3_s"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="glass-block" style="padding: 15px !important;">
+                    <div class="cert-col">
+                        <div class="cert-title">{t["c3_t"]}</div>
+                        <div class="cert-val">{t["c3_v"]}</div>
+                        <div class="cert-status">{t["c3_s"]}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         with c4:
-            with st.container(border=True):
-                st.markdown(f'<div class="cert-col"><div class="cert-title">{t["c4_t"]}</div><div class="cert-val">{t["c4_v"]}</div><div class="cert-status">{t["c4_s"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="glass-block" style="padding: 15px !important;">
+                    <div class="cert-col">
+                        <div class="cert-title">{t["c4_t"]}</div>
+                        <div class="cert-val">{t["c4_v"]}</div>
+                        <div class="cert-status">{t["c4_s"]}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)v class="cert-status">{t["c4_s"]}</div></div>', unsafe_allow_html=True)
