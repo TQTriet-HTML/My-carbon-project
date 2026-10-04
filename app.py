@@ -11,10 +11,34 @@ from social import hien_thi_mang_xa_hoi
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- CSS TỔNG HỢP (BAO GỒM HOẠT HỌA PHẦN GIỚI THIỆU) ---
+# --- TỪ ĐIỂN ĐA NGÔN NGỮ TỐI ƯU ---
+LANG_DICT = {
+    "Tiếng Việt": {
+        "title": "🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON",
+        "logout": "🚪 Đăng xuất",
+        "lang_select": "🌐 Ngôn ngữ / Language",
+        "tabs": ["🛰️ Hệ thống MRV", "💹 Sàn Giao dịch", "🤝 Đầu tư Trồng rừng", "🌐 Mạng xã hội", "🏆 Bảng Vàng", "🌟 Về chúng tôi"]
+    },
+    "English": {
+        "title": "🌍 MRV PLATFORM & CARBON CREDIT EXCHANGE",
+        "logout": "🚪 Logout",
+        "lang_select": "🌐 Language",
+        "tabs": ["🛰️ MRV System", "💹 Marketplace", "🤝 Forest Investment", "🌐 Social Network", "🏆 Leaderboard", "🌟 About Us"]
+    }
+}
+
+if "current_lang" not in st.session_state:
+    st.session_state["current_lang"] = "Tiếng Việt"
+
+def change_lang():
+    # Callback kích hoạt ngay lập tức khi người dùng đổi selectbox
+    pass
+
+# --- CSS TỔNG HỢP ---
 def inject_custom_css():
     st.markdown("""
         <style>
+        /* Font chữ hệ thống rõ ràng, chuyên nghiệp */
         html, body, [class*="css"] {
             font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important;
         }
@@ -36,6 +60,7 @@ def inject_custom_css():
             margin-top: 5px;
         }
         
+        /* Hiệu ứng nổi bồng bềnh chung */
         div[data-testid="stVerticalBlockBorderWrapper"] {
             transition: all 0.3s ease-in-out !important;
             border-radius: 12px !important;
@@ -55,59 +80,6 @@ def inject_custom_css():
             box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important;
             border-color: #48bb78 !important;
         }
-
-        /* --- CSS HOẠT HỌA CHO PHẦN GIỚI THIỆU --- */
-        @keyframes floatAndGlow {
-            0% { transform: translateY(0px); text-shadow: 0 0 5px rgba(56, 161, 105, 0.2); }
-            50% { transform: translateY(-5px); text-shadow: 0 0 15px rgba(56, 161, 105, 0.6); }
-            100% { transform: translateY(0px); text-shadow: 0 0 5px rgba(56, 161, 105, 0.2); }
-        }
-        .thank-you-banner {
-            background: linear-gradient(90deg, rgba(26,32,44,1) 0%, rgba(45,55,72,1) 100%);
-            border-left: 5px solid #3182ce;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            animation: floatAndGlow 4s ease-in-out infinite;
-            border: 1px solid #4a5568;
-        }
-        .text-green { color: #48bb78; } 
-        .text-blue-bold { color: #3182ce; font-weight: 800; font-size: 1.2rem; }
-
-        .partner-card {
-            background: linear-gradient(145deg, #1e2530, #2a3441);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #2d3748;
-            height: 160px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .partner-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: #48bb78;
-            box-shadow: 0 15px 30px rgba(72, 187, 120, 0.25);
-        }
-        .partner-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
-            transform: skewX(-25deg);
-            transition: 0.6s;
-        }
-        .partner-card:hover::after {
-            left: 125%;
-        }
-        
-        .pc-title { color: #a0aec0; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .pc-value { color: #ffffff; font-size: 18px; font-weight: bold; margin-top: 0; line-height: 1.3;}
-        .pc-status { color: #48bb78; font-size: 13px; margin-top: 15px; display: flex; align-items: center;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -115,15 +87,18 @@ inject_custom_css()
 
 # --- SIDEBAR: NGÔN NGỮ & LIÊN KẾT NGOÀI ---
 with st.sidebar:
-    st.title("🌐 Ngôn ngữ / Language")
-    ngon_ngu = st.selectbox(
-        "Chọn ngôn ngữ hiển thị:", 
-        ["Tiếng Việt", "English (Global)", "中文 (Chinese)", "Русский (Russian)", "Français (French)"]
+    st.title(LANG_DICT[st.session_state["current_lang"]]["lang_select"])
+    
+    # Selectbox đổi ngôn ngữ gọi callback trực tiếp
+    st.selectbox(
+        "Chọn ngôn ngữ / Select language:", 
+        ["Tiếng Việt", "English"],
+        key="current_lang",
+        on_change=change_lang
     )
-    if ngon_ngu != "Tiếng Việt":
-        st.info(f"⏳ Đang triển khai AI dịch thuật tự động cho **{ngon_ngu}**.")
+    
     st.divider()
-    st.caption("Carbon Exchange Platform v2.5")
+    st.caption("Carbon Exchange Platform v4.0")
 
 # Khởi tạo trạng thái phiên
 if "logged_in" not in st.session_state:
@@ -141,19 +116,7 @@ if "investor_portfolios" not in st.session_state:
 if "project_reports" not in st.session_state:
     st.session_state["project_reports"] = {}
 if "social_posts" not in st.session_state:
-    st.session_state["social_posts"] = [
-        {
-            "id": "post_seed_1",
-            "author": "Chuyên gia Lâm nghiệp Lê Văn A",
-            "role": "Chủ rừng / Kỹ sư MRV",
-            "content": "Tôi vừa thử nghiệm công nghệ vệ tinh mới trên sàn, độ chính xác nhận diện thảm thực vật lên đến 95%. Rất đáng kỳ vọng cho đợt đo đạc tới!",
-            "tag": "#KinhNghiemTrongRung",
-            "time": "02/10/2026 09:30",
-            "likes": 12,
-            "comments": [{"user": "Đại diện Vinamilk", "text": "Tuyệt vời, chúng tôi rất mong chờ lô tín chỉ tiếp theo của anh."}]
-        }
-    ]
-
+    st.session_state["social_posts"] = []
 if "market_projects" not in st.session_state:
     st.session_state["market_projects"] = [
         {
@@ -175,18 +138,25 @@ if "market_projects" not in st.session_state:
     ]
 
 def main_app():
+    # Sử dụng từ điển để hiển thị chữ theo ngôn ngữ đã chọn
+    lang = LANG_DICT[st.session_state["current_lang"]]
+    
     col_title, col_logout = st.columns([6, 1])
     with col_title:
-        st.markdown('<div class="main-title">🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
-        st.caption(f"Chào mừng trở lại, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
+        st.markdown(f'<div class="main-title">{lang["title"]}</div>', unsafe_allow_html=True)
+        st.caption(f"Welcome back, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
         
     with col_logout:
         st.markdown('<div class="logout-btn-container">', unsafe_allow_html=True)
-        if st.button("🚪 Đăng xuất", type="secondary", use_container_width=True):
+        if st.button(lang["logout"], type="secondary", use_container_width=True):
             st.session_state["logged_in"] = False
+            # Reset lại theme mờ (xoá thuộc tính nền)
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
             
+    # Xoá phông nền của trang Đăng nhập khi đã vào app chính
+    st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
+
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
         cred_path = os.path.expanduser('~/.config/earthengine/')
@@ -218,15 +188,8 @@ def main_app():
         ai_model = ee.Classifier.smileRandomForest(50).setOutputMode('REGRESSION').train(features=tap_huan_luyen, classProperty='Carbon_ThucTe', inputProperties=['NDVI'])
         return ndvi_forest.classify(ai_model).clip(vung_du_an)
 
-    # Các Tab giao diện
-    tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs([
-        "🛰️ Hệ thống MRV", 
-        "💹 Sàn Giao dịch", 
-        "🤝 Đầu tư Trồng rừng",
-        "🌐 Mạng xã hội",
-        "🏆 Bảng Vàng",
-        "🌟 Về chúng tôi"
-    ])
+    # Đưa tên các tab vào từ điển đa ngôn ngữ
+    tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs(lang["tabs"])
 
     with tab_mrv:
         st.info("Công cụ đo đạc vệ tinh sinh khối rừng")
