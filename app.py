@@ -11,7 +11,6 @@ from social import hien_thi_mang_xa_hoi
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- TỪ ĐIỂN ĐA NGÔN NGỮ TỐI ƯU ---
 LANG_DICT = {
     "Tiếng Việt": {
         "title": "🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON",
@@ -37,7 +36,7 @@ if "current_lang" not in st.session_state:
 def change_lang():
     pass
 
-# --- CSS TỔNG HỢP ---
+# --- CSS TỔNG HỢP VÀ KHẮC PHỤC LỖI VIỀN ĐỎ (RED FOCUS RING BUG) ---
 def inject_custom_css():
     st.markdown("""
         <style>
@@ -55,6 +54,8 @@ def inject_custom_css():
         .logout-btn-container {
             display: flex; justify-content: flex-end; align-items: center; height: 100%; margin-top: 5px;
         }
+        
+        /* Hiệu ứng nổi bồng bềnh chung */
         div[data-testid="stVerticalBlockBorderWrapper"] {
             transition: all 0.3s ease-in-out !important; border-radius: 12px !important;
         }
@@ -68,21 +69,28 @@ def inject_custom_css():
             transform: translateY(-3px) !important; box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important; border-color: #48bb78 !important;
         }
         
-        /* CSS riêng cho Badges trên Sidebar */
+        /* --- ĐÈ CSS ĐỂ XOÁ VIỀN ĐỎ MẶC ĐỊNH CỦA STREAMLIT --- */
+        /* Áp dụng cho Selectbox (Hộp thả xuống ngôn ngữ) */
+        div[data-baseweb="select"] > div:focus-within {
+            border-color: #48bb78 !important;
+            box-shadow: 0 0 0 1px #48bb78 !important;
+            transition: all 0.3s ease;
+        }
+        /* Áp dụng cho Text Input (Ô nhập liệu đăng nhập) */
+        div[data-baseweb="input"] > div:focus-within {
+            border-color: #48bb78 !important;
+            box-shadow: 0 0 0 1px #48bb78 !important;
+            transition: all 0.3s ease;
+        }
+
+        /* CSS Badges Sidebar */
         .sidebar-badge {
-            background-color: rgba(30, 41, 59, 0.5);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
+            background-color: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center;
             transition: transform 0.2s ease, background-color 0.2s ease;
         }
         .sidebar-badge:hover {
-            transform: scale(1.02);
-            background-color: rgba(30, 41, 59, 0.8);
-            border-color: rgba(72, 187, 120, 0.5);
+            transform: scale(1.02); background-color: rgba(30, 41, 59, 0.8); border-color: rgba(72, 187, 120, 0.5);
         }
         .sb-icon { font-size: 22px; margin-right: 12px; }
         .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
@@ -93,68 +101,49 @@ def inject_custom_css():
 
 inject_custom_css()
 
-# --- SIDEBAR: NGÔN NGỮ, ĐỐI TÁC & CHỨNG NHẬN ---
+# --- SIDEBAR ---
 with st.sidebar:
     lang_dict = LANG_DICT[st.session_state["current_lang"]]
-    
     st.title(lang_dict["lang_select"])
-    # Đưa phiên bản lên ngay dưới tiêu đề ngôn ngữ
-    st.caption("🚀 Carbon Exchange Platform v5.0")
+    st.caption("🚀 Carbon Exchange Platform v5.5")
     
     st.selectbox(
         "Chọn ngôn ngữ / Select language:", 
         ["Tiếng Việt", "English"],
         key="current_lang",
         on_change=change_lang,
-        label_visibility="collapsed" # Ẩn label mặc định để nhìn gọn hơn
+        label_visibility="collapsed"
     )
     
     st.divider()
     
-    # Khu vực 1: Đối tác Chiến lược
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; margin-bottom:10px;'>{lang_dict['sidebar_partners']}</p>", unsafe_allow_html=True)
     st.markdown("""
         <div class="sidebar-badge">
             <div class="sb-icon">🇻🇳</div>
-            <div>
-                <div class="sb-title">Bộ Tài nguyên & Môi trường</div>
-                <div class="sb-desc">Cơ quan Quản lý & Giám sát</div>
-            </div>
+            <div><div class="sb-title">Bộ Tài nguyên & Môi trường</div><div class="sb-desc">Cơ quan Quản lý & Giám sát</div></div>
         </div>
         <div class="sidebar-badge">
             <div class="sb-icon">📡</div>
-            <div>
-                <div class="sb-title">Google Earth Engine</div>
-                <div class="sb-desc">Đối tác Dữ liệu Không gian AI</div>
-            </div>
+            <div><div class="sb-title">Google Earth Engine</div><div class="sb-desc">Đối tác Dữ liệu Không gian AI</div></div>
         </div>
         <div class="sidebar-badge">
             <div class="sb-icon">🏦</div>
-            <div>
-                <div class="sb-title">Vietcombank</div>
-                <div class="sb-desc">Ngân hàng Thanh toán Escrow</div>
-            </div>
+            <div><div class="sb-title">Vietcombank</div><div class="sb-desc">Ngân hàng Thanh toán Escrow</div></div>
         </div>
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Khu vực 2: Chứng nhận Pháp lý
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; margin-bottom:10px;'>{lang_dict['sidebar_certs']}</p>", unsafe_allow_html=True)
     st.markdown("""
         <div class="sidebar-badge">
             <div class="sb-icon">🥇</div>
-            <div>
-                <div class="sb-title">VCS (Verra) & Gold Standard</div>
-                <div class="sb-desc highlight">✔ Tiêu chuẩn Carbon Toàn cầu</div>
-            </div>
+            <div><div class="sb-title">VCS (Verra) & Gold Standard</div><div class="sb-desc highlight">✔ Tiêu chuẩn Carbon Toàn cầu</div></div>
         </div>
         <div class="sidebar-badge">
             <div class="sb-icon">🛡️</div>
-            <div>
-                <div class="sb-title">ISO/IEC 27001:2022</div>
-                <div class="sb-desc highlight">✔ Bảo mật Thông tin Cấp cao</div>
-            </div>
+            <div><div class="sb-title">ISO/IEC 27001:2022</div><div class="sb-desc highlight">✔ Bảo mật Thông tin Cấp cao</div></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -209,7 +198,6 @@ def main_app():
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
             
-    # Xóa hình nền khi đã đăng nhập
     st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
     try:
