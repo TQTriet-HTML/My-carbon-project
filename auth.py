@@ -28,7 +28,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "proj_1_name": "Dự án Rừng ngập mặn Cà Mau", "proj_1_desc": "Bảo vệ sinh khối & Đa dạng sinh học vùng ven biển."
         },
         "English": {
-            "slogan": "ONE TOUCH - ONE GREEN WORLD", # <--- ĐÃ ĐỔI THEO Ý CỦA BẠN
+            "slogan": "ONE TOUCH - ONE GREEN WORLD", 
             "welcome": "🌱 Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
             "login_tab": "🔐 Login",
             "register_tab": "✨ Create Account",
@@ -64,7 +64,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background-size: cover; background-position: center; background-attachment: fixed;
         }
         
-        /* HOẠT HỌA SÓNG */
         @keyframes autoWave {
             0%, 20%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
             10% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
@@ -72,23 +71,28 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .bouncing-slogan { text-align: center; margin-bottom: 20px; }
         .bouncing-slogan span { display: inline-block; font-size: clamp(2rem, 2.5vw, 2.8rem); font-weight: 900; cursor: default; animation: autoWave 5s infinite; }
         
+        /* --- HIỆU ỨNG LÓA SÁNG KHỐI GLASS-CARD (THÀNH TỰU & TAB ĐĂNG NHẬP) --- */
         .glass-card, div[data-testid="stTabs"] {
             background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 25px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transition: all 0.4s ease; margin-bottom: 20px;
         }
-        .glass-card:hover, div[data-testid="stTabs"]:hover { transform: translateY(-5px); border-color: rgba(72, 187, 120, 0.4); box-shadow: 0 30px 60px -12px rgba(72, 187, 120, 0.3); }
+        .glass-card:hover, div[data-testid="stTabs"]:hover { 
+            transform: translateY(-5px); 
+            border-color: rgba(72, 187, 120, 0.6); 
+            /* Lóa sáng tỏa ra mượt mà */
+            box-shadow: 0 20px 40px -12px rgba(72, 187, 120, 0.4), 0 0 25px rgba(72, 187, 120, 0.5) !important; 
+        }
         
         .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1; }
         .stat-lbl { font-size: 0.95rem; color: #a0aec0; margin-top: 5px; }
         .news-ticker-container { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(15, 23, 42, 0.95); color: #a0aec0; padding: 12px 0; border-top: 1px solid #2d3748; font-size: 0.95rem; z-index: 9999; }
         .news-ticker-content a { color: #63b3ed; text-decoration: none; font-weight: 600; margin: 0 30px; }
-        .news-ticker-content a:hover { color: #48bb78; text-decoration: underline; }
+        .news-ticker-content a:hover { color: #48bb78; text-decoration: underline; text-shadow: 0 0 8px #48bb78; }
         .welcome-text { text-align: center; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 35px; font-weight: 300; }
         </style>
     """, unsafe_allow_html=True)
 
-    # Hiệu ứng Slogan Delay chính xác 0.05s
     slogan = t["slogan"]
     html_slogan = "".join([f'<span style="animation-delay: {i*0.05}s">{"&nbsp;" if c==" " else c}</span>' for i, c in enumerate(slogan)])
     st.markdown(f'<div class="bouncing-slogan">{html_slogan}</div>', unsafe_allow_html=True)
