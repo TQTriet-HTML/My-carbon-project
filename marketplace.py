@@ -169,10 +169,18 @@ def hien_thi_gioi_thieu_va_goi_von():
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         animation: titleShine 4s linear infinite; margin-bottom: 30px; letter-spacing: 2px;
     }
-    .cert-col { text-align: center; padding: 10px; }
-    .cert-title { color: #a0aec0; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; font-weight: 700;}
-    .cert-val { color: #ffffff; font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; }
-    .cert-status { color: #48bb78; font-size: 0.9rem; font-weight: 800; }
+    /* CỐ ĐỊNH CHIỀU CAO VÀ CĂN GIỮA ĐỒNG ĐỀU CHO CÁC KHỐI CHỨNG NHẬN */
+    .cert-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 160px;
+        text-align: center;
+        padding: 5px;
+    }
+    .cert-title { color: #a0aec0; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; letter-spacing: 1px;}
+    .cert-val { color: #ffffff; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+    .cert-status { color: #48bb78; font-size: 0.85rem; font-weight: 800; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -227,8 +235,8 @@ def hien_thi_gioi_thieu_va_goi_von():
         
         with c1:
             st.markdown(f"""
-                <div class="glass-block" style="padding: 15px !important;">
-                    <div class="cert-col">
+                <div class="glass-block" style="padding: 20px !important;">
+                    <div class="cert-box">
                         <div class="cert-title">{t["c1_t"]}</div>
                         <div class="cert-val">{t["c1_v"]}</div>
                         <div class="cert-status">{t["c1_s"]}</div>
@@ -237,8 +245,8 @@ def hien_thi_gioi_thieu_va_goi_von():
             """, unsafe_allow_html=True)
         with c2:
             st.markdown(f"""
-                <div class="glass-block" style="padding: 15px !important;">
-                    <div class="cert-col">
+                <div class="glass-block" style="padding: 20px !important;">
+                    <div class="cert-box">
                         <div class="cert-title">{t["c2_t"]}</div>
                         <div class="cert-val">{t["c2_v"]}</div>
                         <div class="cert-status">{t["c2_s"]}</div>
@@ -247,8 +255,8 @@ def hien_thi_gioi_thieu_va_goi_von():
             """, unsafe_allow_html=True)
         with c3:
             st.markdown(f"""
-                <div class="glass-block" style="padding: 15px !important;">
-                    <div class="cert-col">
+                <div class="glass-block" style="padding: 20px !important;">
+                    <div class="cert-box">
                         <div class="cert-title">{t["c3_t"]}</div>
                         <div class="cert-val">{t["c3_v"]}</div>
                         <div class="cert-status">{t["c3_s"]}</div>
@@ -257,8 +265,8 @@ def hien_thi_gioi_thieu_va_goi_von():
             """, unsafe_allow_html=True)
         with c4:
             st.markdown(f"""
-                <div class="glass-block" style="padding: 15px !important;">
-                    <div class="cert-col">
+                <div class="glass-block" style="padding: 20px !important;">
+                    <div class="cert-box">
                         <div class="cert-title">{t["c4_t"]}</div>
                         <div class="cert-val">{t["c4_v"]}</div>
                         <div class="cert-status">{t["c4_s"]}</div>
