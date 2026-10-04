@@ -1,7 +1,8 @@
 import streamlit as st
 import ee
 import geemap.foliumap as geemap
-from streamlit_folium import st_folium
+# DÙNG FOLIUM_STATIC ĐỂ BẢN ĐỒ TẢI NGAY LẬP TỨC THAY VÌ ST_FOLIUM
+from streamlit_folium import folium_static 
 import os
 
 from auth import hien_thi_cong_dang_nhap
@@ -16,17 +17,43 @@ except ImportError:
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
+# --- TỪ ĐIỂN DỊCH THUẬT SÂU 100% ---
 LANG_DICT = {
     "Tiếng Việt": {
         "title": "🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "🚪 Đăng xuất", "lang_select": "🌐 Ngôn ngữ",
         "tabs": ["🛰️ Hệ thống MRV", "💹 Sàn Giao dịch", "🤝 Đầu tư Trồng rừng", "🌐 Mạng xã hội", "🏆 Bảng Vàng", "🌟 Về chúng tôi"],
-        "sidebar_partners": "🤝 ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "📜 CHỨNG NHẬN PHÁP LÝ"
+        "sidebar_partners": "🤝 ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "📜 CHỨNG NHẬN PHÁP LÝ",
+        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
+        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Thanh toán Escrow",
+        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "✔ Tiêu chuẩn Toàn cầu",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "✔ Bảo mật Thông tin Cấp cao",
+        "welcome": "Xin chào",
+        "mrv_success": "🛰️ Hệ thống Giám sát Không gian AI (Tải siêu tốc)",
+        "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
+        "mrv_loading": "Đang truy xuất dữ liệu từ Vệ tinh Copernicus...",
+        "mrv_biomass": "Sinh khối"
     },
     "English": {
         "title": "🌍 MRV PLATFORM & CARBON EXCHANGE", "logout": "🚪 Logout", "lang_select": "🌐 Language",
         "tabs": ["🛰️ MRV System", "💹 Marketplace", "🤝 Forest Investment", "🌐 Social Network", "🏆 Leaderboard", "🌟 About Us"],
-        "sidebar_partners": "🤝 STRATEGIC PARTNERS", "sidebar_certs": "📜 CERTIFICATIONS"
+        "sidebar_partners": "🤝 STRATEGIC PARTNERS", "sidebar_certs": "📜 CERTIFICATIONS",
+        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
+        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
+        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "✔ Global Standard",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "✔ High-level Security",
+        "welcome": "Welcome",
+        "mrv_success": "🛰️ AI Spatial Monitoring System (Ultra-fast load)",
+        "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
+        "mrv_loading": "Retrieving data from Copernicus Satellite...",
+        "mrv_biomass": "Biomass"
     }
+}
+
+# TỪ ĐIỂN DỊCH VAI TRÒ (ROLE TRANSLATION)
+ROLE_DICT = {
+    "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
+    "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
+    "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
 }
 
 if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
@@ -48,58 +75,26 @@ def inject_custom_css():
             border-color: #48bb78 !important; box-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important;
         }
 
-        /* TẠO LÓA SÁNG XUNG QUANH (GLOW) */
-        div[data-testid="stVerticalBlockBorderWrapper"] { transition: all 0.3s ease-in-out !important; }
+        /* GLOW & SWEEP SHINE TỪ BẢN TRƯỚC */
+        div[data-testid="stVerticalBlockBorderWrapper"] { transition: all 0.3s ease-in-out !important; position: relative; overflow: hidden !important;}
         div[data-testid="stVerticalBlockBorderWrapper"]:hover { 
-            transform: translateY(-5px) !important; 
-            border-color: #48bb78 !important;
+            transform: translateY(-5px) !important; border-color: #48bb78 !important;
             box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3), 0 0 20px rgba(72, 187, 120, 0.5) !important; 
         }
 
-        .sidebar-badge { background-color: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; transition: all 0.3s ease;}
-        .sidebar-badge:hover { 
-            transform: scale(1.02); background-color: rgba(30, 41, 59, 0.8); border-color: rgba(72, 187, 120, 0.6);
-            box-shadow: 0 0 15px rgba(72, 187, 120, 0.6);
-        }
+        .sidebar-badge { background-color: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; transition: all 0.3s ease; position: relative; overflow: hidden !important;}
+        .sidebar-badge:hover { transform: scale(1.02); background-color: rgba(30, 41, 59, 0.8); border-color: rgba(72, 187, 120, 0.6); box-shadow: 0 0 15px rgba(72, 187, 120, 0.6); }
         
-        .partner-card { background: linear-gradient(145deg, #1e2530, #2a3441); padding: 20px; border-radius: 12px; border: 1px solid #2d3748; height: 160px; transition: all 0.4s ease;}
-        .partner-card:hover { 
-            transform: translateY(-10px); border-color: #48bb78; 
-            box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3), 0 0 25px rgba(72, 187, 120, 0.6);
-        }
+        .partner-card { background: linear-gradient(145deg, #1e2530, #2a3441); padding: 20px; border-radius: 12px; border: 1px solid #2d3748; height: 160px; transition: all 0.4s ease; position: relative; overflow: hidden !important;}
+        .partner-card:hover { transform: translateY(-10px); border-color: #48bb78; box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3), 0 0 25px rgba(72, 187, 120, 0.6); }
 
-        /* ========================================================================= */
-        /* HIỆU ỨNG MỚI: LUỒNG SÁNG LƯỚT QUA (SWEEP/SHINE EFFECT) NHƯ BẠN YÊU CẦU */
-        /* ========================================================================= */
-        
-        /* 1. Đặt thuộc tính relative và ẩn các phần tử tràn viền để giấu luồng sáng */
-        .glass-card, .partner-card, .sidebar-badge, button[kind="primary"], div[data-testid="stVerticalBlockBorderWrapper"] {
-            position: relative;
-            overflow: hidden !important;
-        }
-        
-        /* 2. Tạo một dải sáng ảo nằm nghiêng, ẩn ở ngoài cùng bên trái khối */
         .glass-card::after, .partner-card::after, .sidebar-badge::after, button[kind="primary"]::after, div[data-testid="stVerticalBlockBorderWrapper"]::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 60%;
-            height: 100%;
-            /* Màu xanh lá nhạt với hiệu ứng mờ viền (Gradient) */
+            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.4), transparent);
-            transform: skewX(-25deg);
-            transition: left 0.65s ease-in-out;
-            pointer-events: none; /* Tránh cản trở khi bấm nút */
-            z-index: 10;
+            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
         }
-        
-        /* 3. Khi rê chuột, dải sáng chạy vụt từ trái sang phải */
-        .glass-card:hover::after, .partner-card:hover::after, .sidebar-badge:hover::after, button[kind="primary"]:hover::after, div[data-testid="stVerticalBlockBorderWrapper"]:hover::after {
-            left: 150%;
-        }
+        .glass-card:hover::after, .partner-card:hover::after, .sidebar-badge:hover::after, button[kind="primary"]:hover::after, div[data-testid="stVerticalBlockBorderWrapper"]:hover::after { left: 150%; }
 
-        /* CSS phụ trợ */
         .sb-icon { font-size: 22px; margin-right: 12px; }
         .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 3px; }
@@ -128,35 +123,36 @@ if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
 if "current_user" not in st.session_state: st.session_state["current_user"] = ""
 if "current_role" not in st.session_state: st.session_state["current_role"] = ""
 if "wallet_balance" not in st.session_state: st.session_state["wallet_balance"] = 150000.0  
-if "user_portfolios" not in st.session_state: st.session_state["user_portfolios"] = {}
-if "investor_portfolios" not in st.session_state: st.session_state["investor_portfolios"] = {}
-if "market_projects" not in st.session_state:
-    st.session_state["market_projects"] = [
-        {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
-    ]
 
+# --- SIDEBAR ĐƯỢC DỊCH 100% ---
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.title(l["lang_select"])
-    st.caption("🚀 Carbon Exchange Platform v8.0 Shine")
+    st.caption("🚀 Carbon Exchange Platform v9.0 Pro")
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", on_change=change_lang, label_visibility="collapsed")
     st.divider()
+    
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
-    st.markdown("""<div class="sidebar-badge"><div class="sb-icon">📡</div><div><div class="sb-title">Google Earth Engine</div><div class="sb-desc">Đối tác Không gian AI</div></div></div>""", unsafe_allow_html=True)
-    st.markdown("""<div class="sidebar-badge"><div class="sb-icon">🏦</div><div><div class="sb-title">Vietcombank</div><div class="sb-desc">Escrow Payment</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">📡</div><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">🏦</div><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
+    
     st.divider()
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
-    st.markdown("""<div class="sidebar-badge"><div class="sb-icon">🥇</div><div><div class="sb-title">VCS (Verra)</div><div class="sb-desc highlight">✔ Tiêu chuẩn Toàn cầu</div></div></div>""", unsafe_allow_html=True)
-    st.markdown("""<div class="sidebar-badge"><div class="sb-icon">🛡️</div><div><div class="sb-title">ISO/IEC 27001</div><div class="sb-desc highlight">✔ Bảo mật Thông tin Cấp cao</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">🥇</div><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div class="sb-icon">🛡️</div><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
 
 def main_app():
-    lang = LANG_DICT[st.session_state["current_lang"]]
+    l = LANG_DICT[st.session_state["current_lang"]]
+    
+    # DỊCH VAI TRÒ NGƯỜI DÙNG Ở TIÊU ĐỀ
+    role_display = ROLE_DICT.get(st.session_state['current_role'], st.session_state['current_role']) if st.session_state["current_lang"] == "English" else st.session_state['current_role']
+    
     col_t, col_l = st.columns([7, 1])
     with col_t:
-        st.markdown(f'<div class="main-title">{lang["title"]}</div>', unsafe_allow_html=True)
-        st.caption(f"Welcome, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
+        st.markdown(f'<div class="main-title">{l["title"]}</div>', unsafe_allow_html=True)
+        st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({role_display})")
     with col_l:
-        if st.button(lang["logout"], type="secondary", use_container_width=True):
+        if st.button(l["logout"], type="secondary", use_container_width=True):
             st.session_state["logged_in"] = False
             st.rerun()
             
@@ -173,30 +169,35 @@ def main_app():
 
     @st.cache_resource(ttl=3600)
     def tao_ban_do_carbon(nam):
-        vung = ee.Geometry.Point([106.6297, 10.8231]).buffer(15000) 
+        # ĐÃ ĐỔI TỌA ĐỘ VỀ RỪNG NAM CÁT TIÊN ĐỂ KHÔNG CÒN BỊ LỦNG LỖ
+        vung = ee.Geometry.Point([107.4286, 11.4280]).buffer(15000) 
         s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(vung).filterDate(f'{nam}-01-01', f'{nam}-12-31').median()
         ndvi = s2.normalizedDifference(['B8', 'B4'])
-        carbon = ndvi.updateMask(ndvi.gt(0.4)).multiply(120).rename('Carbon_Proxy')
+        # Hạ ngưỡng Mask xuống 0.2 để cover mượt mà toàn bộ thảm thực vật
+        carbon = ndvi.updateMask(ndvi.gt(0.2)).multiply(120).rename('Carbon_Proxy')
         return carbon.clip(vung)
 
-    tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs(lang["tabs"])
+    tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs(l["tabs"])
 
     with tab_mrv:
-        st.success("🛰️ Hệ thống Giám sát Không gian AI (Tải siêu tốc)")
+        st.success(l["mrv_success"])
         c1, c2 = st.columns(2)
-        with c1: nam_co_so = st.selectbox("Năm cơ sở:", range(2016, 2027), index=4) 
-        with c2: nam_so_sanh = st.selectbox("Năm so sánh:", range(2016, 2027), index=8) 
+        with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4) 
+        with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8) 
         
         try:
-            with st.spinner("Đang truy xuất dữ liệu từ Vệ tinh Copernicus..."):
+            with st.spinner(l["mrv_loading"]):
                 map_base = tao_ban_do_carbon(nam_co_so)
                 map_comp = tao_ban_do_carbon(nam_so_sanh)
                 
-            m = geemap.Map(center=[10.8231, 106.6297], zoom=11)
+            # Tạo bản đồ trung tâm tại Rừng Nam Cát Tiên
+            m = geemap.Map(center=[11.4280, 107.4286], zoom=11)
             vis = {'min': 0, 'max': 100, 'palette': ['#ffffcc', '#c2e699', '#78c679', '#31a354', '#006837']}
-            m.addLayer(map_base, vis, f'Sinh khối {nam_co_so}')
-            m.addLayer(map_comp, vis, f'Sinh khối {nam_so_sanh}')
-            st_folium(m, width=1200, height=550)
+            m.addLayer(map_base, vis, f"{l['mrv_biomass']} {nam_co_so}")
+            m.addLayer(map_comp, vis, f"{l['mrv_biomass']} {nam_so_sanh}")
+            
+            # SỬ DỤNG folium_static ĐỂ RENDER SIÊU TỐC VÀ KHÔNG BỊ GIẬT LAG
+            folium_static(m, width=1200, height=550)
         except:
             st.warning("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ.")
 
