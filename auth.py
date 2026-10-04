@@ -11,7 +11,6 @@ def load_users():
     return USERS
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
-    # --- TỪ ĐIỂN ĐA NGÔN NGỮ CHO TRANG ĐĂNG NHẬP ---
     T = {
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
@@ -39,7 +38,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "proj_1_name": "Dự án rừng ngập mặn Cà Mau", "proj_1_desc": "Bảo vệ sinh khối & Đa dạng sinh học vùng ven biển."
         },
         "English": {
-            "slogan": "ONE TOUCH - GREEN WORLD",
+            "slogan": "ONE TOUCH - ONE GREENER WORLD",
             "welcome": "🌱 Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
             "login_tab": "🔐 Login",
             "register_tab": "✨ Create Account",
@@ -67,7 +66,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     
     t = T.get(lang, T["Tiếng Việt"])
 
-    # --- CSS HOẠT HỌA & GIAO DIỆN KÍNH ---
     st.markdown("""
         <style>
         .stApp {
@@ -78,10 +76,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background-attachment: fixed;
         }
         
-        /* Hiệu ứng sóng Slogan tự động đồng bộ tỉ lệ thời gian */
+        /* Chỉnh lại hoạt họa vệt sóng chạy mượt mà theo 1 chu kỳ 10 giây */
         @keyframes autoWave {
-            0%, 10%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
-            5% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
+            0%, 20%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
+            10% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
         }
         .bouncing-slogan {
             text-align: center;
@@ -92,7 +90,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             font-size: clamp(2rem, 2.8vw, 2.8rem);
             font-weight: 900;
             cursor: default;
-            animation: autoWave 8s infinite;
+            animation: autoWave 10s infinite; /* Cứ 10 giây lượn 1 lần */
         }
 
         .glass-card, div[data-testid="stTabs"] {
@@ -116,40 +114,28 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .stat-lbl { font-size: 0.95rem; color: #a0aec0; margin-top: 5px; }
 
         .news-ticker-container {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background-color: rgba(15, 23, 42, 0.95);
-            color: #a0aec0;
-            padding: 12px 0;
-            border-top: 1px solid #2d3748;
-            font-size: 0.95rem;
-            z-index: 9999;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
+            position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(15, 23, 42, 0.95);
+            color: #a0aec0; padding: 12px 0; border-top: 1px solid #2d3748; font-size: 0.95rem; z-index: 9999;
         }
         .news-ticker-content a { color: #63b3ed; text-decoration: none; font-weight: 600; margin: 0 30px; }
         .news-ticker-content a:hover { color: #48bb78; text-decoration: underline; }
-        
         .welcome-text { text-align: center; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 35px; font-weight: 300; }
         </style>
     """, unsafe_allow_html=True)
 
-    # --- TÍNH TOÁN ĐỘ TRỄ ĐỘNG CHO TỪNG KÝ TỰ (CHỐNG LỆCH NHỊP KÝ TỰ CUỐI) ---
+    # --- KHẮC PHỤC LỖI HOẠT HỌA SLOGAN BẰNG CÁCH CỐ ĐỊNH DELAY 0.1 GIÂY ---
     slogan = t["slogan"]
-    total_chars = max(len(slogan), 1)
-    
-    # Phân bổ độ trễ tự động trong khoảng 2 giây đầu của chu kỳ 8 giây
     html_slogan = ""
     for i, c in enumerate(slogan):
         if c == ' ':
-            html_slogan += "&nbsp;"
+            html_slogan += "&nbsp;&nbsp;" # Gấp đôi khoảng trắng cho dễ nhìn
         else:
-            delay = (i / total_chars) * 1.5 
-            html_slogan += f'<span style="animation-delay: {delay:.2f}s">{c}</span>'
+            delay = i * 0.1 # Chính xác mỗi chữ cái cách nhau 0.1 giây
+            html_slogan += f'<span style="animation-delay: {delay}s">{c}</span>'
             
     st.markdown(f'<div class="bouncing-slogan">{html_slogan}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="welcome-text">{t["welcome"]}</div>', unsafe_allow_html=True)
 
-    # --- CHIA 2 CỘT ---
     col_form, col_gap, col_info = st.columns([12, 1, 10])
     
     with col_form:
@@ -207,7 +193,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-    # --- BẢNG TIN TỨC CHẠY DƯỚI CÙNG ---
     st.markdown(f"""
         <div class="news-ticker-container">
             <marquee class="news-ticker-content" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();">
