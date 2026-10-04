@@ -35,32 +35,36 @@ def hien_thi_san_giao_dich():
     elif vai_tro == "Chủ rừng / Kỹ sư MRV":
         st.info("🌳 **Khu vực Chủ rừng:** Nộp hồ sơ minh chứng gốc và niêm yết tín chỉ lên sàn.")
         with st.expander("📝 NIÊM YẾT LÔ TÍN CHỈ MỚI", expanded=False):
-            ten_du_an = st.text_input("Tên dự án / Lô rừng:")
-            kl_ban = st.number_input("Khối lượng tín chỉ muốn bán (tấn):", min_value=100, step=100)
-            gia_ban = st.number_input("Giá bán mỗi tín chỉ (USD):", value=10.0)
-            cam_ket_nam = st.number_input("Thời hạn cam kết bảo vệ rừng (Năm):", min_value=1, max_value=30, value=5)
-            file_minh_chung = st.file_uploader("📎 Tải lên Sổ đỏ / Giấy tờ pháp lý gốc", type=['pdf', 'jpg', 'png'])
-            
-            if st.button("🚀 ĐƯA LÊN SÀN GIAO DỊCH", type="primary"):
-                if not ten_du_an or file_minh_chung is None:
-                    st.error("❌ Vui lòng điền tên và tải minh chứng pháp lý.")
-                else:
-                    new_proj = {
-                        "id": f"user_p_{len(st.session_state['market_projects'])}",
-                        "name": ten_du_an,
-                        "owner": st.session_state['current_user'],
-                        "price": gia_ban,
-                        "volume": kl_ban,
-                        "duration": cam_ket_nam,
-                        "lat": 11.4280, 
-                        "lon": 107.4286,
-                        "verified": True,
-                        "proof_file": file_minh_chung,
-                        "proof_name": file_minh_chung.name,
-                        "status": "Active"
-                    }
-                    st.session_state["market_projects"].append(new_proj)
-                    st.success("✅ Thành công! Lô tín chỉ đã lên sàn thương mại.")
+            # Form giúp XÓA TRẮNG DỮ LIỆU sau khi Chủ rừng bấm Đưa lên sàn thành công
+            with st.form("form_niem_yet", clear_on_submit=True):
+                ten_du_an = st.text_input("Tên dự án / Lô rừng:")
+                kl_ban = st.number_input("Khối lượng tín chỉ muốn bán (tấn):", min_value=100, step=100)
+                gia_ban = st.number_input("Giá bán mỗi tín chỉ (USD):", value=10.0)
+                cam_ket_nam = st.number_input("Thời hạn cam kết bảo vệ rừng (Năm):", min_value=1, max_value=30, value=5)
+                file_minh_chung = st.file_uploader("📎 Tải lên Sổ đỏ / Giấy tờ pháp lý gốc", type=['pdf', 'jpg', 'png'])
+                
+                submitted_ny = st.form_submit_button("🚀 ĐƯA LÊN SÀN GIAO DỊCH", type="primary")
+                
+                if submitted_ny:
+                    if not ten_du_an or file_minh_chung is None:
+                        st.error("❌ Vui lòng điền tên và tải minh chứng pháp lý.")
+                    else:
+                        new_proj = {
+                            "id": f"user_p_{len(st.session_state['market_projects'])}",
+                            "name": ten_du_an,
+                            "owner": st.session_state['current_user'],
+                            "price": gia_ban,
+                            "volume": kl_ban,
+                            "duration": cam_ket_nam,
+                            "lat": 11.4280, 
+                            "lon": 107.4286,
+                            "verified": True,
+                            "proof_file": file_minh_chung,
+                            "proof_name": file_minh_chung.name,
+                            "status": "Active"
+                        }
+                        st.session_state["market_projects"].append(new_proj)
+                        st.success("✅ Thành công! Lô tín chỉ đã lên sàn thương mại. Các biểu mẫu đã được làm sạch an toàn.")
 
     st.divider()
     st.markdown("### 🛒 Danh mục Tín chỉ đang giao dịch trên Sàn")
@@ -121,7 +125,6 @@ def hien_thi_san_giao_dich():
                             else:
                                 st.error("❌ Ví không đủ tiền.")
                     else:
-                        # --- ĐÃ THÊM KEY VÀO ĐÂY ĐỂ TRÁNH TRÙNG LẶP ---
                         st.button("🔒 Đăng nhập tài khoản Mua để giao dịch", key=f"lock_btn_{p['id']}", disabled=True, use_container_width=True)
 
 
@@ -267,10 +270,15 @@ def hien_thi_gioi_thieu_va_goi_von():
         
         with col_p2:
             st.markdown("#### 🚀 Tham gia đồng hành")
-            so_tien_dau_tu = st.number_input("Số vốn cam kết đầu tư (USD):", min_value=1000, step=1000, value=5000)
-            email_lh = st.text_input("Email liên hệ / Đại diện:")
-            if st.button("🤝 GỬI ĐĂNG KÝ ĐẦU TƯ NỀN TẢNG", type="primary", use_container_width=True):
-                if email_lh:
-                    st.success(f"🎉 Cảm ơn bạn! Yêu cầu góp vốn phát triển nền tảng trị giá **${so_tien_dau_tu:,.2f}** đã được gửi đến ban sáng lập. Chúng tôi sẽ liên hệ qua `{email_lh}` trong 24h tới.")
-                else:
-                    st.warning("⚠ Vui lòng nhập email liên hệ.")
+            # Đưa mục này vào Form để tự làm sạch email và số tiền sau khi gửi
+            with st.form("form_goi_von_nen_tang", clear_on_submit=True):
+                so_tien_dau_tu = st.number_input("Số vốn cam kết đầu tư (USD):", min_value=1000, step=1000, value=5000)
+                email_lh = st.text_input("Email liên hệ / Đại diện:")
+                
+                submitted_gv = st.form_submit_button("🤝 GỬI ĐĂNG KÝ ĐẦU TƯ NỀN TẢNG", type="primary", use_container_width=True)
+                
+                if submitted_gv:
+                    if email_lh:
+                        st.success(f"🎉 Cảm ơn bạn! Yêu cầu góp vốn phát triển nền tảng trị giá **${so_tien_dau_tu:,.2f}** đã được gửi đến ban sáng lập. Chúng tôi sẽ liên hệ qua `{email_lh}` trong 24h tới.")
+                    else:
+                        st.warning("⚠ Vui lòng nhập email liên hệ.")
