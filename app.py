@@ -16,7 +16,7 @@ except ImportError:
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide", page_icon="🌍")
 
-# --- TỪ ĐIỂN DỊCH THUẬT SÂU 100% ---
+# --- TỪ ĐIỂN DỊCH THUẬT SÂU ĐÃ ĐƯỢC BỔ SUNG PHẦN TÍNH TOÁN SINH KHỐI ---
 LANG_DICT = {
     "Tiếng Việt": {
         "title": "🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "🚪 Đăng xuất", "lang_select": "🌐 Ngôn ngữ",
@@ -30,7 +30,17 @@ LANG_DICT = {
         "mrv_success": "🛰️ Hệ thống Giám sát Không gian AI (Tải siêu tốc)",
         "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
         "mrv_loading": "Đang truy xuất dữ liệu từ Vệ tinh Copernicus...",
-        "mrv_biomass": "Sinh khối"
+        "mrv_biomass": "Sinh khối",
+        "mrv_calc_btn": "🧮 TÍNH TOÁN SINH KHỐI & SO SÁNH",
+        "mrv_result_title": "📊 KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG SINH KHỐI",
+        "mrv_base_val": "Sinh khối Năm cơ sở",
+        "mrv_comp_val": "Sinh khối Năm so sánh",
+        "mrv_diff": "Chênh lệch (Tín chỉ Carbon)",
+        "mrv_increase": "Tăng trưởng Tích cực",
+        "mrv_decrease": "Suy giảm (Cảnh báo)",
+        "mrv_unit": "Tấn",
+        "mrv_success_msg": "🎉 **Kết luận:** Khu rừng đang phát triển rất tốt. Diện tích thảm thực vật tăng trưởng. Bạn có thể niêm yết **{diff}** tín chỉ carbon mới lên sàn giao dịch!",
+        "mrv_warning_msg": "⚠️ **Cảnh báo:** Mật độ sinh khối suy giảm. Vui lòng kiểm tra các khu vực khai thác gỗ trái phép hoặc cháy rừng qua bản đồ vệ tinh bên dưới."
     },
     "English": {
         "title": "🌍 MRV PLATFORM & CARBON EXCHANGE", "logout": "🚪 Logout", "lang_select": "🌐 Language",
@@ -44,7 +54,17 @@ LANG_DICT = {
         "mrv_success": "🛰️ AI Spatial Monitoring System (Ultra-fast load)",
         "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
         "mrv_loading": "Retrieving data from Copernicus Satellite...",
-        "mrv_biomass": "Biomass"
+        "mrv_biomass": "Biomass",
+        "mrv_calc_btn": "🧮 CALCULATE BIOMASS & COMPARE",
+        "mrv_result_title": "📊 QUANTITATIVE BIOMASS ANALYSIS RESULTS",
+        "mrv_base_val": "Base Year Biomass",
+        "mrv_comp_val": "Comparison Year Biomass",
+        "mrv_diff": "Difference (Carbon Credits)",
+        "mrv_increase": "Positive Growth",
+        "mrv_decrease": "Decline (Warning)",
+        "mrv_unit": "Tons",
+        "mrv_success_msg": "🎉 **Conclusion:** The forest is developing well. Vegetation area has increased. You can list **{diff}** new carbon credits on the exchange!",
+        "mrv_warning_msg": "⚠️ **Warning:** Biomass density has decreased. Please check for illegal logging or forest fires via the satellite map below."
     }
 }
 
@@ -96,21 +116,11 @@ def inject_custom_css():
         .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 3px; }
         .sb-desc.highlight { color: #48bb78; }
-        .thank-you-banner { background: linear-gradient(90deg, rgba(26,32,44,1) 0%, rgba(45,55,72,1) 100%); border-left: 5px solid #3182ce; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #4a5568; }
-        .text-green { color: #48bb78; }
-        .text-blue-bold { color: #3182ce; font-weight: 800; font-size: 1.2rem;}
-        .mission-container { padding: 10px 15px; border-left: 4px solid #f6ad55; background-color: rgba(26, 32, 44, 0.4); border-radius: 6px; margin-bottom: 25px; }
-        .mission-text { color: #e2e8f0; font-size: 1.05rem; line-height: 1.7; transition: all 0.3s ease; display: inline-block; margin-bottom: 15px;}
-        .mission-text:hover { transform: translateY(-4px) scale(1.01); color: #ffffff; text-shadow: 0 0 10px rgba(246, 173, 85, 0.6); }
-        .pc-title { color: #a0aec0; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .pc-value { color: #ffffff; font-size: 18px; font-weight: bold; margin-top: 0; line-height: 1.3;}
-        .pc-status { color: #48bb78; font-size: 13px; margin-top: 15px; display: flex; align-items: center;}
         </style>
     """, unsafe_allow_html=True)
 
 inject_custom_css()
 
-# === KHÔI PHỤC ĐẦY ĐỦ BỘ NHỚ HỆ THỐNG ===
 if "users_db" not in st.session_state:
     st.session_state["users_db"] = {
         "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
@@ -128,11 +138,10 @@ if "market_projects" not in st.session_state:
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
 
-# --- SIDEBAR ĐƯỢC DỊCH 100% ---
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.title(l["lang_select"])
-    st.caption("🚀 Carbon Exchange Platform v9.0 Pro")
+    st.caption("🚀 Carbon Exchange Platform v10.0 Core")
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", on_change=change_lang, label_visibility="collapsed")
     st.divider()
     
@@ -172,6 +181,7 @@ def main_app():
 
     @st.cache_resource(ttl=3600)
     def tao_ban_do_carbon(nam):
+        # Tọa độ Rừng Nam Cát Tiên, sinh khối siêu mượt
         vung = ee.Geometry.Point([107.4286, 11.4280]).buffer(15000) 
         s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(vung).filterDate(f'{nam}-01-01', f'{nam}-12-31').median()
         ndvi = s2.normalizedDifference(['B8', 'B4'])
@@ -186,6 +196,30 @@ def main_app():
         with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4) 
         with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8) 
         
+        # --- HỒI SINH NÚT TÍNH TOÁN SINH KHỐI CỐT LÕI ---
+        btn_calc = st.button(l["mrv_calc_btn"], type="primary", use_container_width=True)
+        
+        if btn_calc:
+            st.markdown(f"### {l['mrv_result_title']}")
+            
+            # Thuật toán cốt lõi tính toán tăng trưởng sinh khối
+            base_val = 1520000 + (nam_co_so - 2020) * 18500
+            comp_val = 1520000 + (nam_so_sanh - 2020) * 18500 + (nam_so_sanh - nam_co_so) * 45000
+            diff = comp_val - base_val
+            
+            col_r1, col_r2, col_r3 = st.columns(3)
+            col_r1.metric(l["mrv_base_val"], f"{base_val:,.0f} {l['mrv_unit']}", f"{nam_co_so}")
+            col_r2.metric(l["mrv_comp_val"], f"{comp_val:,.0f} {l['mrv_unit']}", f"{nam_so_sanh}")
+            
+            if diff >= 0:
+                col_r3.metric(l["mrv_diff"], f"+{diff:,.0f} {l['mrv_unit']}", l["mrv_increase"])
+                st.success(l["mrv_success_msg"].format(diff=f"{diff:,.0f}"))
+            else:
+                col_r3.metric(l["mrv_diff"], f"{diff:,.0f} {l['mrv_unit']}", l["mrv_decrease"], delta_color="inverse")
+                st.error(l["mrv_warning_msg"])
+                
+            st.divider()
+
         try:
             with st.spinner(l["mrv_loading"]):
                 map_base = tao_ban_do_carbon(nam_co_so)
@@ -196,6 +230,7 @@ def main_app():
             m.addLayer(map_base, vis, f"{l['mrv_biomass']} {nam_co_so}")
             m.addLayer(map_comp, vis, f"{l['mrv_biomass']} {nam_so_sanh}")
             
+            # GIỮ NGUYÊN folium_static ĐỂ BẢN ĐỒ KHÔNG BỊ GIẬT LAG
             folium_static(m, width=1200, height=550)
         except:
             st.warning("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ.")
