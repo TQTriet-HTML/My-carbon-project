@@ -8,12 +8,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* HIỆU ỨNG CHỮ LƯỢN SÓNG (WAVE EFFECT) MỖI 10 GIÂY */
+        /* HIỆU ỨNG CHỮ LƯỢN SÓNG (WAVE EFFECT) THEO CỤM MỖI 10 GIÂY */
         @keyframes wave-animation {
-            0%, 85% { transform: translateY(0); color: transparent; text-shadow: none; }
-            90% { transform: translateY(-8px); color: #68d391; text-shadow: 0 0 15px rgba(104, 211, 145, 0.8); }
+            0%, 85% { transform: translateY(0); filter: drop-shadow(0 0 0 transparent); }
+            90% { transform: translateY(-8px); filter: drop-shadow(0 0 12px rgba(104, 211, 145, 0.8)); }
             95% { transform: translateY(4px); }
-            100% { transform: translateY(0); color: transparent; text-shadow: none; }
+            100% { transform: translateY(0); filter: drop-shadow(0 0 0 transparent); }
         }
         
         .wave-text {
@@ -29,6 +29,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: wave-animation 10s infinite ease-in-out;
+            padding: 0 5px;
         }
 
         .hero-subtitle {
@@ -40,13 +41,42 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             letter-spacing: 0.5px;
         }
 
-        /* KHUNG ĐĂNG NHẬP KÍNH PHA LÊ SÁNG */
-        div[data-testid="stVerticalBlockBorderWrapper"] {
+        /* --- HIỆU ỨNG LÓA SÁNG VÀ LƯỚT SÁNG XANH LÁ (SWEEP SHINE) CHO CÁC KHỐI --- */
+        div[data-testid="stVerticalBlockBorderWrapper"], .side-card {
             background: rgba(17, 24, 39, 0.85) !important;
             border: 1px solid rgba(72, 187, 120, 0.3) !important;
             border-radius: 12px !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(72, 187, 120, 0.05) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(72, 187, 120, 0.05) !important;
             backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden !important;
+            transition: all 0.4s ease !important;
+        }
+
+        /* Khi Hover: Lóa sáng viền xanh lá mạnh hơn */
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover, .side-card:hover {
+            border-color: #48bb78 !important;
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important;
+            transform: translateY(-3px);
+        }
+
+        /* Lưỡi dao ánh sáng xanh lướt qua (Sweep Shine) */
+        div[data-testid="stVerticalBlockBorderWrapper"]::after, .side-card::after {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: -150%; 
+            width: 60%; 
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.35), transparent);
+            transform: skewX(-25deg); 
+            transition: left 0.65s ease-in-out; 
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .side-card:hover::after { 
+            left: 150%; 
         }
 
         /* NÚT BẤM ĐỎ GỐC CỦA HỆ THỐNG */
@@ -72,15 +102,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         [aria-invalid="true"] { border-color: #48bb78 !important; }
 
-        /* CSS THÀNH TỰU VÀ DỰ ÁN TIÊU BIỂU (THAY THẾ TÁC DỤNG CỦA ICON) */
-        .side-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(72, 187, 120, 0.2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
+        /* CSS THÀNH TỰU VÀ DỰ ÁN TIÊU BIỂU */
         .section-title {
             color: #ffffff;
             font-size: 1.1rem;
@@ -163,10 +185,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # --- BỘ TỪ ĐIỂN TEXT CHUẨN XÁC VỚI HỆ THỐNG GỐC ---
+    # --- BỘ TỪ ĐIỂN TEXT CHUẨN XÁC KÈM SLOGAN MỚI ---
     T = {
         "Tiếng Việt": {
-            "slogan": "MỘT CHẠM - MỘT THẾ GIỚI XANH",
+            "slogan_chunks": ["MỘT CÚ CHẠM", "-", "VẠN ĐIỀU XANH"],
             "subtitle": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
             "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN",
             "sys_access": "Hệ thống Truy cập",
@@ -183,7 +205,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "news_txt": "Thị trường Tín chỉ Carbon Việt Nam chính thức bước vào giai đoạn vận hành thí điểm."
         },
         "English": {
-            "slogan": "ONE TOUCH - ONE GREEN WORLD",
+            "slogan_chunks": ["ONE TOUCH", "-", "ONE GREEN WORLD"],
             "subtitle": "Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
             "tab_login": "LOGIN", "tab_reg": "CREATE ACCOUNT",
             "sys_access": "System Access",
@@ -202,25 +224,22 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     }
     t = T[lang]
 
-    # --- TẠO HIỆU ỨNG CHỮ LƯỢN SÓNG (WAVE TEXT) THEO TỪNG TỪ BẰNG HTML SPAN ---
-    words = t["slogan"].split()
+    # --- TẠO HIỆU ỨNG CHỮ LƯỢN SÓNG (WAVE TEXT) THEO CỤM TỪ ---
     wave_html = '<div class="wave-text">'
     delay = 0.0
-    for word in words:
-        if word == "-":
-            wave_html += f'<span style="animation-delay: {delay}s;"> {word} </span>'
-        else:
-            wave_html += f'<span style="animation-delay: {delay}s;">{word}&nbsp;</span>'
-        delay += 0.1
+    for chunk in t["slogan_chunks"]:
+        wave_html += f'<span style="animation-delay: {delay}s;">{chunk}</span>'
+        delay += 0.15  # Các cụm sẽ lượn sóng nhịp nhàng tiếp nối nhau
     wave_html += '</div>'
 
     st.markdown(wave_html, unsafe_allow_html=True)
     st.markdown(f'<div class="hero-subtitle">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
-    # --- KHÔI PHỤC LAYOUT 2 CỘT NHƯ GỐC ---
+    # --- BỐ CỤC 2 CỘT NHƯ GỐC ---
     col_form, col_space, col_info = st.columns([1.1, 0.1, 1.1])
     
     with col_form:
+        # Form đăng nhập (Tự động nhận hiệu ứng Glow & Sweep Shine từ CSS)
         with st.container(border=True):
             st.markdown(f'<h3 style="color: white; margin-top: 0; font-weight: 700; font-size: 1.2rem;">{t["sys_access"]}</h3>', unsafe_allow_html=True)
             tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
@@ -261,7 +280,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                             st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
 
     with col_info:
-        # THÀNH TỰU NỀN TẢNG
+        # Khối Thành tựu (Tự động nhận hiệu ứng Glow & Sweep Shine từ lớp .side-card)
         st.markdown(f"""
         <div class="side-card">
             <div class="section-title">{t['achieve']}</div>
@@ -278,7 +297,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </div>
         """, unsafe_allow_html=True)
 
-        # DỰ ÁN TIÊU BIỂU
+        # Khối Dự án Tiêu biểu (Tự động nhận hiệu ứng Glow & Sweep Shine)
         st.markdown(f"""
         <div class="side-card">
             <div class="section-title">{t['projects']}</div>
@@ -288,7 +307,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </div>
         """, unsafe_allow_html=True)
 
-    # --- KHÔI PHỤC TIN TỨC CHẠY (NEWS TICKER) ---
+    # --- TIN TỨC CHẠY (NEWS TICKER) ---
     st.markdown(f"""
     <div class="news-ticker-container">
         <div class="news-label">{t['news_lbl']}</div>
