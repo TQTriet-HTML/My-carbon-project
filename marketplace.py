@@ -206,7 +206,6 @@ def hien_thi_gioi_thieu_va_goi_von():
     with c_mid:
         st.markdown(f'<div class="about-title">{t["title"]}</div>', unsafe_allow_html=True)
         
-        # Bọc thêm class="glass-block" để kích hoạt hiệu ứng lóa sáng & lướt sáng xanh lá
         st.markdown(f"""
             <div class="glass-block">
                 <p style='text-align:center; font-size:1.1rem; color:#e2e8f0; line-height:1.7; margin:0;'>
@@ -265,4 +264,4 @@ def hien_thi_gioi_thieu_va_goi_von():
                         <div class="cert-status">{t["c4_s"]}</div>
                     </div>
                 </div>
-            """, unsafe_allow_html=True)v class="cert-status">{t["c4_s"]}</div></div>', unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
