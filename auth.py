@@ -1,15 +1,6 @@
 import streamlit as st
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
-    # --- 1. KHỞI TẠO CƠ SỞ DỮ LIỆU NGAY TRONG HÀM (KHẮC PHỤC LỖI KEYERROR) ---
-    if "users_db" not in st.session_state:
-        st.session_state["users_db"] = {
-            "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
-            "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
-            "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
-        }
-
-    # --- 2. TỪ ĐIỂN ĐA NGÔN NGỮ ---
     T = {
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
@@ -65,42 +56,27 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     
     t = T.get(lang, T["Tiếng Việt"])
 
-    # --- 3. CSS TÙY CHỈNH ---
     st.markdown("""
         <style>
         .stApp {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
                               url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2532&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-size: cover; background-position: center; background-attachment: fixed;
         }
-        
         @keyframes autoWave {
             0%, 20%, 100% { transform: translateY(0) scale(1); color: #48bb78; text-shadow: 0 4px 15px rgba(72, 187, 120, 0.4); }
             10% { transform: translateY(-12px) scale(1.12); color: #63b3ed; text-shadow: 0 8px 22px rgba(99, 179, 237, 0.7); }
         }
-        .bouncing-slogan {
-            text-align: center; margin-bottom: 20px;
-        }
-        .bouncing-slogan span {
-            display: inline-block; font-size: clamp(2rem, 2.8vw, 2.8rem); font-weight: 900;
-            cursor: default; animation: autoWave 10s infinite;
-        }
-
+        .bouncing-slogan { text-align: center; margin-bottom: 20px; }
+        .bouncing-slogan span { display: inline-block; font-size: clamp(2rem, 2.8vw, 2.8rem); font-weight: 900; cursor: default; animation: autoWave 10s infinite; }
         .glass-card, div[data-testid="stTabs"] {
             background: rgba(30, 41, 59, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 25px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-            margin-bottom: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease; margin-bottom: 20px;
         }
-        .glass-card:hover, div[data-testid="stTabs"]:hover {
-            transform: translateY(-6px); box-shadow: 0 30px 60px -12px rgba(72, 187, 120, 0.3); border-color: rgba(72, 187, 120, 0.4);
-        }
-
+        .glass-card:hover, div[data-testid="stTabs"]:hover { transform: translateY(-6px); box-shadow: 0 30px 60px -12px rgba(72, 187, 120, 0.3); border-color: rgba(72, 187, 120, 0.4); }
         .stat-val { font-size: 2rem; font-weight: 800; color: #48bb78; margin-bottom: 0px; line-height: 1; }
         .stat-lbl { font-size: 0.95rem; color: #a0aec0; margin-top: 5px; }
-
         .news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(15, 23, 42, 0.95);
             color: #a0aec0; padding: 12px 0; border-top: 1px solid #2d3748; font-size: 0.95rem; z-index: 9999;
@@ -111,7 +87,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # --- 4. KẾT XUẤT GIAO DIỆN ---
     slogan = t["slogan"]
     html_slogan = ""
     for i, c in enumerate(slogan):
@@ -133,6 +108,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             matkhau = st.text_input(t["password"], type="password", placeholder="***")
             
             if st.button(t["btn_login"], type="primary", use_container_width=True):
+                # Lúc này users_db CHẮC CHẮN ĐÃ TỒN TẠI vì được gọi từ app.py
                 db = st.session_state["users_db"]
                 if tendangnhap in db and db[tendangnhap]["password"] == matkhau:
                     st.session_state["logged_in"] = True
@@ -156,6 +132,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 elif new_user in st.session_state["users_db"]:
                     st.error("⚠ Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.")
                 else:
+                    # Lưu an toàn vào DB gốc
                     st.session_state["users_db"][new_user] = {
                         "password": new_pass,
                         "role": new_role
