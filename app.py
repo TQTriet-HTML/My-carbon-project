@@ -17,13 +17,17 @@ LANG_DICT = {
         "title": "🌍 NỀN TẢNG MRV & SÀN GIAO DỊCH TÍN CHỈ CARBON",
         "logout": "🚪 Đăng xuất",
         "lang_select": "🌐 Ngôn ngữ / Language",
-        "tabs": ["🛰️ Hệ thống MRV", "💹 Sàn Giao dịch", "🤝 Đầu tư Trồng rừng", "🌐 Mạng xã hội", "🏆 Bảng Vàng", "🌟 Về chúng tôi"]
+        "tabs": ["🛰️ Hệ thống MRV", "💹 Sàn Giao dịch", "🤝 Đầu tư Trồng rừng", "🌐 Mạng xã hội", "🏆 Bảng Vàng", "🌟 Về chúng tôi"],
+        "sidebar_partners": "🤝 ĐỐI TÁC CHIẾN LƯỢC",
+        "sidebar_certs": "📜 CHỨNG NHẬN PHÁP LÝ"
     },
     "English": {
         "title": "🌍 MRV PLATFORM & CARBON CREDIT EXCHANGE",
         "logout": "🚪 Logout",
         "lang_select": "🌐 Language",
-        "tabs": ["🛰️ MRV System", "💹 Marketplace", "🤝 Forest Investment", "🌐 Social Network", "🏆 Leaderboard", "🌟 About Us"]
+        "tabs": ["🛰️ MRV System", "💹 Marketplace", "🤝 Forest Investment", "🌐 Social Network", "🏆 Leaderboard", "🌟 About Us"],
+        "sidebar_partners": "🤝 STRATEGIC PARTNERS",
+        "sidebar_certs": "📜 CERTIFICATIONS"
     }
 }
 
@@ -63,21 +67,96 @@ def inject_custom_css():
         div.stButton > button:hover {
             transform: translateY(-3px) !important; box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3) !important; border-color: #48bb78 !important;
         }
+        
+        /* CSS riêng cho Badges trên Sidebar */
+        .sidebar-badge {
+            background-color: rgba(30, 41, 59, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .sidebar-badge:hover {
+            transform: scale(1.02);
+            background-color: rgba(30, 41, 59, 0.8);
+            border-color: rgba(72, 187, 120, 0.5);
+        }
+        .sb-icon { font-size: 22px; margin-right: 12px; }
+        .sb-title { color: #e2e8f0; font-size: 13px; font-weight: 600; line-height: 1.2; }
+        .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 3px; }
+        .sb-desc.highlight { color: #48bb78; }
         </style>
     """, unsafe_allow_html=True)
 
 inject_custom_css()
 
+# --- SIDEBAR: NGÔN NGỮ, ĐỐI TÁC & CHỨNG NHẬN ---
 with st.sidebar:
-    st.title(LANG_DICT[st.session_state["current_lang"]]["lang_select"])
+    lang_dict = LANG_DICT[st.session_state["current_lang"]]
+    
+    st.title(lang_dict["lang_select"])
+    # Đưa phiên bản lên ngay dưới tiêu đề ngôn ngữ
+    st.caption("🚀 Carbon Exchange Platform v5.0")
+    
     st.selectbox(
         "Chọn ngôn ngữ / Select language:", 
         ["Tiếng Việt", "English"],
         key="current_lang",
-        on_change=change_lang
+        on_change=change_lang,
+        label_visibility="collapsed" # Ẩn label mặc định để nhìn gọn hơn
     )
+    
     st.divider()
-    st.caption("Carbon Exchange Platform v4.5")
+    
+    # Khu vực 1: Đối tác Chiến lược
+    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; margin-bottom:10px;'>{lang_dict['sidebar_partners']}</p>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="sidebar-badge">
+            <div class="sb-icon">🇻🇳</div>
+            <div>
+                <div class="sb-title">Bộ Tài nguyên & Môi trường</div>
+                <div class="sb-desc">Cơ quan Quản lý & Giám sát</div>
+            </div>
+        </div>
+        <div class="sidebar-badge">
+            <div class="sb-icon">📡</div>
+            <div>
+                <div class="sb-title">Google Earth Engine</div>
+                <div class="sb-desc">Đối tác Dữ liệu Không gian AI</div>
+            </div>
+        </div>
+        <div class="sidebar-badge">
+            <div class="sb-icon">🏦</div>
+            <div>
+                <div class="sb-title">Vietcombank</div>
+                <div class="sb-desc">Ngân hàng Thanh toán Escrow</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Khu vực 2: Chứng nhận Pháp lý
+    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; margin-bottom:10px;'>{lang_dict['sidebar_certs']}</p>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="sidebar-badge">
+            <div class="sb-icon">🥇</div>
+            <div>
+                <div class="sb-title">VCS (Verra) & Gold Standard</div>
+                <div class="sb-desc highlight">✔ Tiêu chuẩn Carbon Toàn cầu</div>
+            </div>
+        </div>
+        <div class="sidebar-badge">
+            <div class="sb-icon">🛡️</div>
+            <div>
+                <div class="sb-title">ISO/IEC 27001:2022</div>
+                <div class="sb-desc highlight">✔ Bảo mật Thông tin Cấp cao</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
@@ -190,7 +269,6 @@ def main_app():
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
-# LƯU Ý Ở ĐÂY: Truyền trạng thái ngôn ngữ vào trang đăng nhập
 if not st.session_state["logged_in"]:
     hien_thi_cong_dang_nhap(st.session_state["current_lang"])
 else:
