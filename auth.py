@@ -14,99 +14,29 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* TIÊU ĐỀ: XIN CHÀO QUÝ ĐỒNG HÀNH - LÓA SÁNG XANH LÁ */
-        @keyframes welcome-shine {
-            to { background-position: 200% center; }
+        /* TIÊU ĐỀ: XIN CHÀO QUÝ ĐỒNG HÀNH - LUÔN TRÊN 1 DÒNG, LÓA SÁNG XANH LÁ 8 GIÂY */
+        @keyframes green-pulse-shine {
+            0%, 100% { 
+                color: #48bb78; 
+                text-shadow: 0 0 5px rgba(72,187,120,0.3); 
+            }
+            50% { 
+                color: #a7f3d0; 
+                text-shadow: 0 0 25px rgba(72,187,120,0.9), 0 0 10px rgba(167,243,208,0.8); 
+            }
         }
         .welcome-title {
-            font-size: 1.6rem; font-weight: 900; text-align: center; text-transform: uppercase;
-            background: linear-gradient(to right, #48bb78, #a7f3d0, #48bb78);
-            background-size: 200% auto; color: #fff; background-clip: text;
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: welcome-shine 4s linear infinite; 
-            margin-bottom: 25px; letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(72,187,120,0.5);
+            font-size: 1.35rem; 
+            font-weight: 900; 
+            text-align: center; 
+            text-transform: uppercase;
+            white-space: nowrap; /* Bắt buộc nằm trên một dòng duy nhất không bị rớt chữ */
+            color: #48bb78;
+            animation: green-pulse-shine 8s infinite ease-in-out; /* Chu kỳ đúng 8 giây */
+            margin-bottom: 25px; 
+            letter-spacing: 1px;
         }
 
-        /* 1. KHUNG XANH LÁ BỌC QUANH CÁC TIÊU MỤC (TAB LIST) VỚI HIỆU ỨNG LƯỚT SÁNG 6S */
-        [data-testid="stTabs"] [data-baseweb="tab-list"] {
-            display: flex !important;
-            justify-content: space-between !important;
-            width: 100% !important;
-            border: 2px solid #48bb78 !important; /* Khung viền xanh lá */
-            border-radius: 12px !important;
-            padding: 6px !important;
-            background: rgba(26, 32, 44, 0.6) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            margin-bottom: 20px !important;
-            gap: 5px !important;
-        }
-
-        /* Hiệu ứng vầng sáng lướt qua tiêu mục mỗi 6 giây */
-        @keyframes tab-frame-sweep {
-            0% { left: -100%; }
-            15% { left: 100%; } /* Lướt qua nhanh */
-            100% { left: 100%; } /* Đợi phần thời gian còn lại của 6s */
-        }
-        [data-testid="stTabs"] [data-baseweb="tab-list"]::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transform: skewX(-25deg);
-            animation: tab-frame-sweep 6s infinite ease-in-out;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* 2. ĐỊNH DẠNG TỪNG TIÊU MỤC BÊN TRONG KHUNG */
-        [data-testid="stTabs"] button[role="tab"] {
-            flex: 1 1 0% !important;
-            justify-content: center !important;
-            text-align: center !important;
-            transition: all 0.3s ease !important;
-            z-index: 1 !important;
-            border-radius: 8px !important;
-            padding: 10px 0 !important;
-            background: transparent !important;
-            border: none !important;
-        }
-
-        /* TRỊ TẬN GỐC MÀU ĐỎ CỦA STREAMLIT: Ép màu mặc định là xám nhạt */
-        [data-testid="stTabs"] button[role="tab"] * {
-            color: #a0aec0 !important;
-            transition: all 0.3s ease !important;
-        }
-
-        /* 3. HIỆU ỨNG NỔI LÊN & ĐỔI MÀU XANH LÁ KHI TRỎ CHUỘT HOẶC ĐƯỢC CHỌN */
-        /* Khi trỏ chuột */
-        [data-testid="stTabs"] button[role="tab"]:hover {
-            transform: scale(1.03) translateY(-2px) !important;
-            background: rgba(72, 187, 120, 0.15) !important;
-            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3) !important;
-        }
-        [data-testid="stTabs"] button[role="tab"]:hover * {
-            color: #48bb78 !important;
-        }
-
-        /* Khi được chọn (Active) */
-        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
-            transform: scale(1.05) translateY(-2px) !important;
-            background: rgba(72, 187, 120, 0.25) !important;
-            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4) !important;
-        }
-        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] * {
-            color: #48bb78 !important;
-            font-weight: 900 !important;
-        }
-
-        /* Ẩn gạch chân highlight của Streamlit vì đã có khung bọc */
-        [data-testid="stTabs"] div[data-baseweb="tab-highlight"] {
-            display: none !important;
-        }
-        
         /* HOẠT HỌA CÂU SLOGAN CHÍNH */
         @keyframes letter-wave-halo {
             0%, 80% { transform: translateY(0); text-shadow: none; }
@@ -262,9 +192,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     _, col_form, col_space, col_info, _ = st.columns([0.5, 3, 0.2, 3, 0.5])
     
     with col_form:
-        # KHÔI PHỤC VIỀN BAO NGOÀI CHO TOÀN BỘ KHU VỰC ĐĂNG NHẬP / ĐĂNG KÝ
         with st.container(border=True):
-            # TIÊU ĐỀ MỚI VỚI HIỆU ỨNG LÓA SÁNG XANH LÁ
+            # TIÊU ĐỀ NẰM TRÊN 1 DÒNG VỚI HIỆU ỨNG LÓA SÁNG 8 GIÂY
             st.markdown(f'<div class="welcome-title">{t["welcome_msg"]}</div>', unsafe_allow_html=True)
             
             tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
