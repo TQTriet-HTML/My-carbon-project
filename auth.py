@@ -12,6 +12,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
+        /* CÂN BẰNG 3 TAB TRUY CẬP */
+        div[data-baseweb="tab-list"] {
+            justify-content: space-evenly;
+            gap: 5px;
+        }
+        div[data-baseweb="tab"] {
+            flex: 1;
+            justify-content: center;
+        }
+        
         /* HOẠT HỌA CÂU SLOGAN CHÍNH */
         @keyframes letter-wave-halo {
             0%, 80% { transform: translateY(0); text-shadow: none; }
@@ -38,11 +48,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         .intro-wave-char {
             display: inline-block;
-            color: #48bb78; /* Chữ màu xanh lá */
+            color: #48bb78; 
             font-size: 1.05rem;
             font-weight: 700;
             animation: intro-wave-blue-halo 12s infinite ease-in-out;
-            line-height: 1.7;
         }
 
         /* HIỆU ỨNG KHỐI KÍNH PHA LÊ CHO CÁC KHỐI BÊN PHẢI */
@@ -187,7 +196,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         with st.container(border=True):
             st.markdown(f'<div class="section-title" style="border-left:none; padding-left:0; text-align:center;">{t["sys_access"]}</div>', unsafe_allow_html=True)
             
-            # Đã bổ sung tab GIỚI THIỆU vào danh sách
             tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
             
             with tab_dang_nhap:
@@ -242,21 +250,24 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-            # TAB GIỚI THIỆU MỚI
             with tab_gioi_thieu:
                 intro_text = t["intro_mission"]
-                intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px;">'
+                intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px; line-height: 1.7;">'
                 delay_intro = 0.0
-                for char in intro_text:
-                    intro_html += f'<span class="intro-wave-char" style="animation-delay: {delay_intro}s;">{"&nbsp;" if char == " " else char}</span>'
-                    delay_intro += 0.05
+                
+                # Sửa lỗi cắt chữ: Tách câu theo từng từ, bọc mỗi từ bằng 'white-space: nowrap' để chữ không bị rớt xuống dòng giữa chừng
+                for word in intro_text.split(" "):
+                    intro_html += '<span style="display: inline-block; white-space: nowrap;">'
+                    for char in word:
+                        intro_html += f'<span class="intro-wave-char" style="animation-delay: {delay_intro}s;">{char}</span>'
+                        delay_intro += 0.05
+                    intro_html += '</span> '
                 intro_html += '</div>'
                 
                 st.markdown(intro_html, unsafe_allow_html=True)
                 
                 st.markdown(f"<h4 style='text-align:center; color:white; margin-bottom:25px; font-weight: 800;'>{t['intro_question']}</h4>", unsafe_allow_html=True)
                 
-                # Nút xanh lá (tertiary) có hiệu ứng lóa sáng
                 if st.button(t["btn_create_acc_intro"], type="tertiary", use_container_width=True):
                     st.info("Vui lòng nhấn vào tab 'TẠO TÀI KHOẢN' ở phía trên để bắt đầu." if lang == "Tiếng Việt" else "Please click the 'CREATE ACCOUNT' tab above to start.")
 
