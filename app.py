@@ -178,29 +178,31 @@ with st.sidebar:
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
 
-# ĐỊNH NGHĨA HỘP THOẠI MODAL CHUẨN XÁC CỦA STREAMLIT
+# HỘP THOẠI MODAL ĐĂNG XUẤT (ĐÃ ĐẢO ĐÚNG MÀU SẮC THEO YÊU CẦU)
 @st.dialog(" ")
 def hop_thoai_dang_xuat():
     st.markdown("""
         <style>
-        /* CSS CHO 2 NÚT TRONG DIALOG ĐĂNG XUẤT */
-        div.stButton > button.logout-red {
+        /* Nút 1: Tạm thời nghỉ chân (MÀU ĐỎ CẢNH BÁO) */
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
             border: 1px solid rgba(239, 68, 68, 0.8) !important;
             color: white !important; font-weight: 800 !important; border-radius: 8px !important;
             transition: all 0.3s ease !important;
         }
-        div.stButton > button.logout-red:hover {
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover {
             box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
             transform: translateY(-2px) scale(1.03) !important;
         }
-        div.stButton > button.logout-green {
+        
+        /* Nút 2: Tiếp tục chặng đường (MÀU XANH LÁ HY VỌNG & NỔI BẬT) */
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
             border: 1px solid rgba(72, 187, 120, 0.8) !important;
             color: white !important; font-weight: 800 !important; border-radius: 8px !important;
             transition: all 0.3s ease !important;
         }
-        div.stButton > button.logout-green:hover {
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover {
             box-shadow: 0 0 25px rgba(72,187,120,0.9) !important;
             transform: translateY(-2px) scale(1.03) !important;
         }
@@ -211,13 +213,15 @@ def hop_thoai_dang_xuat():
     
     col_y, col_n = st.columns(2)
     with col_y:
-        if st.button("Tạm thời nghỉ chân", use_container_width=True, type="primary", key="confirm_out_yes"):
+        # Nút bên trái: Tạm thời nghỉ chân -> MÀU ĐỎ
+        if st.button("Tạm thời nghỉ chân", use_container_width=True, key="confirm_out_yes"):
             st.session_state["logged_in"] = False
             st.session_state["current_user"] = ""
             st.session_state["current_role"] = ""
             st.rerun()
     with col_n:
-        if st.button("Tiếp tục chặng đường", use_container_width=True, type="secondary", key="confirm_out_no"):
+        # Nút bên phải: Tiếp tục chặng đường -> MÀU XANH LÁ
+        if st.button("Tiếp tục chặng đường", use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
 def main_app():
@@ -251,7 +255,6 @@ def main_app():
             </style>
         """, unsafe_allow_html=True)
         
-        # NÚT ĐĂNG XUẤT MỞ DIALOG CHUẨN XÁC
         if st.button(l["logout"], type="secondary", use_container_width=True):
             hop_thoai_dang_xuat()
 
