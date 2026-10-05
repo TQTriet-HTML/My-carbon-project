@@ -14,27 +14,31 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* TIÊU ĐỀ: XIN CHÀO QUÝ ĐỒNG HÀNH - LUÔN TRÊN 1 DÒNG, LÓA SÁNG XANH LÁ 8 GIÂY */
-        @keyframes green-pulse-shine {
+        /* HIỆU ỨNG LÓA SÁNG TỪNG CHỮ: XANH LÁ SANG XANH DƯƠNG (CHU KỲ 8 GIÂY) */
+        @keyframes char-green-blue-glow {
             0%, 100% { 
                 color: #48bb78; 
-                text-shadow: 0 0 5px rgba(72,187,120,0.3); 
+                text-shadow: 0 0 4px rgba(72,187,120,0.3); 
             }
             50% { 
-                color: #a7f3d0; 
-                text-shadow: 0 0 25px rgba(72,187,120,0.9), 0 0 10px rgba(167,243,208,0.8); 
+                color: #63b3ed; 
+                text-shadow: 0 0 20px rgba(99,179,237,1), 0 0 8px rgba(72,187,120,0.8); 
+                transform: translateY(-2px);
             }
         }
-        .welcome-title {
-            font-size: 1.35rem; 
-            font-weight: 900; 
+        
+        .welcome-container { 
             text-align: center; 
-            text-transform: uppercase;
-            white-space: nowrap; /* Bắt buộc nằm trên một dòng duy nhất không bị rớt chữ */
-            color: #48bb78;
-            animation: green-pulse-shine 8s infinite ease-in-out; /* Chu kỳ đúng 8 giây */
             margin-bottom: 25px; 
+            white-space: nowrap; 
+        }
+        .welcome-char {
+            display: inline-block; 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            text-transform: uppercase;
             letter-spacing: 1px;
+            animation: char-green-blue-glow 8s infinite ease-in-out;
         }
 
         /* HOẠT HỌA CÂU SLOGAN CHÍNH */
@@ -193,8 +197,15 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     
     with col_form:
         with st.container(border=True):
-            # TIÊU ĐỀ NẰM TRÊN 1 DÒNG VỚI HIỆU ỨNG LÓA SÁNG 8 GIÂY
-            st.markdown(f'<div class="welcome-title">{t["welcome_msg"]}</div>', unsafe_allow_html=True)
+            # TẠO HIỆU ỨNG TỪNG CHỮ LÓA SÁNG (XANH LÁ -> XANH DƯƠNG, 8 GIÂY)
+            welcome_text = t["welcome_msg"]
+            welcome_html = '<div class="welcome-container">'
+            delay_wc = 0.0
+            for char in welcome_text:
+                welcome_html += f'<span class="welcome-char" style="animation-delay: {delay_wc}s;">{"&nbsp;" if char == " " else char}</span>'
+                delay_wc += 0.06
+            welcome_html += '</div>'
+            st.markdown(welcome_html, unsafe_allow_html=True)
             
             tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
             
