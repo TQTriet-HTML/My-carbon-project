@@ -1,10 +1,10 @@
+from logout_dialog import hien_thi_popup_dang_xuat
 import streamlit as st
 import ee
 import geemap.foliumap as geemap
 from streamlit_folium import folium_static 
 import os
 import random
-from logout_dialog import hien_thi_popup_dang_xuat
 
 from auth import hien_thi_cong_dang_nhap
 from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
@@ -211,12 +211,12 @@ def main_app():
             </style>
         """, unsafe_allow_html=True)
         
-        from logout_dialog import hien_thi_popup_dang_xuat
+from logout_dialog import hien_thi_popup_dang_xuat
 
 # Gọi hàm popup đăng xuất
 hien_thi_popup_dang_xuat()
-            
-    st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
+
+st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
