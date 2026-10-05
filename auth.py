@@ -12,6 +12,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
+        /* HOẠT HỌA CÂU SLOGAN CHÍNH */
         @keyframes letter-wave-halo {
             0%, 80% { transform: translateY(0); text-shadow: none; }
             85% { transform: translateY(-12px); text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 10px rgba(104,211,145,0.8); }
@@ -28,7 +29,23 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         .hero-subtitle { text-align: center; color: #a0aec0; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; }
 
-        /* HIỆU ỨNG KHỐI KÍNH PHA LÊ (ĐỒNG BỘ CHO CẢ CÁC KHỐI BÊN PHẢI) */
+        /* HOẠT HỌA 12S TAB GIỚI THIỆU: CHỮ XANH LÁ + HÀO QUANG XANH DƯƠNG */
+        @keyframes intro-wave-blue-halo {
+            0%, 85% { transform: translateY(0); text-shadow: none; }
+            90% { transform: translateY(-10px); text-shadow: 0 12px 25px rgba(66,153,225,1), 0 0 15px rgba(99,179,237,0.8); }
+            95% { transform: translateY(4px); text-shadow: 0 5px 10px rgba(66,153,225,0.5); }
+            100% { transform: translateY(0); text-shadow: none; }
+        }
+        .intro-wave-char {
+            display: inline-block;
+            color: #48bb78; /* Chữ màu xanh lá */
+            font-size: 1.05rem;
+            font-weight: 700;
+            animation: intro-wave-blue-halo 12s infinite ease-in-out;
+            line-height: 1.7;
+        }
+
+        /* HIỆU ỨNG KHỐI KÍNH PHA LÊ CHO CÁC KHỐI BÊN PHẢI */
         div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
             border: 1px solid rgba(72, 187, 120, 0.4) !important;
@@ -53,7 +70,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
 
-        /* HIỆU ỨNG NÚT BẤM LÓA SÁNG VÀ LƯỚT SÁNG (BUTTON SHINE) */
+        /* HIỆU ỨNG NÚT BẤM (PRIMARY MÀU ĐỎ GỐC) */
         @keyframes button-shine {
             0% { left: -100%; }
             20% { left: 100%; }
@@ -73,6 +90,24 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         div.stButton > button[kind="primary"]:hover {
             box-shadow: 0 0 25px rgba(239, 68, 68, 0.8) !important; transform: translateY(-2px);
+        }
+
+        /* NÚT TẠO TÀI KHOẢN MÀU XANH LÁ Ở TAB GIỚI THIỆU (TERTIARY) */
+        div.stButton > button[kind="tertiary"] {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; 
+            border: 1px solid rgba(72, 187, 120, 0.6) !important;
+            color: white !important; font-weight: 700 !important; letter-spacing: 1px;
+            position: relative; overflow: hidden !important; z-index: 1;
+            transition: all 0.3s ease !important;
+            border-radius: 8px !important;
+        }
+        div.stButton > button[kind="tertiary"]::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-25deg); animation: button-shine 4s infinite ease-in-out; z-index: -1;
+        }
+        div.stButton > button[kind="tertiary"]:hover {
+            box-shadow: 0 0 25px rgba(72, 187, 120, 0.8) !important; transform: translateY(-2px);
         }
 
         *:focus, *:active { outline: none !important; }
@@ -102,7 +137,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
             "subtitle": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
-            "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN", "sys_access": "HỆ THỐNG TRUY CẬP",
+            "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN", "tab_intro": "GIỚI THIỆU",
+            "sys_access": "HỆ THỐNG TRUY CẬP",
             "user": "Tên đăng nhập", "pass": "Mật khẩu",
             "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
             "achieve": "THÀNH TỰU NỀN TẢNG", "ach_1_val": "2.5M+", "ach_1_lbl": "Tấn Carbon Giao Dịch", "ach_2_val": "15,000", "ach_2_lbl": "Hecta Rừng Được Bảo Vệ",
@@ -110,12 +146,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "news_lbl": "TIN MỚI NHẤT:", "news_txt": "Thị trường Tín chỉ Carbon Việt Nam chính thức bước vào giai đoạn vận hành thí điểm.",
             "pwd_error": "Mật khẩu phải từ 8-20 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.",
             "reg_success_msg": "Bạn đã đặt bước chân đầu tiên trên chặng đường xanh!",
-            "btn_auto_login": "ĐĂNG NHẬP NGAY"
+            "btn_auto_login": "ĐĂNG NHẬP NGAY",
+            "intro_mission": "Sứ mệnh của nền tảng là kiến tạo một tương lai tươi sáng, xanh sạch và phát triển bền vững.",
+            "intro_question": "Bạn đã sẵn sàng cho một tương lai xanh chưa?",
+            "btn_create_acc_intro": "TẠO TÀI KHOẢN NGAY"
         },
         "English": {
             "slogan": "ONE TOUCH - ONE GREEN WORLD",
             "subtitle": "Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
-            "tab_login": "LOGIN", "tab_reg": "CREATE ACCOUNT", "sys_access": "SYSTEM ACCESS",
+            "tab_login": "LOGIN", "tab_reg": "CREATE ACCOUNT", "tab_intro": "INTRODUCTION",
+            "sys_access": "SYSTEM ACCESS",
             "user": "Username", "pass": "Password",
             "btn_login": "Login to Platform", "btn_reg": "Register Account",
             "achieve": "PLATFORM ACHIEVEMENTS", "ach_1_val": "2.5M+", "ach_1_lbl": "Tons Carbon Traded", "ach_2_val": "15,000", "ach_2_lbl": "Hectares Protected",
@@ -123,7 +163,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "news_lbl": "LATEST NEWS:", "news_txt": "Vietnam's Carbon Credit Market officially begins pilot operation.",
             "pwd_error": "Password must be 8-20 characters, with at least 1 uppercase, 1 lowercase, 1 number, and 1 special character.",
             "reg_success_msg": "You have taken the first step on the green journey!",
-            "btn_auto_login": "LOGIN NOW"
+            "btn_auto_login": "LOGIN NOW",
+            "intro_mission": "The platform's mission is to forge a bright, clean, green, and sustainable future.",
+            "intro_question": "Are you ready for a green future?",
+            "btn_create_acc_intro": "CREATE ACCOUNT NOW"
         }
     }
     t = T[lang]
@@ -143,7 +186,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     with col_form:
         with st.container(border=True):
             st.markdown(f'<div class="section-title" style="border-left:none; padding-left:0; text-align:center;">{t["sys_access"]}</div>', unsafe_allow_html=True)
-            tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
+            
+            # Đã bổ sung tab GIỚI THIỆU vào danh sách
+            tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
             
             with tab_dang_nhap:
                 with st.form("form_login"):
@@ -197,8 +242,25 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
+            # TAB GIỚI THIỆU MỚI
+            with tab_gioi_thieu:
+                intro_text = t["intro_mission"]
+                intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px;">'
+                delay_intro = 0.0
+                for char in intro_text:
+                    intro_html += f'<span class="intro-wave-char" style="animation-delay: {delay_intro}s;">{"&nbsp;" if char == " " else char}</span>'
+                    delay_intro += 0.05
+                intro_html += '</div>'
+                
+                st.markdown(intro_html, unsafe_allow_html=True)
+                
+                st.markdown(f"<h4 style='text-align:center; color:white; margin-bottom:25px; font-weight: 800;'>{t['intro_question']}</h4>", unsafe_allow_html=True)
+                
+                # Nút xanh lá (tertiary) có hiệu ứng lóa sáng
+                if st.button(t["btn_create_acc_intro"], type="tertiary", use_container_width=True):
+                    st.info("Vui lòng nhấn vào tab 'TẠO TÀI KHOẢN' ở phía trên để bắt đầu." if lang == "Tiếng Việt" else "Please click the 'CREATE ACCOUNT' tab above to start.")
+
     with col_info:
-        # Sử dụng đúng class glass-block để khôi phục hoàn toàn hiệu ứng kính lóa sáng & lướt sáng xanh lá
         st.markdown(f"""
         <div class="glass-block">
             <div class="section-title">{t['achieve']}</div>
