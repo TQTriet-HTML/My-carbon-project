@@ -14,18 +14,33 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
+        /* TIÊU ĐỀ: XIN CHÀO QUÝ ĐỒNG HÀNH - LÓA SÁNG XANH LÁ */
+        @keyframes welcome-shine {
+            to { background-position: 200% center; }
+        }
+        .welcome-title {
+            font-size: 1.6rem; font-weight: 900; text-align: center; text-transform: uppercase;
+            background: linear-gradient(to right, #48bb78, #a7f3d0, #48bb78);
+            background-size: 200% auto; color: #fff; background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: welcome-shine 4s linear infinite; 
+            margin-bottom: 25px; letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(72,187,120,0.5);
+        }
+
         /* 1. KHUNG XANH LÁ BỌC QUANH CÁC TIÊU MỤC (TAB LIST) VỚI HIỆU ỨNG LƯỚT SÁNG 6S */
-        div[data-baseweb="tab-list"] {
+        [data-testid="stTabs"] [data-baseweb="tab-list"] {
             display: flex !important;
             justify-content: space-between !important;
             width: 100% !important;
-            border: 2px solid rgba(72, 187, 120, 0.5) !important;
+            border: 2px solid #48bb78 !important; /* Khung viền xanh lá */
             border-radius: 12px !important;
-            padding: 8px !important;
+            padding: 6px !important;
             background: rgba(26, 32, 44, 0.6) !important;
             position: relative !important;
             overflow: hidden !important;
             margin-bottom: 20px !important;
+            gap: 5px !important;
         }
 
         /* Hiệu ứng vầng sáng lướt qua tiêu mục mỗi 6 giây */
@@ -34,12 +49,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             15% { left: 100%; } /* Lướt qua nhanh */
             100% { left: 100%; } /* Đợi phần thời gian còn lại của 6s */
         }
-        div[data-baseweb="tab-list"]::before {
+        [data-testid="stTabs"] [data-baseweb="tab-list"]::before {
             content: '';
             position: absolute;
             top: 0; left: -100%;
-            width: 40%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.4), transparent);
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
             transform: skewX(-25deg);
             animation: tab-frame-sweep 6s infinite ease-in-out;
             pointer-events: none;
@@ -47,7 +62,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
 
         /* 2. ĐỊNH DẠNG TỪNG TIÊU MỤC BÊN TRONG KHUNG */
-        button[data-baseweb="tab"] {
+        [data-testid="stTabs"] button[role="tab"] {
             flex: 1 1 0% !important;
             justify-content: center !important;
             text-align: center !important;
@@ -55,42 +70,41 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 1 !important;
             border-radius: 8px !important;
             padding: 10px 0 !important;
+            background: transparent !important;
+            border: none !important;
         }
 
-        /* TRỊ TẬN GỐC MÀU ĐỎ CỦA STREAMLIT: Ép màu mặc định là xám */
-        button[data-baseweb="tab"] * {
+        /* TRỊ TẬN GỐC MÀU ĐỎ CỦA STREAMLIT: Ép màu mặc định là xám nhạt */
+        [data-testid="stTabs"] button[role="tab"] * {
             color: #a0aec0 !important;
             transition: all 0.3s ease !important;
         }
 
         /* 3. HIỆU ỨNG NỔI LÊN & ĐỔI MÀU XANH LÁ KHI TRỎ CHUỘT HOẶC ĐƯỢC CHỌN */
         /* Khi trỏ chuột */
-        button[data-baseweb="tab"]:hover {
-            transform: scale(1.05) translateY(-2px) !important;
-            background: rgba(72, 187, 120, 0.1) !important;
+        [data-testid="stTabs"] button[role="tab"]:hover {
+            transform: scale(1.03) translateY(-2px) !important;
+            background: rgba(72, 187, 120, 0.15) !important;
             box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3) !important;
         }
-        button[data-baseweb="tab"]:hover * {
+        [data-testid="stTabs"] button[role="tab"]:hover * {
             color: #48bb78 !important;
         }
 
         /* Khi được chọn (Active) */
-        button[data-baseweb="tab"][aria-selected="true"] {
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
             transform: scale(1.05) translateY(-2px) !important;
-            background: rgba(72, 187, 120, 0.15) !important;
+            background: rgba(72, 187, 120, 0.25) !important;
             box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4) !important;
         }
-        button[data-baseweb="tab"][aria-selected="true"] * {
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] * {
             color: #48bb78 !important;
             font-weight: 900 !important;
         }
 
-        /* ÉP MÀU VẠCH KẺ DƯỚI (HIGHLIGHT) THÀNH XANH LÁ */
-        div[data-baseweb="tab-highlight"] {
-            background-color: #48bb78 !important;
-            height: 3px !important;
-            border-radius: 3px !important;
-            bottom: 5px !important;
+        /* Ẩn gạch chân highlight của Streamlit vì đã có khung bọc */
+        [data-testid="stTabs"] div[data-baseweb="tab-highlight"] {
+            display: none !important;
         }
         
         /* HOẠT HỌA CÂU SLOGAN CHÍNH */
@@ -202,7 +216,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
             "subtitle": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
             "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN", "tab_intro": "GIỚI THIỆU",
-            "sys_access": "HỆ THỐNG TRUY CẬP",
+            "welcome_msg": "XIN CHÀO QUÝ ĐỒNG HÀNH!",
             "user": "Tên đăng nhập", "pass": "Mật khẩu",
             "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
             "achieve": "THÀNH TỰU NỀN TẢNG", "ach_1_val": "2.5M+", "ach_1_lbl": "Tấn Carbon Giao Dịch", "ach_2_val": "15,000", "ach_2_lbl": "Hecta Rừng Được Bảo Vệ",
@@ -219,7 +233,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "slogan": "ONE TOUCH - ONE GREEN WORLD",
             "subtitle": "Welcome to the pioneer Carbon Credit Exchange. Where AI satellite tech meets the mission to protect the Earth.",
             "tab_login": "LOGIN", "tab_reg": "CREATE ACCOUNT", "tab_intro": "INTRODUCTION",
-            "sys_access": "SYSTEM ACCESS",
+            "welcome_msg": "WELCOME OUR COMPANIONS!",
             "user": "Username", "pass": "Password",
             "btn_login": "Login to Platform", "btn_reg": "Register Account",
             "achieve": "PLATFORM ACHIEVEMENTS", "ach_1_val": "2.5M+", "ach_1_lbl": "Tons Carbon Traded", "ach_2_val": "15,000", "ach_2_lbl": "Hectares Protected",
@@ -248,125 +262,128 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     _, col_form, col_space, col_info, _ = st.columns([0.5, 3, 0.2, 3, 0.5])
     
     with col_form:
-        st.markdown(f'<div class="section-title" style="border-left:none; padding-left:0; text-align:center;">{t["sys_access"]}</div>', unsafe_allow_html=True)
-        
-        tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
-        
-        with tab_dang_nhap:
-            with st.form("form_login"):
-                u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
-                u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
-                submitted = st.form_submit_button(t["btn_login"], type="tertiary", use_container_width=True)
-                if submitted:
-                    db = st.session_state["users_db"]
-                    if u_name in db and db[u_name]["password"] == u_pass:
+        # KHÔI PHỤC VIỀN BAO NGOÀI CHO TOÀN BỘ KHU VỰC ĐĂNG NHẬP / ĐĂNG KÝ
+        with st.container(border=True):
+            # TIÊU ĐỀ MỚI VỚI HIỆU ỨNG LÓA SÁNG XANH LÁ
+            st.markdown(f'<div class="welcome-title">{t["welcome_msg"]}</div>', unsafe_allow_html=True)
+            
+            tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
+            
+            with tab_dang_nhap:
+                with st.form("form_login"):
+                    u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
+                    u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
+                    submitted = st.form_submit_button(t["btn_login"], type="tertiary", use_container_width=True)
+                    if submitted:
+                        db = st.session_state["users_db"]
+                        if u_name in db and db[u_name]["password"] == u_pass:
+                            st.session_state["logged_in"] = True
+                            st.session_state["current_user"] = u_name
+                            st.session_state["current_role"] = db[u_name]["role"]
+                            st.rerun()
+                        else: st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
+            
+            with tab_dang_ky:
+                if st.session_state["reg_success_data"]:
+                    st.markdown(f"""
+                        <div class="glass-block" style="border-color: #48bb78; box-shadow: 0 0 25px rgba(72,187,120,0.5); text-align:center; padding: 25px; margin-top: 15px;">
+                            <h3 style="color:#48bb78; font-weight:800; margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4;">{t['reg_success_msg']}</h3>
+                            <p style="color:#a0aec0; margin-bottom: 5px;">Tài khoản / Account: <b style="color:white;">{st.session_state['reg_success_data']['user']}</b></p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                    if st.button(t["btn_auto_login"], type="tertiary", use_container_width=True, key="btn_auto_login_main"):
+                        data = st.session_state["reg_success_data"]
                         st.session_state["logged_in"] = True
-                        st.session_state["current_user"] = u_name
-                        st.session_state["current_role"] = db[u_name]["role"]
+                        st.session_state["current_user"] = data["user"]
+                        st.session_state["current_role"] = data["role"]
+                        st.session_state["reg_success_data"] = None
                         st.rerun()
-                    else: st.error("Thông giải không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
-        
-        with tab_dang_ky:
-            if st.session_state["reg_success_data"]:
-                st.markdown(f"""
-                    <div class="glass-block" style="border-color: #48bb78; box-shadow: 0 0 25px rgba(72,187,120,0.5); text-align:center; padding: 25px; margin-top: 15px;">
-                        <h3 style="color:#48bb78; font-weight:800; margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4;">{t['reg_success_msg']}</h3>
-                        <p style="color:#a0aec0; margin-bottom: 5px;">Tài khoản / Account: <b style="color:white;">{st.session_state['reg_success_data']['user']}</b></p>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                if st.button(t["btn_auto_login"], type="tertiary", use_container_width=True, key="btn_auto_login_main"):
-                    data = st.session_state["reg_success_data"]
-                    st.session_state["logged_in"] = True
-                    st.session_state["current_user"] = data["user"]
-                    st.session_state["current_role"] = data["role"]
-                    st.session_state["reg_success_data"] = None
-                    st.rerun()
-            else:
-                with st.form("form_register", clear_on_submit=True):
-                    new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
-                    new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
-                    role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
-                    
-                    reg_submitted = st.form_submit_button(t["btn_reg"], type="tertiary", use_container_width=True)
-                    
-                    if reg_submitted:
-                        if not new_user or not new_pass:
-                            st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
-                        elif new_user in st.session_state["users_db"]:
-                            st.error("Tài khoản đã tồn tại." if lang=="Tiếng Việt" else "Account already exists.")
-                        else:
-                            pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
-                            if not re.match(pwd_pattern, new_pass):
-                                st.error(t["pwd_error"])
+                else:
+                    with st.form("form_register", clear_on_submit=True):
+                        new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
+                        new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
+                        role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
+                        
+                        reg_submitted = st.form_submit_button(t["btn_reg"], type="tertiary", use_container_width=True)
+                        
+                        if reg_submitted:
+                            if not new_user or not new_pass:
+                                st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+                            elif new_user in st.session_state["users_db"]:
+                                st.error("Tài khoản đã tồn tại." if lang=="Tiếng Việt" else "Account already exists.")
                             else:
-                                st.session_state["users_db"][new_user] = {"password": new_pass, "role": role_sel}
-                                st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
-                                st.rerun()
+                                pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
+                                if not re.match(pwd_pattern, new_pass):
+                                    st.error(t["pwd_error"])
+                                else:
+                                    st.session_state["users_db"][new_user] = {"password": new_pass, "role": role_sel}
+                                    st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
+                                    st.rerun()
 
-        with tab_gioi_thieu:
-            if st.session_state["reg_success_data"]:
-                st.markdown(f"""
-                    <div class="glass-block" style="border-color: #48bb78; box-shadow: 0 0 25px rgba(72,187,120,0.5); text-align:center; padding: 25px; margin-top: 15px;">
-                        <h3 style="color:#48bb78; font-weight:800; margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4;">{t['reg_success_msg']}</h3>
-                        <p style="color:#a0aec0; margin-bottom: 5px;">Tài khoản / Account: <b style="color:white;">{st.session_state['reg_success_data']['user']}</b></p>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                if st.button(t["btn_auto_login"], type="tertiary", use_container_width=True, key="btn_auto_login_intro"):
-                    data = st.session_state["reg_success_data"]
-                    st.session_state["logged_in"] = True
-                    st.session_state["current_user"] = data["user"]
-                    st.session_state["current_role"] = data["role"]
-                    st.session_state["reg_success_data"] = None
-                    st.rerun()
-
-            elif st.session_state["show_intro_reg_form"]:
-                st.markdown(f"<h5 style='text-align:center; color:#48bb78; margin-bottom: 15px;'>ĐĂNG KÝ TÀI KHOẢN MỚI</h5>", unsafe_allow_html=True)
-                with st.form("form_register_intro", clear_on_submit=True):
-                    new_user_intro = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username", key="reg_u_intro")
-                    new_pass_intro = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password", key="reg_p_intro")
-                    role_sel_intro = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"], key="reg_r_intro")
+            with tab_gioi_thieu:
+                if st.session_state["reg_success_data"]:
+                    st.markdown(f"""
+                        <div class="glass-block" style="border-color: #48bb78; box-shadow: 0 0 25px rgba(72,187,120,0.5); text-align:center; padding: 25px; margin-top: 15px;">
+                            <h3 style="color:#48bb78; font-weight:800; margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4;">{t['reg_success_msg']}</h3>
+                            <p style="color:#a0aec0; margin-bottom: 5px;">Tài khoản / Account: <b style="color:white;">{st.session_state['reg_success_data']['user']}</b></p>
+                        </div>
+                    """, unsafe_allow_html=True)
                     
-                    reg_submitted_intro = st.form_submit_button(t["btn_reg"], type="tertiary", use_container_width=True)
-                    if reg_submitted_intro:
-                        if not new_user_intro or not new_pass_intro:
-                            st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
-                        elif new_user_intro in st.session_state["users_db"]:
-                            st.error("Tài khoản đã tồn tại." if lang=="Tiếng Việt" else "Account already exists.")
-                        else:
-                            pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
-                            if not re.match(pwd_pattern, new_pass_intro):
-                                st.error(t["pwd_error"])
-                            else:
-                                st.session_state["users_db"][new_user_intro] = {"password": new_pass_intro, "role": role_sel_intro}
-                                st.session_state["reg_success_data"] = {"user": new_user_intro, "role": role_sel_intro}
-                                st.session_state["show_intro_reg_form"] = False
-                                st.rerun()
-                
-                if st.button("QUAY LẠI GIỚI THIỆU" if lang=="Tiếng Việt" else "BACK TO INTRO", type="tertiary", use_container_width=True):
-                    st.session_state["show_intro_reg_form"] = False
-                    st.rerun()
+                    if st.button(t["btn_auto_login"], type="tertiary", use_container_width=True, key="btn_auto_login_intro"):
+                        data = st.session_state["reg_success_data"]
+                        st.session_state["logged_in"] = True
+                        st.session_state["current_user"] = data["user"]
+                        st.session_state["current_role"] = data["role"]
+                        st.session_state["reg_success_data"] = None
+                        st.rerun()
 
-            else:
-                intro_text = t["intro_mission"]
-                intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px; line-height: 1.7;">'
-                delay_intro = 0.0
-                
-                for word in intro_text.split(" "):
-                    intro_html += '<span style="display: inline-block; white-space: nowrap;">'
-                    for char in word:
-                        intro_html += f'<span class="intro-wave-char" style="animation-delay: {delay_intro}s;">{char}</span>'
-                        delay_intro += 0.05
-                    intro_html += '</span> '
-                intro_html += '</div>'
-                
-                st.markdown(intro_html, unsafe_allow_html=True)
-                st.markdown(f"<h4 style='text-align:center; color:white; margin-bottom:25px; font-weight: 800;'>{t['intro_question']}</h4>", unsafe_allow_html=True)
-                
-                if st.button(t["btn_create_acc_intro"], type="tertiary", use_container_width=True):
-                    st.session_state["show_intro_reg_form"] = True
-                    st.rerun()
+                elif st.session_state["show_intro_reg_form"]:
+                    st.markdown(f"<h5 style='text-align:center; color:#48bb78; margin-bottom: 15px;'>ĐĂNG KÝ TÀI KHOẢN MỚI</h5>", unsafe_allow_html=True)
+                    with st.form("form_register_intro", clear_on_submit=True):
+                        new_user_intro = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username", key="reg_u_intro")
+                        new_pass_intro = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password", key="reg_p_intro")
+                        role_sel_intro = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"], key="reg_r_intro")
+                        
+                        reg_submitted_intro = st.form_submit_button(t["btn_reg"], type="tertiary", use_container_width=True)
+                        if reg_submitted_intro:
+                            if not new_user_intro or not new_pass_intro:
+                                st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+                            elif new_user_intro in st.session_state["users_db"]:
+                                st.error("Tài khoản đã tồn tại." if lang=="Tiếng Việt" else "Account already exists.")
+                            else:
+                                pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
+                                if not re.match(pwd_pattern, new_pass_intro):
+                                    st.error(t["pwd_error"])
+                                else:
+                                    st.session_state["users_db"][new_user_intro] = {"password": new_pass_intro, "role": role_sel_intro}
+                                    st.session_state["reg_success_data"] = {"user": new_user_intro, "role": role_sel_intro}
+                                    st.session_state["show_intro_reg_form"] = False
+                                    st.rerun()
+                    
+                    if st.button("QUAY LẠI GIỚI THIỆU" if lang=="Tiếng Việt" else "BACK TO INTRO", type="tertiary", use_container_width=True):
+                        st.session_state["show_intro_reg_form"] = False
+                        st.rerun()
+
+                else:
+                    intro_text = t["intro_mission"]
+                    intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px; line-height: 1.7;">'
+                    delay_intro = 0.0
+                    
+                    for word in intro_text.split(" "):
+                        intro_html += '<span style="display: inline-block; white-space: nowrap;">'
+                        for char in word:
+                            intro_html += f'<span class="intro-wave-char" style="animation-delay: {delay_intro}s;">{char}</span>'
+                            delay_intro += 0.05
+                        intro_html += '</span> '
+                    intro_html += '</div>'
+                    
+                    st.markdown(intro_html, unsafe_allow_html=True)
+                    st.markdown(f"<h4 style='text-align:center; color:white; margin-bottom:25px; font-weight: 800;'>{t['intro_question']}</h4>", unsafe_allow_html=True)
+                    
+                    if st.button(t["btn_create_acc_intro"], type="tertiary", use_container_width=True):
+                        st.session_state["show_intro_reg_form"] = True
+                        st.rerun()
 
     with col_info:
         st.markdown(f"""
