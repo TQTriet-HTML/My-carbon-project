@@ -163,10 +163,6 @@ if "market_projects" not in st.session_state:
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 
-# TRẠNG THÁI HIỂN THỊ HỘP THOẠI ĐĂNG XUẤT
-if "show_logout_dialog" not in st.session_state: 
-    st.session_state["show_logout_dialog"] = False
-
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
     st.markdown(f"<h3 style='color: white; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px;'>{l['lang_select']}</h3>", unsafe_allow_html=True)
@@ -181,6 +177,48 @@ with st.sidebar:
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
+
+# ĐỊNH NGHĨA HỘP THOẠI MODAL CHUẨN XÁC CỦA STREAMLIT
+@st.dialog(" ")
+def hop_thoai_dang_xuat():
+    st.markdown("""
+        <style>
+        /* CSS CHO 2 NÚT TRONG DIALOG ĐĂNG XUẤT */
+        div.stButton > button.logout-red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            border: 1px solid rgba(239, 68, 68, 0.8) !important;
+            color: white !important; font-weight: 800 !important; border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        div.stButton > button.logout-red:hover {
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
+            transform: translateY(-2px) scale(1.03) !important;
+        }
+        div.stButton > button.logout-green {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+            border: 1px solid rgba(72, 187, 120, 0.8) !important;
+            color: white !important; font-weight: 800 !important; border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        div.stButton > button.logout-green:hover {
+            box-shadow: 0 0 25px rgba(72,187,120,0.9) !important;
+            transform: translateY(-2px) scale(1.03) !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
+    
+    col_y, col_n = st.columns(2)
+    with col_y:
+        if st.button("Tạm thời nghỉ chân", use_container_width=True, type="primary", key="confirm_out_yes"):
+            st.session_state["logged_in"] = False
+            st.session_state["current_user"] = ""
+            st.session_state["current_role"] = ""
+            st.rerun()
+    with col_n:
+        if st.button("Tiếp tục chặng đường", use_container_width=True, type="secondary", key="confirm_out_no"):
+            st.rerun()
 
 def main_app():
     l = LANG_DICT[st.session_state["current_lang"]]
@@ -213,62 +251,9 @@ def main_app():
             </style>
         """, unsafe_allow_html=True)
         
-        # NÚT ĐĂNG XUẤT TRÊN GÓC PHẢI
+        # NÚT ĐĂNG XUẤT MỞ DIALOG CHUẨN XÁC
         if st.button(l["logout"], type="secondary", use_container_width=True):
-            st.session_state["show_logout_dialog"] = True
-            st.rerun()
-
-    # =========================================================================
-    # HỘP THOẠI POPUP ĐĂNG XUẤT CHUẨN XÁC GIỮA MÀN HÌNH (SỬ DỤNG BORDER=TRUE)
-    # =========================================================================
-    if st.session_state.get("show_logout_dialog", False):
-        st.markdown("""<div class="logout-overlay"></div>""", unsafe_allow_html=True)
-        
-        # Viền Container (border=True) giúp CSS bắt đúng toàn bộ khối UI
-        with st.container(border=True):
-            st.markdown("""
-            <div class="logout-anchor"></div>
-            <style>
-            .logout-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(9, 13, 22, 0.85); backdrop-filter: blur(8px); z-index: 999998; }
-            
-            /* Cố định Container chứa Popup */
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) { 
-                position: fixed !important; top: 50% !important; left: 50% !important; 
-                transform: translate(-50%, -50%) !important; 
-                background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98)) !important; 
-                border: 2px solid #48bb78 !important; border-radius: 16px !important; 
-                padding: 35px !important; z-index: 999999 !important; 
-                width: 90% !important; max-width: 480px !important; 
-                box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 35px rgba(72,187,120,0.6) !important; 
-                animation: popIn 0.3s ease-out forwards !important; 
-            }
-            @keyframes popIn { from { opacity: 0; transform: translate(-50%, -45%) scale(0.9); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-            
-            /* Ép style Nút Đỏ (Cột 1) */
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button:hover { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
-            
-            /* Ép style Nút Xanh lá (Cột 2) */
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button { background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button:hover { box-shadow: 0 0 25px rgba(72,187,120,0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
-            </style>
-            """, unsafe_allow_html=True)
-
-            st.markdown("<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
-            
-            c_yes, c_no = st.columns(2)
-            with c_yes:
-                if st.button("Tạm thời nghỉ chân", use_container_width=True, key="btn_confirm_logout_action"):
-                    st.session_state["logged_in"] = False
-                    st.session_state["current_user"] = ""
-                    st.session_state["current_role"] = ""
-                    st.session_state["show_logout_dialog"] = False
-                    st.rerun()
-            with c_no:
-                if st.button("Tiếp tục chặng đường", use_container_width=True, key="btn_cancel_logout_action"):
-                    st.session_state["show_logout_dialog"] = False
-                    st.rerun()
-    # =========================================================================
+            hop_thoai_dang_xuat()
 
     st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
