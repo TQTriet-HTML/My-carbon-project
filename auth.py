@@ -2,7 +2,6 @@ import streamlit as st
 import re
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
-    # Khởi tạo biến lưu trạng thái đăng ký thành công
     if "reg_success_data" not in st.session_state:
         st.session_state["reg_success_data"] = None
 
@@ -28,6 +27,31 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: letter-wave-halo 10s infinite ease-in-out;
         }
         .hero-subtitle { text-align: center; color: #a0aec0; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; }
+
+        /* HIỆU ỨNG KHỐI KÍNH PHA LÊ (ĐỒNG BỘ CHO CẢ CÁC KHỐI BÊN PHẢI) */
+        div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
+            border: 1px solid rgba(72, 187, 120, 0.4) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden !important;
+            transition: all 0.4s ease !important;
+            padding: 24px !important;
+            margin-bottom: 20px !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-block:hover {
+            border-color: #48bb78 !important;
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important;
+            transform: translateY(-2px);
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]::after, .glass-block::after {
+            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.25), transparent);
+            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
 
         /* HIỆU ỨNG NÚT BẤM LÓA SÁNG VÀ LƯỚT SÁNG (BUTTON SHINE) */
         @keyframes button-shine {
@@ -136,7 +160,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         else: st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
             
             with tab_dang_ky:
-                # Nếu vừa đăng ký thành công, hiển thị Khối thông báo & Nút đăng nhập nhanh
                 if st.session_state["reg_success_data"]:
                     st.markdown(f"""
                         <div class="glass-block" style="border-color: #48bb78; box-shadow: 0 0 25px rgba(72,187,120,0.5); text-align:center; padding: 25px; margin-top: 15px;">
@@ -150,10 +173,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         st.session_state["logged_in"] = True
                         st.session_state["current_user"] = data["user"]
                         st.session_state["current_role"] = data["role"]
-                        st.session_state["reg_success_data"] = None  # Xóa trạng thái
+                        st.session_state["reg_success_data"] = None
                         st.rerun()
                 else:
-                    # Form đăng ký bình thường
                     with st.form("form_register", clear_on_submit=True):
                         new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
                         new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
@@ -167,7 +189,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                             elif new_user in st.session_state["users_db"]:
                                 st.error("Tài khoản đã tồn tại." if lang=="Tiếng Việt" else "Account already exists.")
                             else:
-                                # Kiểm tra Regex Mật khẩu: 8-20 ký tự, chữ hoa, chữ thường, số, ký tự đặc biệt
                                 pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
                                 if not re.match(pwd_pattern, new_pass):
                                     st.error(t["pwd_error"])
@@ -177,22 +198,25 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.rerun()
 
     with col_info:
-        with st.container(border=True):
-            st.markdown(f"""
+        # Sử dụng đúng class glass-block để khôi phục hoàn toàn hiệu ứng kính lóa sáng & lướt sáng xanh lá
+        st.markdown(f"""
+        <div class="glass-block">
             <div class="section-title">{t['achieve']}</div>
             <div style="display: flex; justify-content: space-around; text-align:center;">
                 <div><div class="stat-value">{t['ach_1_val']}</div><div class="stat-label">{t['ach_1_lbl']}</div></div>
                 <div><div class="stat-value">{t['ach_2_val']}</div><div class="stat-label">{t['ach_2_lbl']}</div></div>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
-        with st.container(border=True):
-            st.markdown(f"""
+        st.markdown(f"""
+        <div class="glass-block">
             <div class="section-title">{t['projects']}</div>
             <div class="project-title">{t['proj_name']}</div>
             <div class="project-desc">{t['proj_desc']}</div>
             <div style="text-align:center;"><span class="verified-badge">{t['proj_badge']}</span></div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="news-ticker-container">
