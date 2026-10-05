@@ -1,4 +1,3 @@
-from logout_dialog import hien_thi_popup_dang_xuat
 import streamlit as st
 import ee
 import geemap.foliumap as geemap
@@ -211,14 +210,26 @@ def main_app():
             </style>
         """, unsafe_allow_html=True)
         
-from logout_dialog import hien_thi_popup_dang_xuat
+        if not st.session_state["confirm_logout"]:
+            if st.button(l["logout"], type="secondary", use_container_width=True):
+                st.session_state["confirm_logout"] = True
+                st.rerun()
+        else:
+            st.warning("Bạn có chắc chắn muốn đăng xuất không?" if st.session_state["current_lang"]=="Tiếng Việt" else "Are you sure to logout?")
+            c_yes, c_no = st.columns(2)
+            with c_yes:
+                if st.button("Có" if st.session_state["current_lang"]=="Tiếng Việt" else "Yes", type="primary", use_container_width=True):
+                    st.session_state["logged_in"] = False
+                    st.session_state["confirm_logout"] = False
+                    st.rerun()
+            with c_no:
+                if st.button("Không" if st.session_state["current_lang"]=="Tiếng Việt" else "No", type="secondary", use_container_width=True):
+                    st.session_state["confirm_logout"] = False
+                    st.rerun()
+            
+    st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
-# Gọi hàm popup đăng xuất
-hien_thi_popup_dang_xuat()
-
-st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
-
-try:
+    try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
         cred_path = os.path.expanduser('~/.config/earthengine/')
         os.makedirs(cred_path, exist_ok=True)
