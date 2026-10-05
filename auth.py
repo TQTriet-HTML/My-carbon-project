@@ -14,46 +14,83 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* BỌC KHUNG XANH LÁ CHO KHU VỰC TABS VÀ ÉP CĂN GIỮA, ĐỔI MÀU */
-        [data-testid="stTabs"] {
-            border: 1px solid rgba(72, 187, 120, 0.4) !important;
-            border-radius: 12px !important;
-            padding: 15px !important;
-            box-shadow: 0 0 20px rgba(72, 187, 120, 0.1) !important;
-            background: rgba(26, 32, 44, 0.4) !important;
-        }
-        [data-testid="stTabs"] [data-baseweb="tab-list"] {
+        /* 1. KHUNG XANH LÁ BỌC QUANH CÁC TIÊU MỤC (TAB LIST) VỚI HIỆU ỨNG LƯỚT SÁNG 6S */
+        div[data-baseweb="tab-list"] {
             display: flex !important;
-            justify-content: center !important;
+            justify-content: space-between !important;
             width: 100% !important;
+            border: 2px solid rgba(72, 187, 120, 0.5) !important;
+            border-radius: 12px !important;
+            padding: 8px !important;
+            background: rgba(26, 32, 44, 0.6) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            margin-bottom: 20px !important;
         }
-        [data-testid="stTabs"] button[role="tab"] {
-            flex: 1 !important;
-            text-align: center !important;
+
+        /* Hiệu ứng vầng sáng lướt qua tiêu mục mỗi 6 giây */
+        @keyframes tab-frame-sweep {
+            0% { left: -100%; }
+            15% { left: 100%; } /* Lướt qua nhanh */
+            100% { left: 100%; } /* Đợi phần thời gian còn lại của 6s */
+        }
+        div[data-baseweb="tab-list"]::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 40%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.4), transparent);
+            transform: skewX(-25deg);
+            animation: tab-frame-sweep 6s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 2. ĐỊNH DẠNG TỪNG TIÊU MỤC BÊN TRONG KHUNG */
+        button[data-baseweb="tab"] {
+            flex: 1 1 0% !important;
             justify-content: center !important;
+            text-align: center !important;
+            transition: all 0.3s ease !important;
+            z-index: 1 !important;
+            border-radius: 8px !important;
+            padding: 10px 0 !important;
+        }
+
+        /* TRỊ TẬN GỐC MÀU ĐỎ CỦA STREAMLIT: Ép màu mặc định là xám */
+        button[data-baseweb="tab"] * {
+            color: #a0aec0 !important;
             transition: all 0.3s ease !important;
         }
-        
-        /* Chuyển màu Vạch kẻ dưới (Highlight) sang Xanh lá */
-        [data-testid="stTabs"] div[data-baseweb="tab-highlight"] {
-            background-color: #48bb78 !important;
+
+        /* 3. HIỆU ỨNG NỔI LÊN & ĐỔI MÀU XANH LÁ KHI TRỎ CHUỘT HOẶC ĐƯỢC CHỌN */
+        /* Khi trỏ chuột */
+        button[data-baseweb="tab"]:hover {
+            transform: scale(1.05) translateY(-2px) !important;
+            background: rgba(72, 187, 120, 0.1) !important;
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3) !important;
         }
-        
-        /* Chuyển chữ của Tab Đang Chọn sang Xanh lá, In đậm và Phóng to */
-        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] p,
-        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] span {
+        button[data-baseweb="tab"]:hover * {
+            color: #48bb78 !important;
+        }
+
+        /* Khi được chọn (Active) */
+        button[data-baseweb="tab"][aria-selected="true"] {
+            transform: scale(1.05) translateY(-2px) !important;
+            background: rgba(72, 187, 120, 0.15) !important;
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4) !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] * {
             color: #48bb78 !important;
             font-weight: 900 !important;
-            transform: scale(1.05);
-            transition: all 0.3s ease;
         }
-        
-        /* Hiệu ứng khi Trỏ chuột vào các Tab */
-        [data-testid="stTabs"] button[role="tab"]:hover p,
-        [data-testid="stTabs"] button[role="tab"]:hover span {
-            color: #48bb78 !important;
-            transform: scale(1.05);
-            transition: all 0.2s ease;
+
+        /* ÉP MÀU VẠCH KẺ DƯỚI (HIGHLIGHT) THÀNH XANH LÁ */
+        div[data-baseweb="tab-highlight"] {
+            background-color: #48bb78 !important;
+            height: 3px !important;
+            border-radius: 3px !important;
+            bottom: 5px !important;
         }
         
         /* HOẠT HỌA CÂU SLOGAN CHÍNH */
@@ -73,7 +110,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         .hero-subtitle { text-align: center; color: #a0aec0; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; }
 
-        /* HOẠT HỌA 12S TAB GIỚI THIỆU: CHỮ XANH LÁ + HÀO QUANG XANH DƯƠNG */
+        /* HOẠT HỌA 12S TAB GIỚI THIỆU */
         @keyframes intro-wave-blue-halo {
             0%, 85% { transform: translateY(0); text-shadow: none; }
             90% { transform: translateY(-10px); text-shadow: 0 12px 25px rgba(66,153,225,1), 0 0 15px rgba(99,179,237,0.8); }
@@ -88,7 +125,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: intro-wave-blue-halo 12s infinite ease-in-out;
         }
 
-        /* HIỆU ỨNG KHỐI KÍNH PHA LÊ CHO CÁC KHỐI BÊN PHẢI */
+        /* HIỆU ỨNG KHỐI KÍNH PHA LÊ (BÊN PHẢI VÀ BỌC TỔNG) */
         div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
             border: 1px solid rgba(72, 187, 120, 0.4) !important;
@@ -113,14 +150,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
 
-        /* HIỆU ỨNG LƯỚT SÁNG CHO NÚT BẤM */
+        /* ĐỒNG BỘ NÚT FORM/BUTTON XANH LÁ + LƯỚT SÁNG */
         @keyframes button-shine {
             0% { left: -100%; }
             20% { left: 100%; }
             100% { left: 100%; }
         }
-
-        /* ĐỒNG BỘ MÀU XANH LÁ + HIỆU ỨNG CHO TOÀN BỘ NÚT FORM/BUTTON */
         .stButton > button, .stFormSubmitButton > button {
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; 
             border: 1px solid rgba(72, 187, 120, 0.6) !important;
@@ -213,7 +248,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     _, col_form, col_space, col_info, _ = st.columns([0.5, 3, 0.2, 3, 0.5])
     
     with col_form:
-        # Xóa container cũ (để sử dụng chung 1 khối viền xanh lá duy nhất cho khu vực Tab)
         st.markdown(f'<div class="section-title" style="border-left:none; padding-left:0; text-align:center;">{t["sys_access"]}</div>', unsafe_allow_html=True)
         
         tab_dang_nhap, tab_dang_ky, tab_gioi_thieu = st.tabs([t["tab_login"], t["tab_reg"], t["tab_intro"]])
@@ -230,7 +264,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         st.session_state["current_user"] = u_name
                         st.session_state["current_role"] = db[u_name]["role"]
                         st.rerun()
-                    else: st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
+                    else: st.error("Thông giải không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
@@ -272,7 +306,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
         with tab_gioi_thieu:
             if st.session_state["reg_success_data"]:
-                # Nếu vừa đăng ký thành công qua form bên Giới Thiệu, hiển thị thông báo
                 st.markdown(f"""
                     <div class="glass-block" style="border-color: #48bb78; box-shadow: 0 0 25px rgba(72,187,120,0.5); text-align:center; padding: 25px; margin-top: 15px;">
                         <h3 style="color:#48bb78; font-weight:800; margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4;">{t['reg_success_msg']}</h3>
@@ -289,7 +322,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                     st.rerun()
 
             elif st.session_state["show_intro_reg_form"]:
-                # HIỂN THỊ FORM ĐĂNG KÝ TRỰC TIẾP TRONG TAB GIỚI THIỆU
                 st.markdown(f"<h5 style='text-align:center; color:#48bb78; margin-bottom: 15px;'>ĐĂNG KÝ TÀI KHOẢN MỚI</h5>", unsafe_allow_html=True)
                 with st.form("form_register_intro", clear_on_submit=True):
                     new_user_intro = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username", key="reg_u_intro")
@@ -312,13 +344,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                 st.session_state["show_intro_reg_form"] = False
                                 st.rerun()
                 
-                # Nút hủy để quay lại màn hình Giới thiệu
                 if st.button("QUAY LẠI GIỚI THIỆU" if lang=="Tiếng Việt" else "BACK TO INTRO", type="tertiary", use_container_width=True):
                     st.session_state["show_intro_reg_form"] = False
                     st.rerun()
 
             else:
-                # HIỂN THỊ NỘI DUNG GIỚI THIỆU MẶC ĐỊNH
                 intro_text = t["intro_mission"]
                 intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px; line-height: 1.7;">'
                 delay_intro = 0.0
@@ -334,7 +364,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 st.markdown(intro_html, unsafe_allow_html=True)
                 st.markdown(f"<h4 style='text-align:center; color:white; margin-bottom:25px; font-weight: 800;'>{t['intro_question']}</h4>", unsafe_allow_html=True)
                 
-                # BẤM NÚT NÀY SẼ MỞ RA FORM ĐĂNG KÝ TRỰC TIẾP
                 if st.button(t["btn_create_acc_intro"], type="tertiary", use_container_width=True):
                     st.session_state["show_intro_reg_form"] = True
                     st.rerun()
