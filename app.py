@@ -213,32 +213,45 @@ def main_app():
             </style>
         """, unsafe_allow_html=True)
         
-        # NÚT ĐĂNG XUẤT KÍCH HOẠT POPUP
+        # NÚT ĐĂNG XUẤT TRÊN GÓC PHẢI
         if st.button(l["logout"], type="secondary", use_container_width=True):
             st.session_state["show_logout_dialog"] = True
             st.rerun()
 
     # =========================================================================
-    # HỘP THOẠI POPUP ĐĂNG XUẤT TÍCH HỢP TRỰC TIẾP (KHÔNG CẦN FILE RỜI)
+    # HỘP THOẠI POPUP ĐĂNG XUẤT CHUẨN XÁC GIỮA MÀN HÌNH (SỬ DỤNG BORDER=TRUE)
     # =========================================================================
     if st.session_state.get("show_logout_dialog", False):
-        with st.container():
+        st.markdown("""<div class="logout-overlay"></div>""", unsafe_allow_html=True)
+        
+        # Viền Container (border=True) giúp CSS bắt đúng toàn bộ khối UI
+        with st.container(border=True):
             st.markdown("""
             <div class="logout-anchor"></div>
             <style>
             .logout-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(9, 13, 22, 0.85); backdrop-filter: blur(8px); z-index: 999998; }
-            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98)) !important; border: 2px solid #48bb78 !important; border-radius: 16px !important; padding: 35px !important; z-index: 999999 !important; width: 90% !important; max-width: 480px !important; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(72,187,120,0.5) !important; animation: popIn 0.3s ease-out forwards !important; }
+            
+            /* Cố định Container chứa Popup */
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) { 
+                position: fixed !important; top: 50% !important; left: 50% !important; 
+                transform: translate(-50%, -50%) !important; 
+                background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98)) !important; 
+                border: 2px solid #48bb78 !important; border-radius: 16px !important; 
+                padding: 35px !important; z-index: 999999 !important; 
+                width: 90% !important; max-width: 480px !important; 
+                box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 35px rgba(72,187,120,0.6) !important; 
+                animation: popIn 0.3s ease-out forwards !important; 
+            }
             @keyframes popIn { from { opacity: 0; transform: translate(-50%, -45%) scale(0.9); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
             
-            /* Nút Đỏ */
-            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
-            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button:hover { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
+            /* Ép style Nút Đỏ (Cột 1) */
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button:hover { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
             
-            /* Nút Xanh lá */
-            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button { background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
-            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button:hover { box-shadow: 0 0 25px rgba(72,187,120,0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
+            /* Ép style Nút Xanh lá (Cột 2) */
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button { background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button:hover { box-shadow: 0 0 25px rgba(72,187,120,0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
             </style>
-            <div class="logout-overlay"></div>
             """, unsafe_allow_html=True)
 
             st.markdown("<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
