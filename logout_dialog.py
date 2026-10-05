@@ -1,11 +1,9 @@
 import streamlit as st
 
 def hien_thi_popup_dang_xuat():
-    # Khởi tạo trạng thái hiển thị popup nếu chưa có
     if "show_logout_dialog" not in st.session_state:
         st.session_state["show_logout_dialog"] = False
 
-    # CSS tùy chỉnh cho hộp thoại nổi và 2 nút lựa chọn (Đỏ & Xanh lá)
     st.markdown("""
     <style>
     .logout-dialog-overlay {
@@ -25,32 +23,31 @@ def hien_thi_popup_dang_xuat():
     }
 
     /* Nút Tạm thời nghỉ chân (Màu Đỏ, sáng lên khi trỏ chuột) */
-    div.stButton > button.logout-btn-red {
+    div.stButton > button.btn-red-style {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626) !important;
         border: 1px solid rgba(239, 68, 68, 0.8) !important;
         color: white !important; font-weight: 800 !important; border-radius: 8px !important;
-        transition: all 0.3s ease !important; letter-spacing: 0.5px;
+        transition: all 0.3s ease !important;
     }
-    div.stButton > button.logout-btn-red:hover {
+    div.stButton > button.btn-red-style:hover {
         box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
         transform: translateY(-2px) scale(1.03) !important;
     }
 
     /* Nút Tiếp tục chặng đường (Màu Xanh lá, sáng lên khi trỏ chuột) */
-    div.stButton > button.logout-btn-green {
+    div.stButton > button.btn-green-style {
         background: linear-gradient(135deg, #38a169 0%, #2f855a) !important;
         border: 1px solid rgba(72, 187, 120, 0.8) !important;
         color: white !important; font-weight: 800 !important; border-radius: 8px !important;
-        transition: all 0.3s ease !important; letter-spacing: 0.5px;
+        transition: all 0.3s ease !important;
     }
-    div.stButton > button.logout-btn-green:hover {
+    div.stButton > button.btn-green-style:hover {
         box-shadow: 0 0 25px rgba(72,187,120,0.9) !important;
         transform: translateY(-2px) scale(1.03) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # Nút bấm Đăng xuất ở giao diện chính (Sidebar hoặc Menu)
     lang = st.session_state.get("current_lang", "Tiếng Việt")
     btn_label = "Đăng xuất" if lang == "Tiếng Việt" else "Logout"
     
@@ -58,7 +55,6 @@ def hien_thi_popup_dang_xuat():
         st.session_state["show_logout_dialog"] = True
         st.rerun()
 
-    # Nếu trạng thái gọi hộp thoại là True thì hiển thị modal phủ giữa màn hình
     if st.session_state["show_logout_dialog"]:
         st.markdown("""
             <div class="logout-dialog-overlay">
@@ -70,17 +66,16 @@ def hien_thi_popup_dang_xuat():
             </div>
         """, unsafe_allow_html=True)
         
-        # Đặt 2 nút lựa chọn (Dùng cột để xếp ngang)
         col_c1, col_c2 = st.columns(2)
         with col_c1:
-            # Gán class CSS tùy chỉnh qua markdown hoặc dùng button thông thường
-            if st.button("Tạm thời nghỉ chân", use_container_width=True, key="btn_confirm_logout"):
+            # Gán kiểu trực tiếp qua tham số type hoặc custom CSS
+            if st.button("Tạm thời nghỉ chân", use_container_width=True, key="btn_confirm_logout", type="primary"):
                 st.session_state["logged_in"] = False
                 st.session_state["current_user"] = ""
                 st.session_state["current_role"] = ""
                 st.session_state["show_logout_dialog"] = False
                 st.rerun()
         with col_c2:
-            if st.button("Tiếp tục chặng đường", use_container_width=True, key="btn_cancel_logout"):
+            if st.button("Tiếp tục chặng đường", use_container_width=True, key="btn_cancel_logout", type="secondary"):
                 st.session_state["show_logout_dialog"] = False
                 st.rerun()
