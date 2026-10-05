@@ -162,7 +162,10 @@ if "market_projects" not in st.session_state:
 
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
-if "confirm_logout" not in st.session_state: st.session_state["confirm_logout"] = False
+
+# TRẠNG THÁI HIỂN THỊ HỘP THOẠI ĐĂNG XUẤT
+if "show_logout_dialog" not in st.session_state: 
+    st.session_state["show_logout_dialog"] = False
 
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
@@ -187,8 +190,8 @@ def main_app():
     with col_t:
         st.markdown(f'<div class="main-title">{l["title"]}</div>', unsafe_allow_html=True)
         st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({role_display})")
+    
     with col_l:
-        # Nút đăng xuất có cơ chế xác nhận chống bấm nhầm & hiệu ứng khối đỏ loét sáng
         st.markdown("""
             <style>
             button[kind="secondary"] {
@@ -210,31 +213,50 @@ def main_app():
             </style>
         """, unsafe_allow_html=True)
         
-        if not st.session_state["confirm_logout"]:
-            # Gọi hàm hộp thoại đăng xuất (SÁT LỀ TRÁI)
-from logout_dialog import hien_thi_popup_dang_xuat
-hien_thi_popup_dang_xuat()
+        # NÚT ĐĂNG XUẤT KÍCH HOẠT POPUP
+        if st.button(l["logout"], type="secondary", use_container_width=True):
+            st.session_state["show_logout_dialog"] = True
+            st.rerun()
 
-# Khai báo cấu trúc màu nền (SÁT LỀ TRÁI)
-st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
-
-# Khởi tạo Earth Engine (SÁT LỀ TRÁI)
-def init_earth_engine():
-    try:
-        ee_token = st.secrets["EARTHENGINE_TOKEN"]
-        cred_path = os.path.expanduser('~/.config/earthengine/')
-        os.makedirs(cred_path, exist_ok=True)
-        with open(os.path.join(cred_path, 'credentials'), 'w') as f:
-            f.write(ee_token)
-        ee.Initialize()
-    except Exception as e:
-        st.error(f"Lỗi khởi tạo Earth Engine: {e}")
-
-# Chạy hàm khởi tạo (SÁT LỀ TRÁI)
-init_earth_engine()
-                    st.session_state["confirm_logout"] = False
-                    st.rerun()
+    # =========================================================================
+    # HỘP THOẠI POPUP ĐĂNG XUẤT TÍCH HỢP TRỰC TIẾP (KHÔNG CẦN FILE RỜI)
+    # =========================================================================
+    if st.session_state.get("show_logout_dialog", False):
+        with st.container():
+            st.markdown("""
+            <div class="logout-anchor"></div>
+            <style>
+            .logout-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(9, 13, 22, 0.85); backdrop-filter: blur(8px); z-index: 999998; }
+            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98)) !important; border: 2px solid #48bb78 !important; border-radius: 16px !important; padding: 35px !important; z-index: 999999 !important; width: 90% !important; max-width: 480px !important; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(72,187,120,0.5) !important; animation: popIn 0.3s ease-out forwards !important; }
+            @keyframes popIn { from { opacity: 0; transform: translate(-50%, -45%) scale(0.9); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
             
+            /* Nút Đỏ */
+            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
+            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(1) button:hover { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
+            
+            /* Nút Xanh lá */
+            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button { background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
+            div[data-testid="stVerticalBlock"] > div:has(.logout-anchor) div[data-testid="column"]:nth-child(2) button:hover { box-shadow: 0 0 25px rgba(72,187,120,0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
+            </style>
+            <div class="logout-overlay"></div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
+            
+            c_yes, c_no = st.columns(2)
+            with c_yes:
+                if st.button("Tạm thời nghỉ chân", use_container_width=True, key="btn_confirm_logout_action"):
+                    st.session_state["logged_in"] = False
+                    st.session_state["current_user"] = ""
+                    st.session_state["current_role"] = ""
+                    st.session_state["show_logout_dialog"] = False
+                    st.rerun()
+            with c_no:
+                if st.button("Tiếp tục chặng đường", use_container_width=True, key="btn_cancel_logout_action"):
+                    st.session_state["show_logout_dialog"] = False
+                    st.rerun()
+    # =========================================================================
+
     st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
     try:
