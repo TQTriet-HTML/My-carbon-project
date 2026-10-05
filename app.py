@@ -218,7 +218,7 @@ hien_thi_popup_dang_xuat()
 
 st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
 
-    try:
+        try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
         cred_path = os.path.expanduser('~/.config/earthengine/')
         os.makedirs(cred_path, exist_ok=True)
