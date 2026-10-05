@@ -12,14 +12,18 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* CÂN BẰNG 3 TAB TRUY CẬP */
+        /* CÂN BẰNG 3 TAB TRUY CẬP TUYỆT ĐỐI */
         div[data-baseweb="tab-list"] {
-            justify-content: space-evenly;
-            gap: 5px;
+            display: flex !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            gap: 0 !important;
         }
         div[data-baseweb="tab"] {
-            flex: 1;
-            justify-content: center;
+            flex: 1 1 0% !important;
+            justify-content: center !important;
+            text-align: center !important;
+            padding: 10px 0 !important;
         }
         
         /* HOẠT HỌA CÂU SLOGAN CHÍNH */
@@ -79,12 +83,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
 
-        /* HIỆU ỨNG NÚT BẤM (PRIMARY MÀU ĐỎ GỐC) */
+        /* HIỆU ỨNG LƯỚT SÁNG CHO NÚT BẤM */
         @keyframes button-shine {
             0% { left: -100%; }
             20% { left: 100%; }
             100% { left: 100%; }
         }
+
+        /* NÚT PRIMARY BỊ VÔ HIỆU HÓA/THAY THẾ (GIỮ DỰ PHÒNG NẾU CẦN) */
         div.stButton > button[kind="primary"] {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; 
             border: 1px solid rgba(239, 68, 68, 0.6) !important;
@@ -101,7 +107,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 0 25px rgba(239, 68, 68, 0.8) !important; transform: translateY(-2px);
         }
 
-        /* NÚT TẠO TÀI KHOẢN MÀU XANH LÁ Ở TAB GIỚI THIỆU (TERTIARY) */
+        /* TẤT CẢ CÁC NÚT ĐỀU CHUYỂN SANG MÀU XANH LÁ (TERTIARY) VỚI HIỆU ỨNG LÓA SÁNG ĐỒNG BỘ */
         div.stButton > button[kind="tertiary"] {
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; 
             border: 1px solid rgba(72, 187, 120, 0.6) !important;
@@ -116,7 +122,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: skewX(-25deg); animation: button-shine 4s infinite ease-in-out; z-index: -1;
         }
         div.stButton > button[kind="tertiary"]:hover {
-            box-shadow: 0 0 25px rgba(72, 187, 120, 0.8) !important; transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(72, 187, 120, 0.9) !important; 
+            transform: translateY(-2px) scale(1.02); /* Thêm hiệu ứng nổi/phóng to nhẹ khi trỏ vào */
         }
 
         *:focus, *:active { outline: none !important; }
@@ -202,7 +209,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 with st.form("form_login"):
                     u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
                     u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
-                    submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
+                    # Sử dụng type="tertiary" để áp dụng nút màu xanh lá
+                    submitted = st.form_submit_button(t["btn_login"], type="tertiary", use_container_width=True)
                     if submitted:
                         db = st.session_state["users_db"]
                         if u_name in db and db[u_name]["password"] == u_pass:
@@ -221,7 +229,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
+                    # Sử dụng type="tertiary" để áp dụng nút màu xanh lá
+                    if st.button(t["btn_auto_login"], type="tertiary", use_container_width=True):
                         data = st.session_state["reg_success_data"]
                         st.session_state["logged_in"] = True
                         st.session_state["current_user"] = data["user"]
@@ -234,7 +243,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
                         role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
                         
-                        reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                        # Sử dụng type="tertiary" để áp dụng nút màu xanh lá
+                        reg_submitted = st.form_submit_button(t["btn_reg"], type="tertiary", use_container_width=True)
                         
                         if reg_submitted:
                             if not new_user or not new_pass:
@@ -255,7 +265,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 intro_html = '<div style="text-align:center; margin-top: 15px; margin-bottom: 25px; line-height: 1.7;">'
                 delay_intro = 0.0
                 
-                # Sửa lỗi cắt chữ: Tách câu theo từng từ, bọc mỗi từ bằng 'white-space: nowrap' để chữ không bị rớt xuống dòng giữa chừng
                 for word in intro_text.split(" "):
                     intro_html += '<span style="display: inline-block; white-space: nowrap;">'
                     for char in word:
