@@ -12,19 +12,34 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #090d16 0%, #111827 50%, #064e3b 100%) !important;
         }
         
-        /* CÂN BẰNG 3 TAB TRUY CẬP TUYỆT ĐỐI */
-        div[data-baseweb="tab-list"] {
+        /* CĂN BẰNG VÀ CĂN GIỮA 3 TAB TRUY CẬP */
+        div.stTabs > div[data-baseweb="tab-list"] {
             display: flex !important;
-            width: 100% !important;
             justify-content: space-between !important;
+            width: 100% !important;
+            gap: 0 !important;
         }
-        /* Sửa lại đúng thẻ button của Streamlit để dàn đều 3 mục */
-        button[data-baseweb="tab"] {
+        div.stTabs button[data-baseweb="tab"] {
             flex: 1 1 0% !important;
             justify-content: center !important;
             text-align: center !important;
+            transition: all 0.3s ease !important; /* Thêm transition cho mượt */
         }
-        /* Đổi màu vạch highlight dưới tab đang chọn thành Xanh Lá */
+        
+        /* HIỆU ỨNG HOVER VÀ ACTIVE CHO TAB */
+        /* Khi trỏ chuột vào tab */
+        div.stTabs button[data-baseweb="tab"]:hover p {
+            color: #48bb78 !important; /* Chuyển chữ thành xanh lá */
+            transform: scale(1.05) !important; /* Phóng to một chút */
+            transition: all 0.2s ease !important;
+        }
+        /* Tab đang được chọn (Active) */
+        div.stTabs button[aria-selected="true"] p {
+            color: #48bb78 !important; /* Chữ màu xanh lá */
+            font-weight: bold !important;
+            transform: scale(1.05) !important; /* Phóng to */
+        }
+        /* Màu vạch highlight dưới tab đang chọn */
         div[data-baseweb="tab-highlight"] {
             background-color: #48bb78 !important;
         }
@@ -195,7 +210,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 with st.form("form_login"):
                     u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
                     u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
-                    submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
+                    submitted = st.form_submit_button(t["btn_login"], type="tertiary", use_container_width=True)
                     if submitted:
                         db = st.session_state["users_db"]
                         if u_name in db and db[u_name]["password"] == u_pass:
@@ -214,7 +229,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
+                    if st.button(t["btn_auto_login"], type="tertiary", use_container_width=True):
                         data = st.session_state["reg_success_data"]
                         st.session_state["logged_in"] = True
                         st.session_state["current_user"] = data["user"]
@@ -227,7 +242,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
                         role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
                         
-                        reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                        reg_submitted = st.form_submit_button(t["btn_reg"], type="tertiary", use_container_width=True)
                         
                         if reg_submitted:
                             if not new_user or not new_pass:
@@ -260,7 +275,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 
                 st.markdown(f"<h4 style='text-align:center; color:white; margin-bottom:25px; font-weight: 800;'>{t['intro_question']}</h4>", unsafe_allow_html=True)
                 
-                if st.button(t["btn_create_acc_intro"], type="primary", use_container_width=True):
+                if st.button(t["btn_create_acc_intro"], type="tertiary", use_container_width=True):
                     st.info("Vui lòng nhấn vào tab 'TẠO TÀI KHOẢN' ở phía trên để bắt đầu." if lang == "Tiếng Việt" else "Please click the 'CREATE ACCOUNT' tab above to start.")
 
     with col_info:
