@@ -5,24 +5,49 @@ from streamlit_folium import folium_static
 import os
 import random
 
+import db_manager
 from auth import hien_thi_cong_dang_nhap
 from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
 
 try:
     from social import hien_thi_mang_xa_hoi
     from community import hien_thi_vinh_danh_va_gop_y
-    from diary import hien_thi_nhat_ky_xanh  # ĐÃ THÊM: Import hàm Nhật ký xanh
+    from diary import hien_thi_nhat_ky_xanh
 except ImportError:
     def hien_thi_mang_xa_hoi(): st.info("Hệ thống đang được bảo trì.")
     def hien_thi_vinh_danh_va_gop_y(): st.info("Hệ thống đang được bảo trì.")
-    def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang được bảo trì. Vui lòng tạo file diary.py") # ĐÃ THÊM: Xử lý lỗi nếu thiếu file
+    def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang được bảo trì.")
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide")
+
+# Khởi tạo CSDL SQLite & nạp dữ liệu vào session_state
+db_manager.init_db()
+
+if "users_db" not in st.session_state:
+    st.session_state["users_db"] = db_manager.load_users()
+
+if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
+if "current_user" not in st.session_state: st.session_state["current_user"] = ""
+if "current_role" not in st.session_state: st.session_state["current_role"] = ""
+if "wallet_balance" not in st.session_state: st.session_state["wallet_balance"] = 150000.0  
+if "user_portfolios" not in st.session_state: st.session_state["user_portfolios"] = {}
+if "investor_portfolios" not in st.session_state: st.session_state["investor_portfolios"] = {}
+
+if "market_projects" not in st.session_state:
+    st.session_state["market_projects"] = db_manager.load_market_projects()
+
+if "social_posts" not in st.session_state:
+    st.session_state["social_posts"] = db_manager.load_social_posts()
+
+if "green_diary" not in st.session_state:
+    st.session_state["green_diary"] = db_manager.load_green_diary()
+
+if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
+if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 
 LANG_DICT = {
     "Tiếng Việt": {
         "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "ĐĂNG XUẤT", "lang_select": "TÙY CHỌN NGÔN NGỮ",
-        # ĐÃ THÊM: "Nhật ký Xanh" vào danh sách tabs
         "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Nhật ký Xanh", "Bảng Vàng", "Về chúng tôi"],
         "sidebar_partners": "ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "CHỨNG NHẬN PHÁP LÝ",
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
@@ -46,217 +71,60 @@ LANG_DICT = {
     },
     "English": {
         "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "LOGOUT", "lang_select": "LANGUAGE SETTINGS",
-        # ĐÃ THÊM: "Green Diary" vào danh sách tabs
         "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Green Diary", "Leaderboard", "About Us"],
         "sidebar_partners": "STRATEGIC PARTNERS", "sidebar_certs": "CERTIFICATIONS",
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
         "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
         "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "High-level Security",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Information Security",
         "welcome": "Welcome",
         "mrv_success": "AI SPATIAL MONITORING SYSTEM",
         "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
-        "mrv_loading": "AI scanning spatial data...",
+        "mrv_loading": "AI is analyzing spatial data...",
         "mrv_biomass": "Biomass",
         "mrv_calc_btn": "ANALYZE AREA",
         "mrv_reset_btn": "RESET DATA",
-        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULTS",
-        "mrv_base_val": "Base Year Biomass",
-        "mrv_comp_val": "Comparison Year Biomass",
+        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULT",
+        "mrv_base_val": "Biomass Year",
+        "mrv_comp_val": "Biomass Year",
         "mrv_total_val": "Total Converted Value",
         "mrv_unit": "Tons",
-        "mrv_success_msg": "Analyzed area records positive growth. You can list an additional {diff} carbon credits.",
-        "mrv_warning_msg": "Biomass density has dropped. Immediate field inspection required."
+        "mrv_success_msg": "Biomass growth detected. You can list {diff} additional carbon credits.",
+        "mrv_warning_msg": "Biomass density decreased. Forest inspection required."
     }
-}
-
-ROLE_DICT = {
-    "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
-    "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
-    "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
 }
 
 if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
-def change_lang(): pass
 
-def inject_custom_css():
-    st.markdown("""
-        <style>
-        html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }
-        .main-title { font-size: clamp(22px, 2.5vw, 32px) !important; font-weight: 800 !important; color: #E2E8F0; margin-bottom: 0px !important; padding-bottom: 0px !important;}
-        
-        button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }
-        button[kind="primary"]:hover { background-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
-        
-        *:focus, *:active { outline: none !important; }
-        div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, .stSelectbox > div > div, input { border-color: #2d3748 !important; }
-        div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
-        [aria-invalid="true"] { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
-
-        /* ĐỒNG BỘ KHỐI CHUẨN MRV CHO TOÀN HỆ THỐNG */
-        div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
-            background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
-            border: 1px solid rgba(72, 187, 120, 0.4) !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important;
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden !important;
-            transition: all 0.4s ease !important;
-            padding: 24px !important;
-            margin-bottom: 20px !important;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-block:hover {
-            border-color: #48bb78 !important;
-            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important;
-            transform: translateY(-2px);
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]::after, .glass-block::after {
-            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.25), transparent);
-            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
-
-        /* CĂN GIỮA HOÀN TOÀN CÁC CHỈ SỐ METRIC */
-        [data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 900 !important; color: #ffffff !important; text-align: center !important; width: 100% !important; display: block !important;}
-        [data-testid="stMetricLabel"] { text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}
-        [data-testid="stMetricDelta"] { justify-content: center !important; font-weight: 700 !important;}
-
-        /* ĐỒNG BỘ HIỆU ỨNG LỚT SÁNG & LÓA SÁNG CHO SIDEBAR KHI ĐÃ ĐĂNG NHẬP */
-        .sidebar-badge { 
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
-            padding: 16px; border-radius: 10px; margin-bottom: 12px; 
-            border: 1px solid rgba(72, 187, 120, 0.4) !important; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(72, 187, 120, 0.05);
-            transition: all 0.4s ease; position: relative; overflow: hidden !important;
-        }
-        .sidebar-badge:hover { transform: translateY(-2px); border-color: #48bb78 !important; box-shadow: 0 8px 25px rgba(72, 187, 120, 0.35); }
-        .sidebar-badge::after {
-            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.3), transparent);
-            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
-        }
-        .sidebar-badge:hover::after { left: 150%; }
-
-        .sb-title { color: #ffffff; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
-        .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 4px; }
-        .sb-desc.highlight { color: #48bb78; font-weight: 600; }
-        </style>
-    """, unsafe_allow_html=True)
-
-inject_custom_css()
-
-if "users_db" not in st.session_state:
-    st.session_state["users_db"] = {
-        "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
-        "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
-        "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
-    }
-if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
-if "current_user" not in st.session_state: st.session_state["current_user"] = ""
-if "current_role" not in st.session_state: st.session_state["current_role"] = ""
-if "wallet_balance" not in st.session_state: st.session_state["wallet_balance"] = 150000.0  
-if "user_portfolios" not in st.session_state: st.session_state["user_portfolios"] = {}
-if "investor_portfolios" not in st.session_state: st.session_state["investor_portfolios"] = {}
-if "market_projects" not in st.session_state:
-    st.session_state["market_projects"] = [
-        {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
-    ]
-
-if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
-if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
-
-with st.sidebar:
-    l = LANG_DICT[st.session_state["current_lang"]]
-    st.markdown(f"<h3 style='color: white; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px;'>{l['lang_select']}</h3>", unsafe_allow_html=True)
-    st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", label_visibility="collapsed")
-    st.divider()
-    
-    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
-    
-    st.divider()
-    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
-
-# HỘP THOẠI MODAL ĐĂNG XUẤT (ĐÃ ĐẢO ĐÚNG MÀU SẮC THEO YÊU CẦU)
-@st.dialog(" ")
 def hop_thoai_dang_xuat():
-    st.markdown("""
-        <style>
-        /* Nút 1: Tạm thời nghỉ chân (MÀU ĐỎ CẢNH BÁO) */
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-            border: 1px solid rgba(239, 68, 68, 0.8) !important;
-            color: white !important; font-weight: 800 !important; border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover {
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
-            transform: translateY(-2px) scale(1.03) !important;
-        }
-        
-        /* Nút 2: Tiếp tục chặng đường (MÀU XANH LÁ HY VỌNG & NỔI BẬT) */
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
-            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
-            border: 1px solid rgba(72, 187, 120, 0.8) !important;
-            color: white !important; font-weight: 800 !important; border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover {
-            box-shadow: 0 0 25px rgba(72,187,120,0.9) !important;
-            transform: translateY(-2px) scale(1.03) !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
-    
-    col_y, col_n = st.columns(2)
-    with col_y:
-        # Nút bên trái: Tạm thời nghỉ chân -> MÀU ĐỎ
-        if st.button("Tạm thời nghỉ chân", use_container_width=True, key="confirm_out_yes"):
-            st.session_state["logged_in"] = False
-            st.session_state["current_user"] = ""
-            st.session_state["current_role"] = ""
-            st.rerun()
-    with col_n:
-        # Nút bên phải: Tiếp tục chặng đường -> MÀU XANH LÁ
-        if st.button("Tiếp tục chặng đường", use_container_width=True, key="confirm_out_no"):
-            st.rerun()
+    st.session_state["logged_in"] = False
+    st.session_state["current_user"] = ""
+    st.session_state["current_role"] = ""
+    st.rerun()
 
 def main_app():
     l = LANG_DICT[st.session_state["current_lang"]]
-    role_display = ROLE_DICT.get(st.session_state['current_role'], st.session_state['current_role']) if st.session_state["current_lang"] == "English" else st.session_state['current_role']
     
-    col_t, col_l = st.columns([7, 1])
-    with col_t:
-        st.markdown(f'<div class="main-title">{l["title"]}</div>', unsafe_allow_html=True)
-        st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({role_display})")
-    
-    with col_l:
-        st.markdown("""
-            <style>
-            button[kind="secondary"] {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important;
-                border: 1px solid rgba(239, 68, 68, 0.6) !important;
-                color: #fca5a5 !important;
-                font-weight: 700 !important;
-                border-radius: 8px !important;
-                transition: all 0.3s ease !important;
-                position: relative; overflow: hidden !important;
-            }
-            button[kind="secondary"]:hover {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important;
-                border-color: #ef4444 !important;
-                color: white !important;
-                box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
-                transform: translateY(-2px);
-            }
-            </style>
+    with st.sidebar:
+        st.markdown(f"<h3 style='color: white; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px;'>{l['lang_select']}</h3>", unsafe_allow_html=True)
+        st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", label_visibility="collapsed")
+        st.divider()
+        
+        st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
+        st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
+        
+        st.divider()
+        st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
+        st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
+        
+        st.divider()
+        st.markdown(f"""
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+            <p style="color:#a0aec0; font-size:11px; margin:0;">{l['welcome']}</p>
+            <p style="color:#48bb78; font-weight:bold; font-size:14px; margin:0;">{st.session_state['current_user']} ({st.session_state['current_role']})</p>
+        </div>
         """, unsafe_allow_html=True)
         
         if st.button(l["logout"], type="secondary", use_container_width=True):
@@ -281,7 +149,6 @@ def main_app():
         carbon = ndvi.updateMask(ndvi.gt(0.2)).multiply(120).rename('Carbon_Proxy')
         return carbon.clip(vung)
 
-    # ĐÃ SỬA: Khai báo đủ 7 Tab tương ứng với danh sách cấu hình ở trên
     tab_mrv, tab_market, tab_invest, tab_social, tab_diary, tab_community, tab_about = st.tabs(l["tabs"])
 
     with tab_mrv:
@@ -293,46 +160,6 @@ def main_app():
                 c1, c2 = st.columns(2)
                 with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4) 
                 with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8) 
-                
-                col_b1, col_b2 = st.columns(2)
-                with col_b1:
-                    btn_calc = st.button(l["mrv_calc_btn"], type="primary", use_container_width=True)
-                with col_b2:
-                    btn_reset = st.button(l["mrv_reset_btn"], type="secondary", use_container_width=True)
-                
-            if btn_reset:
-                st.session_state["mrv_calc_state"] = False
-                st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
-                st.rerun()
-                
-            if btn_calc:
-                st.session_state["mrv_calc_state"] = True
-
-            if st.session_state["mrv_calc_state"]:
-                seed = st.session_state["mrv_polygon_seed"]
-                dien_tich_hecta = 8000.0 + (seed % 12000) 
-                
-                base_val = int(dien_tich_hecta * 95.0 + (nam_co_so - 2020) * 27000 + (seed % 5000))
-                comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
-                diff = comp_val - base_val
-                tong_usd = abs(diff) * 10.5 
-                
-                tong_tien_str = f"{tong_usd * 26000:,.0f} VND" if st.session_state["current_lang"] == "Tiếng Việt" else f"${tong_usd:,.2f} USD"
-                
-                with st.container(border=True):
-                    st.markdown(f"<h3 style='color:#ffffff; text-align:center; font-weight:800; letter-spacing:1px; margin-bottom:25px;'>{l['mrv_result_title']}</h3>", unsafe_allow_html=True)
-                    
-                    col_r1, col_r2, col_r3 = st.columns(3)
-                    col_r1.metric(f"{l['mrv_base_val']} {nam_co_so}", f"{base_val:,.0f} {l['mrv_unit']}")
-                    delta_str = f"+{diff:,.0f} {l['mrv_unit']}" if diff >= 0 else f"{diff:,.0f} {l['mrv_unit']}"
-                    col_r2.metric(f"{l['mrv_comp_val']} {nam_so_sanh}", f"{comp_val:,.0f} {l['mrv_unit']}", delta=delta_str, delta_color="normal" if diff >= 0 else "inverse")
-                    col_r3.metric(l["mrv_total_val"], tong_tien_str, "Quy đổi thị trường" if st.session_state["current_lang"]=="Tiếng Việt" else "Market Converted")
-                    
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    if diff >= 0:
-                        st.markdown(f"<div style='color:#48bb78; text-align:center; font-weight:600;'>{l['mrv_success_msg'].format(diff=f'{diff:,.0f} {l['mrv_unit']}')}</div>", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"<div style='color:#fc8181; text-align:center; font-weight:600;'>{l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
 
             try:
                 with st.spinner(l["mrv_loading"]):
@@ -346,16 +173,13 @@ def main_app():
                 
                 with st.container(border=True):
                     folium_static(m, width=1100, height=500)
-            except:
+            except Exception:
                 st.warning("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ.")
 
     with tab_market: hien_thi_san_giao_dich()
     with tab_invest: hien_thi_cong_dau_tu()
     with tab_social: hien_thi_mang_xa_hoi()
-    
-    # ĐÃ THÊM: Gọi tính năng hiển thị Nhật ký xanh
     with tab_diary: hien_thi_nhat_ky_xanh()
-    
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
