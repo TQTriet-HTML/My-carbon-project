@@ -66,7 +66,6 @@ AUTH_TEXTS = {
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
     txt = AUTH_TEXTS.get(lang, AUTH_TEXTS["Tiếng Việt"])
     
-    # Biến màu sắc theo chế độ Sáng/Tối
     text_sub = "#475569" if is_light else "#cbd5e1"
     bg_auth_block = "rgba(255, 255, 255, 0.95)" if is_light else "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
 
@@ -110,16 +109,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
             animation: greenToBlue 4s infinite ease-in-out;
         }}
 
-        /* 3. KHỐI TRÁI: FORM ĐĂNG NHẬP (Giữ luồng quét sáng) */
+        /* 3. KHỐI TRÁI: FORM ĐĂNG NHẬP (Lóa sáng xanh dương + quét sáng) */
         @keyframes leftAuthGlow {{
-            0%, 100% {{ box-shadow: 0 0 15px rgba(72, 187, 120, 0.3); border-color: rgba(72, 187, 120, 0.5); }}
-            50% {{ box-shadow: 0 0 35px rgba(72, 187, 120, 0.8); border-color: rgba(72, 187, 120, 1); }}
+            0%, 100% {{ box-shadow: 0 0 15px rgba(66, 153, 225, 0.3); border-color: rgba(66, 153, 225, 0.5); }}
+            50% {{ box-shadow: 0 0 35px rgba(66, 153, 225, 0.8); border-color: rgba(66, 153, 225, 1); }}
         }}
         @keyframes sweepLight {{
             0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }}
         }}
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) {{
-            background: {bg_auth_block} !important; border: 2px solid #48bb78 !important; border-radius: 16px !important;
+            background: {bg_auth_block} !important; border: 2px solid #3182ce !important; border-radius: 16px !important;
             padding: 25px !important; animation: leftAuthGlow 4s infinite ease-in-out !important;
             position: relative; overflow: hidden !important; transition: transform 0.4s ease !important;
         }}
@@ -127,6 +126,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
             content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
             transform: skewX(-25deg); animation: sweepLight 6s infinite linear; z-index: 10; pointer-events: none;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker):hover {{
+            transform: translateY(-5px) scale(1.01) !important;
         }}
 
         /* 4. HAI KHỐI BÊN PHẢI: Lóa sáng xanh lá, nổi lên khi trỏ chuột */
@@ -154,7 +156,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
         </style>
     """, unsafe_allow_html=True)
 
-    # Tách từng chữ cho hiệu ứng lướt sóng (Mỗi chữ delay thêm 0.2s)
     title_words = txt['header_title'].split()
     title_html = "".join([f'<span class="slogan-word" style="--delay: {idx * 0.2}s;">{w}</span>' for idx, w in enumerate(title_words)])
 
@@ -169,7 +170,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
 
     col_left, col_right = st.columns([1.1, 0.9], gap="large")
 
-    # CỘT TRÁI: KHỐI FORM ĐĂNG NHẬP / ĐĂNG KÝ
     with col_left:
         with st.container(border=True):
             st.markdown("<div class='auth-marker'></div>", unsafe_allow_html=True)
@@ -220,9 +220,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
                     </div>
                 """, unsafe_allow_html=True)
 
-    # CỘT PHẢI: KHỐI THÀNH TỰU & DỰ ÁN TIÊU BIỂU
     with col_right:
-        # 1. Thành tựu
         with st.container(border=True):
             st.markdown("<div class='right-glow-marker'></div>", unsafe_allow_html=True)
             st.markdown(f"""
@@ -251,7 +249,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
 
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-        # 2. Dự án tiêu biểu
         with st.container(border=True):
             st.markdown("<div class='right-glow-marker'></div>", unsafe_allow_html=True)
             st.markdown(f"""
