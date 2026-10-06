@@ -57,14 +57,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
             letter-spacing: 1px; animation: char-green-blue-glow 8s infinite ease-in-out;
         }}
 
-        /* 2. HOẠT HỌA CÂU SLOGAN CHÍNH LƯỚT SÓNG & ĐỔ BÓNG SÁNG XANH DƯỚI CHÂN */
+        /* 2. HOẠT HỌA CÂU SLOGAN LƯỚT SÓNG MỖI 10 GIÂY (Đã gỡ vầng sáng dưới chân) */
         @keyframes waveUp {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
             10% {{ transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 10px rgba(104,211,145,0.8); }}
-        }}
-        @keyframes glowUnder {{
-            0%, 20%, 100% {{ opacity: 0; box-shadow: 0 0 0px transparent; transform: scaleX(0); }}
-            10% {{ opacity: 1; box-shadow: 0 10px 20px #48bb78, 0 5px 10px #48bb78; transform: scaleX(1); }}
         }}
         .wave-text-container {{ 
             text-align: center; margin-bottom: 10px; padding: 20px 0;
@@ -77,63 +73,80 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
             font-size: clamp(24px, 3.5vw, 42px) !important; font-weight: 900 !important;
             letter-spacing: 2px !important; background: linear-gradient(90deg, #48bb78, #68d391, #319795);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: waveUp 5s infinite ease-in-out;
-            animation-delay: var(--delay);
-        }}
-        .wave-char::after {{
-            content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 4px;
-            background: #48bb78; border-radius: 2px;
-            animation: glowUnder 5s infinite ease-in-out;
+            animation: waveUp 10s infinite ease-in-out;
             animation-delay: var(--delay);
         }}
         .hero-subtitle {{ text-align: center; color: {text_sub}; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; padding: 0 20px; }}
 
-        /* 3. KHỐI KÍNH: HOẠT HỌA QUÉT SÁNG 12s & HIỆU ỨNG TRỎ CHUỘT NỔI BẬT */
-        @keyframes blockSweepLight {{ 
-            0%   {{ left: -100%; opacity: 0; }} 
-            5%   {{ opacity: 1; }}
-            15%  {{ left: 200%; opacity: 0; }} /* Chạy cực nhanh qua khối */
-            100% {{ left: 200%; opacity: 0; }} /* Đợi 12s mới chạy lại */
+        /* 3. KHỐI TRÁI: FORM ĐĂNG NHẬP (Lóa sáng xanh dương + quét sáng) */
+        @keyframes leftAuthGlow {{
+            0%, 100% {{ box-shadow: 0 0 15px rgba(66, 153, 225, 0.3); border-color: rgba(66, 153, 225, 0.5); }}
+            50% {{ box-shadow: 0 0 35px rgba(66, 153, 225, 0.8); border-color: rgba(66, 153, 225, 1); }}
+        }}
+        @keyframes sweepLight {{ 0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }} }}
+        
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) {{
+            background: {bg_auth_block} !important; border: 2px solid #3182ce !important; border-radius: 16px !important;
+            padding: 25px !important; animation: leftAuthGlow 4s infinite ease-in-out !important;
+            position: relative; overflow: hidden !important; transition: transform 0.4s ease !important;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker)::after {{
+            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transform: skewX(-25deg); animation: sweepLight 6s infinite linear; z-index: 10; pointer-events: none;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker):hover {{ transform: translateY(-5px) scale(1.01) !important; }}
+
+        /* 4. HAI KHỐI BÊN PHẢI: Lóa sáng xanh lá chớp mở & Quét sáng mỗi 12 giây */
+        @keyframes rightGreenGlow {{
+            0%, 100% {{ box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.3) !important; }}
+            50% {{ box-shadow: 0 0 30px rgba(72, 187, 120, 0.8); border-color: rgba(72, 187, 120, 0.9) !important; }}
+        }}
+        @keyframes blockSweepLight12s {{ 
+            0%, 85%   {{ left: -100%; opacity: 0; }} 
+            86%       {{ opacity: 1; left: -100%; }}
+            95%       {{ left: 200%; opacity: 0; }} 
+            100%      {{ left: 200%; opacity: 0; }} 
         }}
         
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-block-marker) {{
-            background: {bg_auth_block} !important; 
-            border: 1px solid rgba(72, 187, 120, 0.4) !important; 
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.right-glow-marker) {{
+            background: {bg_auth_block} !important;
+            border: 2px solid rgba(72, 187, 120, 0.4) !important;
             border-radius: 16px !important;
-            padding: 25px !important; 
-            position: relative; overflow: hidden !important; 
-            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease !important;
+            animation: rightGreenGlow 4s infinite ease-in-out !important;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
+            position: relative; overflow: hidden !important;
         }}
-        
-        /* Ánh sáng xéo màu xanh lá lướt qua mỗi 12 giây */
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-block-marker)::after {{
+        /* Ánh sáng quét qua mỗi 12s */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.right-glow-marker)::after {{
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.5), transparent);
-            transform: skewX(-25deg); animation: blockSweepLight 12s infinite cubic-bezier(0.25, 1, 0.5, 1); 
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
+            transform: skewX(-25deg); animation: blockSweepLight12s 12s infinite linear; 
             z-index: 10; pointer-events: none;
         }}
-        
-        /* Khi trỏ chuột: Nổi lên và phát sáng xanh lá */
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-block-marker):hover {{ 
-            transform: translateY(-8px) scale(1.01) !important; 
-            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.6), 0 0 20px rgba(72, 187, 120, 0.4) !important;
+        /* Nổi lên cực mạnh khi trỏ chuột */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.right-glow-marker):hover {{
+            transform: translateY(-8px) scale(1.03) !important;
+            box-shadow: 0 20px 40px rgba(72, 187, 120, 0.9), 0 0 20px rgba(72, 187, 120, 0.5) !important;
             border-color: #48bb78 !important;
+            z-index: 5 !important;
         }}
 
-        /* ĐỒNG BỘ NÚT FORM XANH LÁ + LƯỚT SÁNG NÚT (Nhanh hơn khối) */
+        /* 5. NÚT ĐĂNG NHẬP / ĐĂNG KÝ (ÉP MÀU XANH LÁ CHỐNG LỖI) */
         @keyframes button-shine {{ 0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }} }}
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-block-marker) button[kind="primary"] {{
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"] {{
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; 
-            border: 1px solid rgba(72, 187, 120, 0.6) !important;
-            color: white !important; font-weight: 700 !important; letter-spacing: 1px;
+            border: 1px solid rgba(72, 187, 120, 0.8) !important;
+            color: white !important; font-weight: 800 !important; letter-spacing: 1px;
             position: relative; overflow: hidden !important; z-index: 1; transition: all 0.3s ease !important; border-radius: 8px !important;
         }}
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-block-marker) button[kind="primary"]::before {{
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"]::before {{
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
             transform: skewX(-25deg); animation: button-shine 4s infinite ease-in-out; z-index: -1;
         }}
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-block-marker) button[kind="primary"]:hover {{
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"]:hover {{
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
             box-shadow: 0 0 25px rgba(72, 187, 120, 0.9) !important; transform: translateY(-2px) scale(1.02) !important; 
         }}
 
@@ -169,7 +182,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
     
     with col_form:
         with st.container(border=True):
-            st.markdown("<div class='auth-block-marker'></div>", unsafe_allow_html=True)
+            st.markdown("<div class='auth-marker'></div>", unsafe_allow_html=True)
             
             # Dựng Welcome lóa sáng
             welcome_text = t["welcome_msg"]
@@ -242,8 +255,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
                                         st.rerun()
 
     with col_info:
+        # Khối 1: Thành tựu nền tảng
         with st.container(border=True):
-            st.markdown("<div class='auth-block-marker'></div>", unsafe_allow_html=True)
+            st.markdown("<div class='right-glow-marker'></div>", unsafe_allow_html=True)
             st.markdown(f'<div class="section-title">{t["achieve"]}</div>', unsafe_allow_html=True)
             c_st1, c_st2 = st.columns(2)
             with c_st1:
@@ -253,8 +267,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
 
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
+        # Khối 2: Dự án tiêu biểu
         with st.container(border=True):
-            st.markdown("<div class='auth-block-marker'></div>", unsafe_allow_html=True)
+            st.markdown("<div class='right-glow-marker'></div>", unsafe_allow_html=True)
             st.markdown(f'<div class="section-title">{t["projects"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="project-title">{t["proj_name"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="project-desc">{t["proj_desc"]}</div>', unsafe_allow_html=True)
