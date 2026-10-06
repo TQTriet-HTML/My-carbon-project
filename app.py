@@ -11,16 +11,19 @@ from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_g
 try:
     from social import hien_thi_mang_xa_hoi
     from community import hien_thi_vinh_danh_va_gop_y
+    from diary import hien_thi_nhat_ky_xanh  # ĐÃ THÊM: Import hàm Nhật ký xanh
 except ImportError:
     def hien_thi_mang_xa_hoi(): st.info("Hệ thống đang được bảo trì.")
     def hien_thi_vinh_danh_va_gop_y(): st.info("Hệ thống đang được bảo trì.")
+    def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang được bảo trì. Vui lòng tạo file diary.py") # ĐÃ THÊM: Xử lý lỗi nếu thiếu file
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide")
 
 LANG_DICT = {
     "Tiếng Việt": {
         "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "ĐĂNG XUẤT", "lang_select": "TÙY CHỌN NGÔN NGỮ",
-        "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Bảng Vàng", "Về chúng tôi"],
+        # ĐÃ THÊM: "Nhật ký Xanh" vào danh sách tabs
+        "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Nhật ký Xanh", "Bảng Vàng", "Về chúng tôi"],
         "sidebar_partners": "ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "CHỨNG NHẬN PHÁP LÝ",
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
         "sb_p2_title": "Vietcombank", "sb_p2_desc": "Thanh toán Escrow",
@@ -43,7 +46,8 @@ LANG_DICT = {
     },
     "English": {
         "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "LOGOUT", "lang_select": "LANGUAGE SETTINGS",
-        "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Leaderboard", "About Us"],
+        # ĐÃ THÊM: "Green Diary" vào danh sách tabs
+        "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Green Diary", "Leaderboard", "About Us"],
         "sidebar_partners": "STRATEGIC PARTNERS", "sidebar_certs": "CERTIFICATIONS",
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
         "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
@@ -277,7 +281,8 @@ def main_app():
         carbon = ndvi.updateMask(ndvi.gt(0.2)).multiply(120).rename('Carbon_Proxy')
         return carbon.clip(vung)
 
-    tab_mrv, tab_market, tab_invest, tab_social, tab_community, tab_about = st.tabs(l["tabs"])
+    # ĐÃ SỬA: Khai báo đủ 7 Tab tương ứng với danh sách cấu hình ở trên
+    tab_mrv, tab_market, tab_invest, tab_social, tab_diary, tab_community, tab_about = st.tabs(l["tabs"])
 
     with tab_mrv:
         _, col_center, _ = st.columns([0.05, 0.9, 0.05])
@@ -347,6 +352,10 @@ def main_app():
     with tab_market: hien_thi_san_giao_dich()
     with tab_invest: hien_thi_cong_dau_tu()
     with tab_social: hien_thi_mang_xa_hoi()
+    
+    # ĐÃ THÊM: Gọi tính năng hiển thị Nhật ký xanh
+    with tab_diary: hien_thi_nhat_ky_xanh()
+    
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
