@@ -29,7 +29,25 @@ def inject_custom_css():
         .stApp { background-image: none !important; background-color: #0E1117 !important;}
         
         html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }
-        .main-title { font-size: clamp(22px, 2.5vw, 32px) !important; font-weight: 800 !important; color: #E2E8F0; margin-bottom: 0px !important; padding-bottom: 0px !important;}
+        
+        /* Hiệu ứng lướt sóng cho Tiêu đề chính App */
+        @keyframes titleWave {
+            to { background-position: 200% center; }
+        }
+        .main-title { 
+            font-size: clamp(22px, 2.5vw, 32px) !important; 
+            font-weight: 900 !important; 
+            background: linear-gradient(to right, #48bb78, #63b3ed, #48bb78);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleWave 4s linear infinite;
+            margin-bottom: 0px !important; 
+            padding-bottom: 0px !important;
+            letter-spacing: 1px;
+        }
         
         button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }
         button[kind="primary"]:hover { background-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
@@ -357,7 +375,7 @@ def main_app():
 
 # KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
 if not st.session_state["logged_in"]:
-    # Sidebar và CSS tổng sẽ vẫn được giữ nguyên do khai báo phía trên
+    # Cổng đăng nhập sẽ có đầy đủ Sidebar và hiệu ứng
     hien_thi_cong_dang_nhap(st.session_state["current_lang"])
 else:
     main_app()
