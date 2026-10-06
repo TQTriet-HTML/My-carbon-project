@@ -169,9 +169,14 @@ def hien_thi_gioi_thieu_va_goi_von():
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         animation: titleShine 4s linear infinite; margin-bottom: 30px; letter-spacing: 2px;
     }
+    /* CỐ ĐỊNH CHIỀU CAO VÀ CĂN GIỮA ĐỒNG ĐỀU CHO CÁC KHỐI CHỨNG NHẬN */
     .cert-box {
-        display: flex; flex-direction: column; justify-content: space-between;
-        min-height: 160px; text-align: center; padding: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 160px;
+        text-align: center;
+        padding: 5px;
     }
     .cert-title { color: #a0aec0; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; letter-spacing: 1px;}
     .cert-val { color: #ffffff; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
@@ -309,30 +314,29 @@ def hien_thi_gioi_thieu_va_goi_von():
                 border-color: #48bb78 !important;
             }
 
-            /* 3. NÚT BẤM: Đồng bộ màu khối, hover lóa sáng xanh dương + quét sáng 7s */
+            /* 3. NÚT BẤM: Màu xanh dương tinh tế, thu hẹp, hover lóa sáng + quét sáng 7s */
             @keyframes blueSweep {
                 0% { left: -100%; }
-                20% { left: 100%; }
+                15% { left: 100%; }
                 100% { left: 100%; }
             }
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) .stButton > button {
-                background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
-                border: 1px solid rgba(66, 153, 225, 0.5) !important;
-                color: #90cdf4 !important; font-weight: 800 !important; border-radius: 8px !important;
+                background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%) !important;
+                border: 1px solid rgba(66, 153, 225, 0.6) !important;
+                color: white !important; font-weight: 800 !important; border-radius: 8px !important;
                 position: relative; overflow: hidden !important; transition: all 0.4s ease !important;
                 padding: 10px !important; letter-spacing: 1px;
             }
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) .stButton > button::before {
                 content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
                 transform: skewX(-25deg); animation: blueSweep 7s infinite linear; z-index: 1;
             }
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) .stButton > button:hover {
                 background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
-                color: white !important;
-                border-color: #90cdf4 !important;
-                box-shadow: 0 10px 25px rgba(66, 153, 225, 0.8) !important;
-                transform: translateY(-3px) scale(1.02) !important;
+                box-shadow: 0 10px 25px rgba(66, 153, 225, 0.9), inset 0 0 12px rgba(255,255,255,0.3) !important;
+                transform: translateY(-4px) scale(1.03) !important;
+                border-color: #63b3ed !important;
             }
             </style>
         """, unsafe_allow_html=True)
@@ -356,7 +360,13 @@ def hien_thi_gioi_thieu_va_goi_von():
                 fb_content = st.text_area("Nội dung chi tiết (Vấn đề bạn gặp phải hoặc ý tưởng cải tiến):" if lang == "Tiếng Việt" else "Detailed Content (Issues faced or improvement ideas):", height=120, placeholder="Hãy mô tả chi tiết ý tưởng của bạn tại đây..." if lang == "Tiếng Việt" else "Please describe your idea in detail here...")
 
                 btn_text = "GỬI ĐÓNG GÓP & NHẬN THƯỞNG" if lang == "Tiếng Việt" else "SUBMIT & GET REWARDED"
-                if st.form_submit_button(btn_text, use_container_width=True):
+                
+                # Canh giữa và bớt bề rộng của nút bấm (Tạo form thu gọn)
+                col_sp1, col_btn, col_sp2 = st.columns([1, 1.5, 1])
+                with col_btn:
+                    submitted_fb = st.form_submit_button(btn_text, use_container_width=True)
+                
+                if submitted_fb:
                     if fb_title.strip() and fb_content.strip():
                         # Thông báo thành công mới theo yêu cầu
                         success_msg = "Thành công! Đang đợi nhà phát triển xem xét, vui lòng chờ đợi từ 3-4 ngày." if lang == "Tiếng Việt" else "Success! Pending developer review, please wait 3-4 days."
