@@ -66,11 +66,77 @@ AUTH_TEXTS = {
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     txt = AUTH_TEXTS.get(lang, AUTH_TEXTS["Tiếng Việt"])
 
+    # CHÈN HIỆU ỨNG LƯỚT SÓNG VÀ LÓA SÁNG KHỐI
+    st.markdown("""
+        <style>
+        /* 1. HIỆU ỨNG DÒNG CHỮ LƯỚT SÓNG (Gradient Text Animation) */
+        @keyframes textWave {
+            to { background-position: 200% center; }
+        }
+        .auth-wave-text {
+            font-size: clamp(26px, 3.5vw, 46px);
+            font-weight: 900;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #48bb78, #63b3ed, #48bb78, #38a169);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textWave 4s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        /* 2. HIỆU ỨNG KHỐI LÓA SÁNG LIÊN TỤC (Glowing Box) */
+        @keyframes authGlowBox {
+            0%, 100% { box-shadow: 0 0 15px rgba(72, 187, 120, 0.3), inset 0 0 10px rgba(72, 187, 120, 0.1); border-color: rgba(72, 187, 120, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(72, 187, 120, 0.8), inset 0 0 20px rgba(72, 187, 120, 0.3); border-color: rgba(72, 187, 120, 1); }
+        }
+        
+        /* 3. HIỆU ỨNG LUỒNG SÁNG QUÉT NGANG KHỐI (Sweeping Light) */
+        @keyframes authSweepLight {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        /* Áp dụng cho các khối chứa class 'auth-marker' */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
+            border: 2px solid #48bb78 !important;
+            border-radius: 16px !important;
+            padding: 25px !important;
+            animation: authGlowBox 4s infinite ease-in-out !important;
+            position: relative; overflow: hidden !important;
+            transition: transform 0.4s ease !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker)::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transform: skewX(-25deg); animation: authSweepLight 6s infinite linear; z-index: 10; pointer-events: none;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker):hover {
+            transform: translateY(-5px) scale(1.01) !important;
+        }
+
+        /* Hiệu ứng Nút Bấm bên trong cổng đăng nhập */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"] {
+            background: linear-gradient(135deg, #2f855a 0%, #276749 100%) !important;
+            border: 1px solid #48bb78 !important;
+            position: relative; overflow: hidden; transition: all 0.3s;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"]:hover {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+            box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; transform: translateY(-2px);
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     st.markdown(f"""
         <div style="text-align: center; margin-top: 10px; margin-bottom: 35px;">
-            <h1 style="font-size: clamp(24px, 3.2vw, 42px); font-weight: 900; color: #48bb78; letter-spacing: 2px; margin-bottom: 12px; text-transform: uppercase;">
-                {txt['header_title']}
-            </h1>
+            <div class="auth-wave-text">{txt['header_title']}</div>
             <p style="color: #cbd5e1; font-size: 1.05rem; max-width: 820px; margin: 0 auto; line-height: 1.6;">
                 {txt['header_sub']}
             </p>
@@ -82,8 +148,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     # CỘT TRÁI: KHỐI FORM ĐĂNG NHẬP / ĐĂNG KÝ
     with col_left:
         with st.container(border=True):
+            # Cờ đánh dấu để CSS nhận diện khối lóa sáng
+            st.markdown("<div class='auth-marker'></div>", unsafe_allow_html=True)
+            
             st.markdown(f"""
-                <h3 style="color: #48bb78; font-weight: 800; text-align: center; letter-spacing: 1.5px; margin-bottom: 20px; text-transform: uppercase;">
+                <h3 style="color: #48bb78; font-weight: 900; text-align: center; letter-spacing: 1.5px; margin-bottom: 20px; text-transform: uppercase;">
                     {txt['welcome_box']}
                 </h3>
             """, unsafe_allow_html=True)
@@ -120,7 +189,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         elif new_user in db:
                             st.error(txt["reg_exist_err"])
                         else:
-                            # Ánh xạ vai trò chuẩn
                             role_map = {
                                 "Corporate Buyer": "Doanh nghiệp mua tín chỉ",
                                 "Remote Investor": "Nhà đầu tư từ xa (Cổ đông)",
@@ -134,7 +202,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 st.markdown(f"""
                     <div style="color: #cbd5e1; line-height: 1.8; font-size: 0.98rem; padding: 10px 5px;">
                         <p>🌱 {txt['intro_p1']}</p>
-                        <p>🛡️ {txt['intro_p2']}</p>
+                        <p>🛡️️ {txt['intro_p2']}</p>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -142,9 +210,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     with col_right:
         # 1. Thành tựu
         with st.container(border=True):
+            st.markdown("<div class='auth-marker'></div>", unsafe_allow_html=True)
             st.markdown(f"""
                 <div style="border-left: 3px solid #48bb78; padding-left: 10px; margin-bottom: 20px;">
-                    <span style="color: #ffffff; font-weight: 800; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;">
+                    <span style="color: #ffffff; font-weight: 900; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;">
                         {txt['stats_title']}
                     </span>
                 </div>
@@ -170,9 +239,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
         # 2. Dự án tiêu biểu
         with st.container(border=True):
+            st.markdown("<div class='auth-marker'></div>", unsafe_allow_html=True)
             st.markdown(f"""
                 <div style="border-left: 3px solid #63b3ed; padding-left: 10px; margin-bottom: 15px;">
-                    <span style="color: #ffffff; font-weight: 800; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;">
+                    <span style="color: #ffffff; font-weight: 900; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;">
                         {txt['project_title']}
                     </span>
                 </div>
