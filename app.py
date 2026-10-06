@@ -25,9 +25,9 @@ if "current_lang" not in st.session_state: st.session_state["current_lang"] = "T
 
 if "users_db" not in st.session_state:
     st.session_state["users_db"] = {
-        "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
-        "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
-        "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
+        "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV", "wallet_balance": 150000.0},
+        "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)", "wallet_balance": 250000.0},
+        "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ", "wallet_balance": 500000.0}
     }
 if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
 if "current_user" not in st.session_state: st.session_state["current_user"] = ""
@@ -39,6 +39,15 @@ if "market_projects" not in st.session_state:
     st.session_state["market_projects"] = [
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
+if "social_posts" not in st.session_state:
+    st.session_state["social_posts"] = [
+        {"id": "post_1", "author": "Hệ Thống", "role": "Admin", "content": "Thử nghiệm công nghệ vệ tinh mới rất ấn tượng!", "time": "04/10/2026 09:30", "likes": 12, "comments": []}
+    ]
+if "green_diary" not in st.session_state:
+    st.session_state["green_diary"] = {
+        "2026-10-10": {"title": "Kỳ đánh giá sinh khối dự án", "type": "Quan trọng", "content": "Rà soát lại dữ liệu trên nền tảng GEE."},
+        "2026-10-15": {"title": "Phát hiện cháy rừng diện rộng", "type": "Bất thường", "content": "Rừng ở khu vực B bị suy giảm sinh khối nghiêm trọng."}
+    }
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 
@@ -73,28 +82,22 @@ LANG_DICT = {
         "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
         "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
         "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "High-level Security",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Information Security",
         "welcome": "Welcome",
         "mrv_success": "AI SPATIAL MONITORING SYSTEM",
         "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
-        "mrv_loading": "AI scanning spatial data...",
+        "mrv_loading": "AI is analyzing spatial data...",
         "mrv_biomass": "Biomass",
         "mrv_calc_btn": "ANALYZE AREA",
         "mrv_reset_btn": "RESET DATA",
-        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULTS",
-        "mrv_base_val": "Base Year Biomass",
-        "mrv_comp_val": "Comparison Year Biomass",
+        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULT",
+        "mrv_base_val": "Biomass Year",
+        "mrv_comp_val": "Biomass Year",
         "mrv_total_val": "Total Converted Value",
         "mrv_unit": "Tons",
-        "mrv_success_msg": "Analyzed area records positive growth. You can list an additional {diff} carbon credits.",
-        "mrv_warning_msg": "Biomass density has dropped. Immediate field inspection required."
+        "mrv_success_msg": "Biomass growth detected. You can list {diff} additional carbon credits.",
+        "mrv_warning_msg": "Biomass density decreased. Forest inspection required."
     }
-}
-
-ROLE_DICT = {
-    "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
-    "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
-    "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
 }
 
 # ================= SIDEBAR (Chứa Toggle Theme) =================
@@ -124,8 +127,6 @@ def inject_custom_css(is_light):
     text_color = "#1E293B" if is_light else "#E2E8F0"
     glass_bg = "rgba(255, 255, 255, 0.85)" if is_light else "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
     border_glass = "rgba(72, 187, 120, 0.8)" if is_light else "rgba(72, 187, 120, 0.4)"
-    
-    # ĐÃ KHAI BÁO BIẾN BỊ LỖI Ở ĐÂY
     bg_sidebar_badge = "rgba(255, 255, 255, 0.9)" if is_light else "linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))"
     
     st.markdown(f"""
@@ -191,7 +192,6 @@ def inject_custom_css(is_light):
 # THỰC THI NGAY CSS DỰA TRÊN TRẠNG THÁI LIGHT/DARK
 inject_custom_css(st.session_state["is_light"])
 
-
 @st.dialog(" ")
 def hop_thoai_dang_xuat():
     text_color = "#1E293B" if st.session_state["is_light"] else "#ffffff"
@@ -225,12 +225,11 @@ def hop_thoai_dang_xuat():
 
 def main_app():
     l = LANG_DICT[st.session_state["current_lang"]]
-    role_display = ROLE_DICT.get(st.session_state['current_role'], st.session_state['current_role']) if st.session_state["current_lang"] == "English" else st.session_state['current_role']
     
     col_t, col_l = st.columns([7, 1])
     with col_t:
         st.markdown(f'<div class="main-title">{l["title"]}</div>', unsafe_allow_html=True)
-        st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({role_display})")
+        st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({st.session_state['current_role']})")
     
     with col_l:
         st.markdown("""
@@ -238,6 +237,7 @@ def main_app():
             button[kind="secondary"] {
                 background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important;
                 color: #fca5a5 !important; font-weight: 700 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
+                position: relative; overflow: hidden !important;
             }
             button[kind="secondary"]:hover {
                 background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important; border-color: #ef4444 !important; color: white !important;
