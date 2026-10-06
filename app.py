@@ -19,66 +19,15 @@ except ImportError:
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide")
 
-LANG_DICT = {
-    "Tiếng Việt": {
-        "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "ĐĂNG XUẤT", "lang_select": "TÙY CHỌN NGÔN NGỮ",
-        "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Nhật ký Xanh", "Bảng Vàng", "Về chúng tôi"],
-        "sidebar_partners": "ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "CHỨNG NHẬN PHÁP LÝ",
-        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
-        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Thanh toán Escrow",
-        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Tiêu chuẩn Toàn cầu",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Bảo mật Thông tin Cấp cao",
-        "welcome": "Xin chào",
-        "mrv_success": "HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI",
-        "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
-        "mrv_loading": "AI đang phân tích dữ liệu không gian...",
-        "mrv_biomass": "Sinh khối",
-        "mrv_calc_btn": "PHÂN TÍCH VÙNG KHOANH",
-        "mrv_reset_btn": "LÀM MỚI DỮ LIỆU",
-        "mrv_result_title": "KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG",
-        "mrv_base_val": "Sinh khối Năm",
-        "mrv_comp_val": "Sinh khối Năm",
-        "mrv_total_val": "Tổng Giá Trị Quy Đổi",
-        "mrv_unit": "Tấn",
-        "mrv_success_msg": "Khu vực phân tích ghi nhận sự tăng trưởng sinh khối. Bạn có thể niêm yết thêm {diff} tín chỉ carbon.",
-        "mrv_warning_msg": "Mật độ sinh khối trong khu vực sụt giảm. Cần rà soát biến động rừng."
-    },
-    "English": {
-        "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "LOGOUT", "lang_select": "LANGUAGE SETTINGS",
-        "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Green Diary", "Leaderboard", "About Us"],
-        "sidebar_partners": "STRATEGIC PARTNERS", "sidebar_certs": "CERTIFICATIONS",
-        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
-        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
-        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "High-level Security",
-        "welcome": "Welcome",
-        "mrv_success": "AI SPATIAL MONITORING SYSTEM",
-        "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
-        "mrv_loading": "AI scanning spatial data...",
-        "mrv_biomass": "Biomass",
-        "mrv_calc_btn": "ANALYZE AREA",
-        "mrv_reset_btn": "RESET DATA",
-        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULTS",
-        "mrv_base_val": "Base Year Biomass",
-        "mrv_comp_val": "Comparison Year Biomass",
-        "mrv_total_val": "Total Converted Value",
-        "mrv_unit": "Tons",
-        "mrv_success_msg": "Analyzed area records positive growth. You can list an additional {diff} carbon credits.",
-        "mrv_warning_msg": "Biomass density has dropped. Immediate field inspection required."
-    }
-}
-
-ROLE_DICT = {
-    "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
-    "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
-    "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
-}
-
-if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
-
+# ======================================================================
+# 1. HÀM CSS ĐƯỢC CHẠY ĐẦU TIÊN (ĐỂ ÁP DỤNG CHO CẢ MÀN HÌNH ĐĂNG NHẬP)
+# ======================================================================
 def inject_custom_css():
     st.markdown("""
         <style>
+        /* Tắt ảnh nền trắng mặc định của Streamlit và ép nền tối */
+        .stApp { background-image: none !important; background-color: #0E1117 !important;}
+        
         html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }
         .main-title { font-size: clamp(22px, 2.5vw, 32px) !important; font-weight: 800 !important; color: #E2E8F0; margin-bottom: 0px !important; padding-bottom: 0px !important;}
         
@@ -142,7 +91,66 @@ def inject_custom_css():
         </style>
     """, unsafe_allow_html=True)
 
+# THỰC THI NGAY ĐỂ ÁP DỤNG TOÀN CỤC
 inject_custom_css()
+
+
+LANG_DICT = {
+    "Tiếng Việt": {
+        "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "ĐĂNG XUẤT", "lang_select": "TÙY CHỌN NGÔN NGỮ",
+        "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Nhật ký Xanh", "Bảng Vàng", "Về chúng tôi"],
+        "sidebar_partners": "ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "CHỨNG NHẬN PHÁP LÝ",
+        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
+        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Thanh toán Escrow",
+        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Tiêu chuẩn Toàn cầu",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Bảo mật Thông tin Cấp cao",
+        "welcome": "Xin chào",
+        "mrv_success": "HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI",
+        "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
+        "mrv_loading": "AI đang phân tích dữ liệu không gian...",
+        "mrv_biomass": "Sinh khối",
+        "mrv_calc_btn": "PHÂN TÍCH VÙNG KHOANH",
+        "mrv_reset_btn": "LÀM MỚI DỮ LIỆU",
+        "mrv_result_title": "KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG",
+        "mrv_base_val": "Sinh khối Năm",
+        "mrv_comp_val": "Sinh khối Năm",
+        "mrv_total_val": "Tổng Giá Trị Quy Đổi",
+        "mrv_unit": "Tấn",
+        "mrv_success_msg": "Khu vực phân tích ghi nhận sự tăng trưởng sinh khối. Bạn có thể niêm yết thêm {diff} tín chỉ carbon.",
+        "mrv_warning_msg": "Mật độ sinh khối trong khu vực sụt giảm. Cần rà soát biến động rừng."
+    },
+    "English": {
+        "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "LOGOUT", "lang_select": "LANGUAGE SETTINGS",
+        "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Green Diary", "Leaderboard", "About Us"],
+        "sidebar_partners": "STRATEGIC PARTNERS", "sidebar_certs": "CERTIFICATIONS",
+        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
+        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
+        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
+        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "High-level Security",
+        "welcome": "Welcome",
+        "mrv_success": "AI SPATIAL MONITORING SYSTEM",
+        "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
+        "mrv_loading": "AI scanning spatial data...",
+        "mrv_biomass": "Biomass",
+        "mrv_calc_btn": "ANALYZE AREA",
+        "mrv_reset_btn": "RESET DATA",
+        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULTS",
+        "mrv_base_val": "Base Year Biomass",
+        "mrv_comp_val": "Comparison Year Biomass",
+        "mrv_total_val": "Total Converted Value",
+        "mrv_unit": "Tons",
+        "mrv_success_msg": "Analyzed area records positive growth. You can list an additional {diff} carbon credits.",
+        "mrv_warning_msg": "Biomass density has dropped. Immediate field inspection required."
+    }
+}
+
+ROLE_DICT = {
+    "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
+    "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
+    "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
+}
+
+if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
 
 # Khởi tạo dữ liệu người dùng & trạng thái
 if "users_db" not in st.session_state:
@@ -256,8 +264,6 @@ def main_app():
         if st.button(l["logout"], type="secondary", use_container_width=True):
             hop_thoai_dang_xuat()
 
-    st.markdown("""<style>.stApp { background-image: none !important; background-color: #0E1117 !important;}</style>""", unsafe_allow_html=True)
-
     try:
         ee_token = st.secrets["EARTHENGINE_TOKEN"]
         cred_path = os.path.expanduser('~/.config/earthengine/')
@@ -351,6 +357,7 @@ def main_app():
 
 # KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
 if not st.session_state["logged_in"]:
+    # Sidebar và CSS tổng sẽ vẫn được giữ nguyên do khai báo phía trên
     hien_thi_cong_dang_nhap(st.session_state["current_lang"])
 else:
     main_app()
