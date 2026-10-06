@@ -270,11 +270,11 @@ def hien_thi_gioi_thieu_va_goi_von():
             """, unsafe_allow_html=True)
 
         # =========================================================
-        # KHỐI ĐÓNG GÓP Ý KIẾN
+        # KHỐI ĐÓNG GÓP Ý KIẾN (GIẢI QUYẾT TRIỆT ĐỂ LỖI NÚT BẤM)
         # =========================================================
         st.markdown("""
             <style>
-            /* 1. KHUNG CHÍNH: Chỉ lóa sáng xanh dương khi HOVER */
+            /* 1. KHUNG CHÍNH */
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) {
                 background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
                 border: 1px solid rgba(66, 153, 225, 0.3) !important;
@@ -289,7 +289,7 @@ def hien_thi_gioi_thieu_va_goi_von():
                 transform: translateY(-2px);
             }
 
-            /* 2. Ô NHẬP LIỆU: Viền xanh lá, nổi nhẹ khi hover/focus */
+            /* 2. Ô NHẬP LIỆU */
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="input"], 
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="textarea"] {
                 transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
@@ -299,36 +299,36 @@ def hien_thi_gioi_thieu_va_goi_von():
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="textarea"]:hover,
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="input"]:focus-within,
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="textarea"]:focus-within {
-                border-color: #48bb78 !important; /* Viền xanh lá */
+                border-color: #48bb78 !important;
                 box-shadow: 0 6px 15px rgba(72, 187, 120, 0.25) !important;
-                transform: translateY(-3px) !important; /* Nổi nhẹ lên */
+                transform: translateY(-3px) !important;
             }
-            /* Ghi đè viền đỏ mặc định của Streamlit */
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) [aria-invalid="true"],
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) [data-baseweb]:focus-within {
                 border-color: #48bb78 !important;
             }
 
-            /* 3. NÚT BẤM (Đã sửa lỗi chọn phần tử): Màu xanh dương tinh tế, hover lóa sáng + quét sáng 7s */
+            /* 3. NÚT NỘP FORM (Ép ghi đè toàn bộ CSS mặc định của hệ thống) */
             @keyframes blueSweep {
                 0% { left: -100%; }
                 15% { left: 100%; }
                 100% { left: 100%; }
             }
-            /* Lấy trực tiếp phần tử button bên trong khối có chứa feedback-anchor */
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) button {
+            
+            /* Dùng cờ báo hiệu riêng biệt ".form-feedback-marker" để nhắm thẳng vào nút submit này */
+            div[data-testid="stForm"]:has(.form-feedback-marker) button[kind="primary"] {
                 background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%) !important;
                 border: 1px solid rgba(66, 153, 225, 0.6) !important;
                 color: white !important; font-weight: 800 !important; border-radius: 8px !important;
                 position: relative; overflow: hidden !important; transition: all 0.4s ease !important;
                 padding: 10px !important; letter-spacing: 1px;
             }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) button::before {
+            div[data-testid="stForm"]:has(.form-feedback-marker) button[kind="primary"]::before {
                 content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
                 background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
                 transform: skewX(-25deg); animation: blueSweep 7s infinite linear; z-index: 1;
             }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) button:hover {
+            div[data-testid="stForm"]:has(.form-feedback-marker) button[kind="primary"]:hover {
                 background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
                 box-shadow: 0 10px 25px rgba(66, 153, 225, 0.9), inset 0 0 12px rgba(255,255,255,0.3) !important;
                 transform: translateY(-4px) scale(1.03) !important;
@@ -351,15 +351,18 @@ def hien_thi_gioi_thieu_va_goi_von():
             """, unsafe_allow_html=True)
 
             with st.form("feedback_form", clear_on_submit=True):
+                # Đánh dấu cờ riêng để CSS nhắm mục tiêu chính xác
+                st.markdown("<div class='form-feedback-marker'></div>", unsafe_allow_html=True)
+                
                 fb_title = st.text_input("Tiêu đề góp ý:" if lang == "Tiếng Việt" else "Feedback Title:", placeholder="Ví dụ: Đề xuất thêm tính năng thanh toán..." if lang == "Tiếng Việt" else "E.g., Proposing a new payment feature...")
                 fb_content = st.text_area("Nội dung chi tiết (Vấn đề bạn gặp phải hoặc ý tưởng cải tiến):" if lang == "Tiếng Việt" else "Detailed Content (Issues faced or improvement ideas):", height=120, placeholder="Hãy mô tả chi tiết ý tưởng của bạn tại đây..." if lang == "Tiếng Việt" else "Please describe your idea in detail here...")
 
                 btn_text = "GỬI ĐÓNG GÓP & NHẬN THƯỞNG" if lang == "Tiếng Việt" else "SUBMIT & GET REWARDED"
                 
-                # Canh giữa và bớt bề rộng của nút bấm
                 col_sp1, col_btn, col_sp2 = st.columns([1, 1.5, 1])
                 with col_btn:
-                    submitted_fb = st.form_submit_button(btn_text, use_container_width=True)
+                    # Gán cứng type="primary" để có thể đè nát CSS mặc định
+                    submitted_fb = st.form_submit_button(btn_text, type="primary", use_container_width=True)
                 
                 if submitted_fb:
                     if fb_title.strip() and fb_content.strip():
