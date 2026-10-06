@@ -1,122 +1,91 @@
 import streamlit as st
-
-AUTH_TEXTS = {
-    "Tiếng Việt": {
-        "header_title": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
-        "header_sub": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
-        "welcome_box": "XIN CHÀO QUÝ ĐỒNG HÀNH!",
-        "tabs": ["ĐĂNG NHẬP", "TẠO TÀI KHOẢN", "GIỚI THIỆU"],
-        "user_label": "Tên đăng nhập",
-        "user_placeholder": "admin, investor, buyer",
-        "pass_label": "Mật khẩu",
-        "login_btn": "XÁC THỰC TRUY CẬP",
-        "register_user": "Tên đăng nhập mới",
-        "register_pass": "Mật khẩu",
-        "register_role": "Vai trò tham gia",
-        "roles": ["Doanh nghiệp mua tín chỉ", "Nhà đầu tư từ xa (Cổ đông)", "Chủ rừng / Kỹ sư MRV"],
-        "register_btn": "TẠO TÀI KHOẢN MỚI",
-        "stats_title": "THÀNH TỰU NỀN TẢNG",
-        "stat_vol_val": "2.5M+",
-        "stat_vol_lbl": "Tấn Carbon Giao Dịch",
-        "stat_area_val": "15,000",
-        "stat_area_lbl": "Hecta Rừng Được Bảo Vệ",
-        "project_title": "DỰ ÁN TIÊU BIỂU",
-        "project_name": "Dự án Rừng ngập mặn Cà Mau",
-        "project_desc": "Bảo vệ sinh khối & đa dạng sinh học ven biển.",
-        "project_badge": "Đã xác thực AI (Verified)",
-        "intro_p1": "Nền tảng tích hợp trí tuệ nhân tạo (GEE) phân tích sinh khối vệ tinh thời gian thực.",
-        "intro_p2": "Giao dịch tín chỉ carbon minh bạch, loại bỏ 'rừng ma' và hỗ trợ vốn đầu tư lâm nghiệp xanh.",
-        "login_err": "Tên đăng nhập hoặc mật khẩu không chính xác!",
-        "reg_fill_err": "Vui lòng nhập đầy đủ thông tin!",
-        "reg_exist_err": "Tên đăng nhập đã tồn tại!",
-        "reg_success": "Đăng ký thành công! Hãy chuyển sang tab Đăng nhập."
-    },
-    "English": {
-        "header_title": "ONE TOUCH - ENDLESS GREEN",
-        "header_sub": "Welcome to the pioneer Carbon Credit Exchange. Where satellite AI technology converges with the mission to heal Earth.",
-        "welcome_box": "WELCOME GREEN COMPANION!",
-        "tabs": ["LOGIN", "REGISTER", "ABOUT"],
-        "user_label": "Username",
-        "user_placeholder": "admin, investor, buyer",
-        "pass_label": "Password",
-        "login_btn": "AUTHENTICATE ACCESS",
-        "register_user": "New Username",
-        "register_pass": "Password",
-        "register_role": "Participation Role",
-        "roles": ["Corporate Buyer", "Remote Investor", "Forest Owner / MRV Eng."],
-        "register_btn": "CREATE ACCOUNT",
-        "stats_title": "PLATFORM ACHIEVEMENTS",
-        "stat_vol_val": "2.5M+",
-        "stat_vol_lbl": "Carbon Tons Traded",
-        "stat_area_val": "15,000",
-        "stat_area_lbl": "Hectares Protected",
-        "project_title": "FEATURED PROJECT",
-        "project_name": "Ca Mau Mangrove Project",
-        "project_desc": "Protecting biomass & coastal biodiversity.",
-        "project_badge": "AI Verified",
-        "intro_p1": "Real-time AI spatial monitoring platform integrated with satellite Earth Engine.",
-        "intro_p2": "Transparent carbon marketplace, eliminating 'ghost forests' and powering green capital.",
-        "login_err": "Invalid username or password!",
-        "reg_fill_err": "Please complete all fields!",
-        "reg_exist_err": "Username already exists!",
-        "reg_success": "Registration successful! Please proceed to login."
-    }
-}
+import re
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
-    txt = AUTH_TEXTS.get(lang, AUTH_TEXTS["Tiếng Việt"])
+    if "reg_success_data" not in st.session_state:
+        st.session_state["reg_success_data"] = None
+    if "show_intro_reg_form" not in st.session_state:
+        st.session_state["show_intro_reg_form"] = False
+
+    T = {
+        "Tiếng Việt": {
+            "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
+            "subtitle": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
+            "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN", "tab_intro": "GIỚI THIỆU",
+            "welcome_msg": "XIN CHÀO QUÝ ĐỒNG HÀNH!",
+            "user": "Tên đăng nhập", "pass": "Mật khẩu",
+            "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
+            "pwd_error": "Mật khẩu phải từ 8-20 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.",
+            "reg_success_msg": "Bạn đã đặt bước chân đầu tiên trên chặng đường xanh!",
+            "btn_auto_login": "ĐĂNG NHẬP NGAY",
+            "achieve": "THÀNH TỰU NỀN TẢNG", "ach_1_val": "2.5M+", "ach_1_lbl": "Tấn Carbon Giao Dịch", "ach_2_val": "15,000", "ach_2_lbl": "Hecta Rừng Được Bảo Vệ",
+            "projects": "DỰ ÁN TIÊU BIỂU", "proj_name": "Dự án Rừng ngập mặn Cà Mau", "proj_desc": "Bảo vệ sinh khối & đa dạng sinh học ven biển.", "proj_badge": "Đã xác thực AI (Verified)",
+            "news_lbl": "TIN MỚI NHẤT:", "news_txt": "Thị trường Tín chỉ Carbon Việt Nam chính thức bước vào giai đoạn vận hành thí điểm."
+        },
+        "English": {
+            "slogan": "ONE TOUCH - ONE GREEN WORLD",
+            "subtitle": "Welcome to the pioneer Carbon Credit Exchange. AI satellite technology meets Earth protection mission.",
+            "tab_login": "LOGIN", "tab_reg": "REGISTER", "tab_intro": "ABOUT",
+            "welcome_msg": "WELCOME PARTNER!",
+            "user": "Username", "pass": "Password",
+            "btn_login": "AUTHENTICATE", "btn_reg": "CREATE ACCOUNT",
+            "pwd_error": "Password must be 8-20 characters with uppercase, lowercase, number, and special character.",
+            "reg_success_msg": "You have taken your first step towards sustainability!",
+            "btn_auto_login": "LOGIN NOW",
+            "achieve": "PLATFORM ACHIEVEMENTS", "ach_1_val": "2.5M+", "ach_1_lbl": "Tons Carbon Traded", "ach_2_val": "15,000", "ach_2_lbl": "Hectares Protected",
+            "projects": "FEATURED PROJECTS", "proj_name": "Ca Mau Mangrove Project", "proj_desc": "Protecting biomass & coastal biodiversity.", "proj_badge": "AI Verified",
+            "news_lbl": "LATEST NEWS:", "news_txt": "Vietnam's Carbon Credit Market officially begins pilot operation."
+        }
+    }
+    t = T.get(lang, T["Tiếng Việt"])
     
     text_sub = "#475569" if is_light else "#cbd5e1"
     bg_auth_block = "rgba(255, 255, 255, 0.95)" if is_light else "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
 
+    # --- CSS TOÀN CỤC CHUYÊN SÂU ---
     st.markdown(f"""
         <style>
-        /* 1. HIỆU ỨNG CHỮ LƯỚT SÓNG & VẦNG SÁNG DƯỚI CHÂN (Chu kỳ 10s) */
+        /* HIỆU ỨNG LÓA SÁNG TỪNG CHỮ (XANH LÁ -> XANH DƯƠNG) */
+        @keyframes char-green-blue-glow {{
+            0%, 100% {{ color: #48bb78; text-shadow: 0 0 4px rgba(72,187,120,0.3); }}
+            50% {{ color: #63b3ed; text-shadow: 0 0 20px rgba(99,179,237,1), 0 0 8px rgba(72,187,120,0.8); transform: translateY(-2px); }}
+        }}
+        .welcome-container {{ text-align: center; margin-bottom: 25px; white-space: nowrap; }}
+        .welcome-char {{
+            display: inline-block; font-size: 1.3rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 1px; animation: char-green-blue-glow 8s infinite ease-in-out;
+        }}
+
+        /* HOẠT HỌA CÂU SLOGAN CHÍNH LƯỚT SÓNG & ĐỔ BÓNG DƯỚI */
         @keyframes waveUp {{
             0%, 15%, 100% {{ transform: translateY(0); }}
-            7.5% {{ transform: translateY(-15px); }}
+            7.5% {{ transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 10px rgba(104,211,145,0.8); }}
         }}
         @keyframes glowUnder {{
             0%, 15%, 100% {{ opacity: 0; box-shadow: 0 0 0px transparent; }}
             7.5% {{ opacity: 1; box-shadow: 0 10px 15px #48bb78, 0 5px 10px #48bb78; }}
         }}
-        .slogan-container {{
-            font-size: clamp(26px, 3.5vw, 46px); font-weight: 900;
-            text-align: center; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;
-        }}
-        .slogan-word {{
-            display: inline-block; position: relative; margin-right: 12px;
-            background: linear-gradient(to right, #48bb78, #63b3ed);
+        .wave-text-container {{ text-align: center; margin-bottom: 5px; }}
+        .wave-char {{
+            display: inline-block; position: relative; margin-right: 12px; font-size: clamp(26px, 3.2vw, 42px) !important; font-weight: 900 !important;
+            letter-spacing: 2px !important; background: linear-gradient(90deg, #48bb78, #68d391, #319795);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: waveUp 10s infinite ease-in-out;
-            animation-delay: var(--delay);
         }}
-        .slogan-word::after {{
+        .wave-char::after {{
             content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px;
             background: #48bb78; border-radius: 2px;
             animation: glowUnder 10s infinite ease-in-out;
-            animation-delay: var(--delay);
         }}
-
-        /* 2. CHỮ "XIN CHÀO QUÝ ĐỒNG HÀNH" ĐỔI MÀU (Xanh lá -> Xanh dương) */
-        @keyframes greenToBlue {{
-            0%, 100% {{ color: #48bb78; text-shadow: 0 0 8px rgba(72,187,120,0.4); }}
-            50% {{ color: #3182ce; text-shadow: 0 0 8px rgba(49,130,206,0.4); }}
-        }}
-        .welcome-text {{
-            font-weight: 900; text-align: center; letter-spacing: 1.5px;
-            margin-bottom: 20px; text-transform: uppercase;
-            animation: greenToBlue 4s infinite ease-in-out;
-        }}
+        .hero-subtitle {{ text-align: center; color: {text_sub}; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; }}
 
         /* 3. KHỐI TRÁI: FORM ĐĂNG NHẬP (Lóa sáng xanh dương + quét sáng) */
         @keyframes leftAuthGlow {{
             0%, 100% {{ box-shadow: 0 0 15px rgba(66, 153, 225, 0.3); border-color: rgba(66, 153, 225, 0.5); }}
             50% {{ box-shadow: 0 0 35px rgba(66, 153, 225, 0.8); border-color: rgba(66, 153, 225, 1); }}
         }}
-        @keyframes sweepLight {{
-            0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }}
-        }}
+        @keyframes sweepLight {{ 0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }} }}
+        
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) {{
             background: {bg_auth_block} !important; border: 2px solid #3182ce !important; border-radius: 16px !important;
             padding: 25px !important; animation: leftAuthGlow 4s infinite ease-in-out !important;
@@ -127,9 +96,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
             transform: skewX(-25deg); animation: sweepLight 6s infinite linear; z-index: 10; pointer-events: none;
         }}
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker):hover {{
-            transform: translateY(-5px) scale(1.01) !important;
-        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker):hover {{ transform: translateY(-5px) scale(1.01) !important; }}
 
         /* 4. HAI KHỐI BÊN PHẢI: Lóa sáng xanh lá, nổi lên khi trỏ chuột */
         @keyframes rightGreenGlow {{
@@ -142,130 +109,153 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt", is_light=False):
             transition: transform 0.4s ease !important;
         }}
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.right-glow-marker):hover {{
-            transform: translateY(-6px) scale(1.02) !important;
-            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important;
+            transform: translateY(-6px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important;
         }}
 
-        /* Nút bấm Đăng nhập */
+        /* ĐỒNG BỘ NÚT FORM XANH LÁ + LƯỚT SÁNG */
+        @keyframes button-shine {{ 0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }} }}
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"] {{
-            background: linear-gradient(135deg, #2f855a 0%, #276749 100%) !important; border: 1px solid #48bb78 !important;
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; 
+            border: 1px solid rgba(72, 187, 120, 0.6) !important;
+            color: white !important; font-weight: 700 !important; letter-spacing: 1px;
+            position: relative; overflow: hidden !important; z-index: 1; transition: all 0.3s ease !important; border-radius: 8px !important;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"]::before {{
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-25deg); animation: button-shine 4s infinite ease-in-out; z-index: -1;
         }}
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-marker) button[kind="primary"]:hover {{
-            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(72, 187, 120, 0.9) !important; transform: translateY(-2px) scale(1.02) !important; 
         }}
+
+        .section-title {{ color: #ffffff; font-size: 1.15rem; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 25px; border-left: 5px solid #48bb78; padding-left: 12px; text-transform: uppercase; }}
+        .stat-value {{ font-size: 2.2rem; font-weight: 900; color: #63b3ed; margin-bottom: 5px; line-height: 1.1; }}
+        .stat-label {{ color: {text_sub}; font-size: 0.9rem; font-weight: 500;}}
+        .project-title {{ color: #48bb78; font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }}
+        .project-desc {{ color: {text_sub}; font-size: 0.95rem; margin-bottom: 15px; line-height: 1.5; }}
+        .verified-badge {{ display: inline-block; background: rgba(72, 187, 120, 0.15); border: 1px solid #48bb78; color: #48bb78; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;}}
+        
+        .news-ticker-container {{ position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 12px 25px; display: flex; align-items: center; z-index: 1000; }}
+        .news-label {{ font-weight: 900; color: #fc8181; margin-right: 20px; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }}
+        .news-marquee {{ overflow: hidden; white-space: nowrap; width: 100%; }}
+        .news-marquee span {{ display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }}
+        @keyframes marquee {{ 0% {{ transform: translate(0, 0); }} 100% {{ transform: translate(-100%, 0); }} }}
         </style>
     """, unsafe_allow_html=True)
 
-    title_words = txt['header_title'].split()
-    title_html = "".join([f'<span class="slogan-word" style="--delay: {idx * 0.2}s;">{w}</span>' for idx, w in enumerate(title_words)])
+    # Dựng Slogan lướt sóng
+    wave_html = '<div class="wave-text-container">'
+    delay = 0.0
+    for char in t["slogan"]:
+        wave_html += f'<span class="wave-char" style="animation-delay: {delay}s;">{"&nbsp;" if char == " " else char}</span>'
+        delay += 0.08
+    wave_html += '</div>'
 
-    st.markdown(f"""
-        <div style="text-align: center; margin-top: 10px; margin-bottom: 35px;">
-            <div class="slogan-container">{title_html}</div>
-            <p style="color: {text_sub}; font-size: 1.05rem; max-width: 820px; margin: 0 auto; line-height: 1.6;">
-                {txt['header_sub']}
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(wave_html, unsafe_allow_html=True)
+    st.markdown(f'<div class="hero-subtitle">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
-    col_left, col_right = st.columns([1.1, 0.9], gap="large")
-
-    with col_left:
+    # Chia cột chính
+    _, col_form, col_space, col_info, _ = st.columns([0.2, 1.2, 0.1, 1.2, 0.2])
+    
+    with col_form:
         with st.container(border=True):
             st.markdown("<div class='auth-marker'></div>", unsafe_allow_html=True)
-            st.markdown(f"<h3 class='welcome-text'>{txt['welcome_box']}</h3>", unsafe_allow_html=True)
+            
+            # Dựng Welcome lóa sáng
+            welcome_text = t["welcome_msg"]
+            welcome_html = '<div class="welcome-container">'
+            delay_wc = 0.0
+            for char in welcome_text:
+                welcome_html += f'<span class="welcome-char" style="animation-delay: {delay_wc}s;">{"&nbsp;" if char == " " else char}</span>'
+                delay_wc += 0.06
+            welcome_html += '</div>'
+            st.markdown(welcome_html, unsafe_allow_html=True)
 
-            t_login, t_reg, t_intro = st.tabs(txt["tabs"])
-
-            with t_login:
-                with st.form("form_login_main", clear_on_submit=False):
-                    username = st.text_input(txt["user_label"], placeholder=txt["user_placeholder"]).strip().lower()
-                    password = st.text_input(txt["pass_label"], type="password")
-                    btn_login = st.form_submit_button(txt["login_btn"], type="primary", use_container_width=True)
-
-                    if btn_login:
-                        db = st.session_state.get("users_db", {})
-                        if username in db and db[username]["password"] == password:
+            tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
+            
+            with tab_dang_nhap:
+                with st.form("form_login"):
+                    u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
+                    u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
+                    submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
+                    if submitted:
+                        users = st.session_state.get("users_db", {})
+                        if u_name in users and users[u_name]["password"] == u_pass:
                             st.session_state["logged_in"] = True
-                            st.session_state["current_user"] = username
-                            st.session_state["current_role"] = db[username]["role"]
+                            st.session_state["current_user"] = u_name
+                            st.session_state["current_role"] = users[u_name]["role"]
                             st.rerun()
                         else:
-                            st.error(txt["login_err"])
+                            st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
+                            
+            with tab_dang_ky:
+                if st.session_state["reg_success_data"]:
+                    st.markdown(f"""
+                        <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:10px; margin-top: 15px;">
+                            <h4 style="color:#48bb78; font-weight:800; margin-bottom: 10px;">{t['reg_success_msg']}</h4>
+                            <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản / Account: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    st.write("")
+                    if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
+                        data = st.session_state["reg_success_data"]
+                        st.session_state["logged_in"] = True
+                        st.session_state["current_user"] = data["user"]
+                        st.session_state["current_role"] = data["role"]
+                        st.session_state["reg_success_data"] = None
+                        st.rerun()
+                else:
+                    with st.form("form_register", clear_on_submit=True):
+                        new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
+                        new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
+                        role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
+                        reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                        
+                        if reg_submitted:
+                            if not new_user or not new_pass:
+                                st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+                            else:
+                                pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
+                                if not re.match(pwd_pattern, new_pass):
+                                    st.error(t["pwd_error"])
+                                else:
+                                    if "users_db" not in st.session_state:
+                                        st.session_state["users_db"] = {}
+                                    if new_user in st.session_state["users_db"]:
+                                        st.error("Tài khoản đã tồn tại!" if lang=="Tiếng Việt" else "Account already exists!")
+                                    else:
+                                        st.session_state["users_db"][new_user] = {
+                                            "password": new_pass, "role": role_sel, "wallet_balance": 100000.0
+                                        }
+                                        st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
+                                        st.rerun()
 
-            with t_reg:
-                with st.form("form_reg_main", clear_on_submit=True):
-                    new_user = st.text_input(txt["register_user"]).strip().lower()
-                    new_pass = st.text_input(txt["register_pass"], type="password")
-                    new_role = st.selectbox(txt["register_role"], txt["roles"])
-                    btn_reg = st.form_submit_button(txt["register_btn"], type="primary", use_container_width=True)
-
-                    if btn_reg:
-                        db = st.session_state.get("users_db", {})
-                        if not new_user or not new_pass:
-                            st.error(txt["reg_fill_err"])
-                        elif new_user in db:
-                            st.error(txt["reg_exist_err"])
-                        else:
-                            role_map = {"Corporate Buyer": "Doanh nghiệp mua tín chỉ", "Remote Investor": "Nhà đầu tư từ xa (Cổ đông)", "Forest Owner / MRV Eng.": "Chủ rừng / Kỹ sư MRV"}
-                            final_role = role_map.get(new_role, new_role)
-                            st.session_state["users_db"][new_user] = {"password": new_pass, "role": final_role}
-                            st.success(txt["reg_success"])
-
-            with t_intro:
-                st.markdown(f"""
-                    <div style="color: {text_sub}; line-height: 1.8; font-size: 0.98rem; padding: 10px 5px;">
-                        <p>🌱 {txt['intro_p1']}</p>
-                        <p>🛡 {txt['intro_p2']}</p>
-                    </div>
-                """, unsafe_allow_html=True)
-
-    with col_right:
+    with col_info:
         with st.container(border=True):
             st.markdown("<div class='right-glow-marker'></div>", unsafe_allow_html=True)
-            st.markdown(f"""
-                <div style="border-left: 3px solid #48bb78; padding-left: 10px; margin-bottom: 20px;">
-                    <span style="color: {text_sub}; font-weight: 900; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;">
-                        {txt['stats_title']}
-                    </span>
-                </div>
-            """, unsafe_allow_html=True)
-
+            st.markdown(f'<div class="section-title">{t["achieve"]}</div>', unsafe_allow_html=True)
             c_st1, c_st2 = st.columns(2)
             with c_st1:
-                st.markdown(f"""
-                    <div style="text-align: center;">
-                        <div style="font-size: 2.2rem; font-weight: 900; color: #63b3ed; line-height: 1.1;">{txt['stat_vol_val']}</div>
-                        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 6px;">{txt['stat_vol_lbl']}</div>
-                    </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align:center;"><div class="stat-value">{t["ach_1_val"]}</div><div class="stat-label">{t["ach_1_lbl"]}</div></div>', unsafe_allow_html=True)
             with c_st2:
-                st.markdown(f"""
-                    <div style="text-align: center;">
-                        <div style="font-size: 2.2rem; font-weight: 900; color: #48bb78; line-height: 1.1;">{txt['stat_area_val']}</div>
-                        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 6px;">{txt['stat_area_lbl']}</div>
-                    </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align:center;"><div class="stat-value" style="color:#48bb78;">{t["ach_2_val"]}</div><div class="stat-label">{t["ach_2_lbl"]}</div></div>', unsafe_allow_html=True)
 
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
         with st.container(border=True):
             st.markdown("<div class='right-glow-marker'></div>", unsafe_allow_html=True)
-            st.markdown(f"""
-                <div style="border-left: 3px solid #63b3ed; padding-left: 10px; margin-bottom: 15px;">
-                    <span style="color: {text_sub}; font-weight: 900; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;">
-                        {txt['project_title']}
-                    </span>
-                </div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: #48bb78; margin-bottom: 8px;">
-                    {txt['project_name']}
-                </div>
-                <div style="color: {text_sub}; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">
-                    {txt['project_desc']}
-                </div>
-                <div style="text-align: right;">
-                    <span style="background: rgba(72, 187, 120, 0.15); border: 1px solid rgba(72, 187, 120, 0.6); color: #48bb78; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;">
-                        {txt['project_badge']}
-                    </span>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="section-title">{t["projects"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="project-title">{t["proj_name"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="project-desc">{t["proj_desc"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="text-align:right;"><span class="verified-badge">{t["proj_badge"]}</span></div>', unsafe_allow_html=True)
+
+    # Tin tức chân trang
+    st.markdown(f"""
+    <div class="news-ticker-container">
+        <div class="news-label">{t['news_lbl']}</div>
+        <div class="news-marquee">
+            <span>{t['news_txt']} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {t['news_txt']}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
