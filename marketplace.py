@@ -169,14 +169,9 @@ def hien_thi_gioi_thieu_va_goi_von():
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         animation: titleShine 4s linear infinite; margin-bottom: 30px; letter-spacing: 2px;
     }
-    /* CỐ ĐỊNH CHIỀU CAO VÀ CĂN GIỮA ĐỒNG ĐỀU CHO CÁC KHỐI CHỨNG NHẬN */
     .cert-box {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 160px;
-        text-align: center;
-        padding: 5px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        min-height: 160px; text-align: center; padding: 5px;
     }
     .cert-title { color: #a0aec0; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; letter-spacing: 1px;}
     .cert-val { color: #ffffff; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
@@ -275,7 +270,7 @@ def hien_thi_gioi_thieu_va_goi_von():
             """, unsafe_allow_html=True)
 
         # =========================================================
-        # KHỐI ĐÓNG GÓP Ý KIẾN (TÙY CHỈNH THEO YÊU CẦU MỚI)
+        # KHỐI ĐÓNG GÓP Ý KIẾN
         # =========================================================
         st.markdown("""
             <style>
@@ -294,7 +289,7 @@ def hien_thi_gioi_thieu_va_goi_von():
                 transform: translateY(-2px);
             }
 
-            /* 2. Ô NHẬP LIỆU: Viền xanh lá, triệt tiêu viền đỏ mặc định, nổi nhẹ khi hover/focus */
+            /* 2. Ô NHẬP LIỆU: Viền xanh lá, nổi nhẹ khi hover/focus */
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="input"], 
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) div[data-baseweb="textarea"] {
                 transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
@@ -308,35 +303,37 @@ def hien_thi_gioi_thieu_va_goi_von():
                 box-shadow: 0 6px 15px rgba(72, 187, 120, 0.25) !important;
                 transform: translateY(-3px) !important; /* Nổi nhẹ lên */
             }
-            /* Ghi đè viền đỏ (aria-invalid) của Streamlit */
+            /* Ghi đè viền đỏ mặc định của Streamlit */
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) [aria-invalid="true"],
             div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) [data-baseweb]:focus-within {
                 border-color: #48bb78 !important;
             }
 
-            /* 3. NÚT BẤM: Màu xanh dương tinh tế, thu hẹp, hover lóa sáng + quét sáng 7s */
+            /* 3. NÚT BẤM (Đã sửa lỗi chọn phần tử): Màu xanh dương tinh tế, hover lóa sáng + quét sáng 7s */
             @keyframes blueSweep {
                 0% { left: -100%; }
                 15% { left: 100%; }
                 100% { left: 100%; }
             }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) .stButton > button {
+            /* Lấy trực tiếp phần tử button bên trong khối có chứa feedback-anchor */
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) button {
                 background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%) !important;
                 border: 1px solid rgba(66, 153, 225, 0.6) !important;
                 color: white !important; font-weight: 800 !important; border-radius: 8px !important;
                 position: relative; overflow: hidden !important; transition: all 0.4s ease !important;
                 padding: 10px !important; letter-spacing: 1px;
             }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) .stButton > button::before {
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) button::before {
                 content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
                 background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
                 transform: skewX(-25deg); animation: blueSweep 7s infinite linear; z-index: 1;
             }
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) .stButton > button:hover {
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(.feedback-anchor) button:hover {
                 background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
                 box-shadow: 0 10px 25px rgba(66, 153, 225, 0.9), inset 0 0 12px rgba(255,255,255,0.3) !important;
                 transform: translateY(-4px) scale(1.03) !important;
                 border-color: #63b3ed !important;
+                color: white !important;
             }
             </style>
         """, unsafe_allow_html=True)
@@ -344,7 +341,6 @@ def hien_thi_gioi_thieu_va_goi_von():
         with st.container(border=True):
             st.markdown("<div class='feedback-anchor'></div>", unsafe_allow_html=True)
             
-            # Tiêu đề đồng bộ với "Về chúng tôi" (Không icon)
             st.markdown(f"<h3 style='color: #63b3ed; font-weight: 900; text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;'>{'GÓP Ý KIẾN - KIẾN TẠO TƯƠNG LAI' if lang=='Tiếng Việt' else 'CONTRIBUTE IDEAS - SHAPE THE FUTURE'}</h3>", unsafe_allow_html=True)
             
             feedback_desc = "Mỗi góc nhìn của bạn là một viên gạch xây dựng nền tảng. Nếu ý tưởng cải tiến của bạn mang lại giá trị thiết thực, chúng tôi xin trân trọng gửi tặng <b>Tín chỉ Carbon</b> trực tiếp vào ví của bạn như một lời tri ân sâu sắc!" if lang == "Tiếng Việt" else "Every perspective is a building block for our platform. If your improvement idea brings practical value, we will directly reward you with <b>Carbon Credits</b> to your wallet as a token of our deepest appreciation!"
@@ -354,21 +350,19 @@ def hien_thi_gioi_thieu_va_goi_von():
             </div>
             """, unsafe_allow_html=True)
 
-            # Form tự động xóa sau khi Submit
             with st.form("feedback_form", clear_on_submit=True):
                 fb_title = st.text_input("Tiêu đề góp ý:" if lang == "Tiếng Việt" else "Feedback Title:", placeholder="Ví dụ: Đề xuất thêm tính năng thanh toán..." if lang == "Tiếng Việt" else "E.g., Proposing a new payment feature...")
                 fb_content = st.text_area("Nội dung chi tiết (Vấn đề bạn gặp phải hoặc ý tưởng cải tiến):" if lang == "Tiếng Việt" else "Detailed Content (Issues faced or improvement ideas):", height=120, placeholder="Hãy mô tả chi tiết ý tưởng của bạn tại đây..." if lang == "Tiếng Việt" else "Please describe your idea in detail here...")
 
                 btn_text = "GỬI ĐÓNG GÓP & NHẬN THƯỞNG" if lang == "Tiếng Việt" else "SUBMIT & GET REWARDED"
                 
-                # Canh giữa và bớt bề rộng của nút bấm (Tạo form thu gọn)
+                # Canh giữa và bớt bề rộng của nút bấm
                 col_sp1, col_btn, col_sp2 = st.columns([1, 1.5, 1])
                 with col_btn:
                     submitted_fb = st.form_submit_button(btn_text, use_container_width=True)
                 
                 if submitted_fb:
                     if fb_title.strip() and fb_content.strip():
-                        # Thông báo thành công mới theo yêu cầu
                         success_msg = "Thành công! Đang đợi nhà phát triển xem xét, vui lòng chờ đợi từ 3-4 ngày." if lang == "Tiếng Việt" else "Success! Pending developer review, please wait 3-4 days."
                         st.success(success_msg)
                     else:
