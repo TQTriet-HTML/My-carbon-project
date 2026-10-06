@@ -124,16 +124,25 @@ def inject_custom_css(is_light):
     text_color = "#1E293B" if is_light else "#E2E8F0"
     glass_bg = "rgba(255, 255, 255, 0.85)" if is_light else "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
     border_glass = "rgba(72, 187, 120, 0.8)" if is_light else "rgba(72, 187, 120, 0.4)"
-    sidebar_badge_bg = "rgba(255, 255, 255, 0.9)" if is_light else "linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))"
+    
+    # ĐÃ KHAI BÁO BIẾN BỊ LỖI Ở ĐÂY
+    bg_sidebar_badge = "rgba(255, 255, 255, 0.9)" if is_light else "linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))"
     
     st.markdown(f"""
         <style>
         .stApp {{ background-image: none !important; background-color: {bg_app} !important; }}
         html, body, [class*="css"] {{ font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }}
         
+        /* Hiệu ứng lướt sóng cho Tiêu đề chính App */
+        @keyframes titleWave {{
+            to {{ background-position: 200% center; }}
+        }}
         .main-title {{ 
             font-size: clamp(22px, 2.5vw, 32px) !important; font-weight: 900 !important; 
-            color: {text_color} !important; margin-bottom: 0px !important; padding-bottom: 0px !important;
+            background: linear-gradient(to right, #48bb78, #63b3ed, #48bb78);
+            background-size: 200% auto;
+            color: #fff; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: titleWave 4s linear infinite; margin-bottom: 0px !important; padding-bottom: 0px !important; letter-spacing: 1px;
         }}
         
         button[kind="primary"] {{ background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }}
@@ -144,6 +153,7 @@ def inject_custom_css(is_light):
         div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within {{ border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }}
         [aria-invalid="true"] {{ border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }}
 
+        /* ĐỒNG BỘ KHỐI CHUẨN CHO TOÀN BỘ HỆ THỐNG */
         div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {{
             background: {glass_bg} !important; border: 1px solid {border_glass} !important; border-radius: 12px !important;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important; backdrop-filter: blur(12px);
@@ -152,11 +162,19 @@ def inject_custom_css(is_light):
         div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-block:hover {{
             border-color: #48bb78 !important; box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important; transform: translateY(-2px);
         }}
-        
+        div[data-testid="stVerticalBlockBorderWrapper"]::after, .glass-block::after {{
+            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.25), transparent);
+            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after {{ left: 150%; }}
+
+        /* CĂN GIỮA CHỈ SỐ METRIC */
         [data-testid="stMetricValue"] {{ font-size: 1.8rem !important; font-weight: 900 !important; color: {text_color} !important; text-align: center !important; width: 100% !important; display: block !important;}}
         [data-testid="stMetricLabel"] {{ text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}}
         [data-testid="stMetricDelta"] {{ justify-content: center !important; font-weight: 700 !important;}}
 
+        /* HIỆU ỨNG SIDEBAR BADGE */
         .sidebar-badge {{ 
             background: {bg_sidebar_badge} !important; padding: 16px; border-radius: 10px; margin-bottom: 12px; 
             border: 1px solid {border_glass} !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
@@ -170,7 +188,9 @@ def inject_custom_css(is_light):
         </style>
     """, unsafe_allow_html=True)
 
+# THỰC THI NGAY CSS DỰA TRÊN TRẠNG THÁI LIGHT/DARK
 inject_custom_css(st.session_state["is_light"])
+
 
 @st.dialog(" ")
 def hop_thoai_dang_xuat():
