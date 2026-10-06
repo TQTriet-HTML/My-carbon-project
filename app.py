@@ -19,99 +19,28 @@ except ImportError:
 
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide")
 
-# ======================================================================
-# 1. HÀM CSS ĐƯỢC CHẠY ĐẦU TIÊN (ĐỂ ÁP DỤNG CHO CẢ MÀN HÌNH ĐĂNG NHẬP)
-# ======================================================================
-def inject_custom_css():
-    st.markdown("""
-        <style>
-        /* Tắt ảnh nền trắng mặc định của Streamlit và ép nền tối */
-        .stApp { background-image: none !important; background-color: #0E1117 !important;}
-        
-        html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }
-        
-        /* Hiệu ứng lướt sóng cho Tiêu đề chính App */
-        @keyframes titleWave {
-            to { background-position: 200% center; }
-        }
-        .main-title { 
-            font-size: clamp(22px, 2.5vw, 32px) !important; 
-            font-weight: 900 !important; 
-            background: linear-gradient(to right, #48bb78, #63b3ed, #48bb78);
-            background-size: 200% auto;
-            color: #fff;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: titleWave 4s linear infinite;
-            margin-bottom: 0px !important; 
-            padding-bottom: 0px !important;
-            letter-spacing: 1px;
-        }
-        
-        button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }
-        button[kind="primary"]:hover { background-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
-        
-        *:focus, *:active { outline: none !important; }
-        div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, .stSelectbox > div > div, input { border-color: #2d3748 !important; }
-        div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
-        [aria-invalid="true"] { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
+# Khởi tạo trạng thái
+if "is_light" not in st.session_state: st.session_state["is_light"] = False
+if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
 
-        /* ĐỒNG BỘ KHỐI CHUẨN CHO TOÀN BỘ HỆ THỐNG */
-        div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
-            background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important;
-            border: 1px solid rgba(72, 187, 120, 0.4) !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important;
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden !important;
-            transition: all 0.4s ease !important;
-            padding: 24px !important;
-            margin-bottom: 20px !important;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-block:hover {
-            border-color: #48bb78 !important;
-            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important;
-            transform: translateY(-2px);
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]::after, .glass-block::after {
-            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.25), transparent);
-            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after { left: 150%; }
-
-        /* CĂN GIỮA CHỈ SỐ METRIC */
-        [data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 900 !important; color: #ffffff !important; text-align: center !important; width: 100% !important; display: block !important;}
-        [data-testid="stMetricLabel"] { text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}
-        [data-testid="stMetricDelta"] { justify-content: center !important; font-weight: 700 !important;}
-
-        /* HIỆU ỨNG SIDEBAR BADGE */
-        .sidebar-badge { 
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
-            padding: 16px; border-radius: 10px; margin-bottom: 12px; 
-            border: 1px solid rgba(72, 187, 120, 0.4) !important; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(72, 187, 120, 0.05);
-            transition: all 0.4s ease; position: relative; overflow: hidden !important;
-        }
-        .sidebar-badge:hover { transform: translateY(-2px); border-color: #48bb78 !important; box-shadow: 0 8px 25px rgba(72, 187, 120, 0.35); }
-        .sidebar-badge::after {
-            content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.3), transparent);
-            transform: skewX(-25deg); transition: left 0.65s ease-in-out; pointer-events: none; z-index: 10;
-        }
-        .sidebar-badge:hover::after { left: 150%; }
-
-        .sb-title { color: #ffffff; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
-        .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 4px; }
-        .sb-desc.highlight { color: #48bb78; font-weight: 600; }
-        </style>
-    """, unsafe_allow_html=True)
-
-# THỰC THI NGAY ĐỂ ÁP DỤNG TOÀN CỤC
-inject_custom_css()
-
+if "users_db" not in st.session_state:
+    st.session_state["users_db"] = {
+        "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
+        "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
+        "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
+    }
+if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
+if "current_user" not in st.session_state: st.session_state["current_user"] = ""
+if "current_role" not in st.session_state: st.session_state["current_role"] = ""
+if "wallet_balance" not in st.session_state: st.session_state["wallet_balance"] = 150000.0  
+if "user_portfolios" not in st.session_state: st.session_state["user_portfolios"] = {}
+if "investor_portfolios" not in st.session_state: st.session_state["investor_portfolios"] = {}
+if "market_projects" not in st.session_state:
+    st.session_state["market_projects"] = [
+        {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
+    ]
+if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
+if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 
 LANG_DICT = {
     "Tiếng Việt": {
@@ -168,33 +97,15 @@ ROLE_DICT = {
     "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
 }
 
-if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
-
-# Khởi tạo dữ liệu người dùng & trạng thái
-if "users_db" not in st.session_state:
-    st.session_state["users_db"] = {
-        "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV"},
-        "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)"},
-        "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ"}
-    }
-if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
-if "current_user" not in st.session_state: st.session_state["current_user"] = ""
-if "current_role" not in st.session_state: st.session_state["current_role"] = ""
-if "wallet_balance" not in st.session_state: st.session_state["wallet_balance"] = 150000.0  
-if "user_portfolios" not in st.session_state: st.session_state["user_portfolios"] = {}
-if "investor_portfolios" not in st.session_state: st.session_state["investor_portfolios"] = {}
-if "market_projects" not in st.session_state:
-    st.session_state["market_projects"] = [
-        {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
-    ]
-
-if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
-if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
-
-# SIDEBAR HIỂN THỊ XUYÊN SUỐT CẢ KHI CHƯA HOẶC ĐÃ ĐĂNG NHẬP
+# ================= SIDEBAR (Chứa Toggle Theme) =================
 with st.sidebar:
     l = LANG_DICT[st.session_state["current_lang"]]
-    st.markdown(f"<h3 style='color: white; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px;'>{l['lang_select']}</h3>", unsafe_allow_html=True)
+    
+    # Nút chuyển Sáng/Tối
+    st.session_state["is_light"] = st.toggle("☀️ Giao diện Sáng (Light)" if st.session_state["current_lang"] == "Tiếng Việt" else "☀️ Light Mode", value=st.session_state["is_light"])
+    st.divider()
+
+    st.markdown(f"<h3 style='color: #48bb78; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px;'>{l['lang_select']}</h3>", unsafe_allow_html=True)
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", label_visibility="collapsed")
     st.divider()
     
@@ -207,35 +118,79 @@ with st.sidebar:
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
 
-# HỘP THOẠI ĐĂNG XUẤT
-@st.dialog(" ")
-def hop_thoai_dang_xuat():
-    st.markdown("""
+# ================= CSS TOÀN CỤC ÁP DỤNG THEO THEME =================
+def inject_custom_css(is_light):
+    bg_app = "#F8FAFC" if is_light else "#0E1117"
+    text_color = "#1E293B" if is_light else "#E2E8F0"
+    glass_bg = "rgba(255, 255, 255, 0.85)" if is_light else "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
+    border_glass = "rgba(72, 187, 120, 0.8)" if is_light else "rgba(72, 187, 120, 0.4)"
+    sidebar_badge_bg = "rgba(255, 255, 255, 0.9)" if is_light else "linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))"
+    
+    st.markdown(f"""
         <style>
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-            border: 1px solid rgba(239, 68, 68, 0.8) !important;
-            color: white !important; font-weight: 800 !important; border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover {
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important;
-            transform: translateY(-2px) scale(1.03) !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
-            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
-            border: 1px solid rgba(72, 187, 120, 0.8) !important;
-            color: white !important; font-weight: 800 !important; border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover {
-            box-shadow: 0 0 25px rgba(72,187,120,0.9) !important;
-            transform: translateY(-2px) scale(1.03) !important;
-        }
+        .stApp {{ background-image: none !important; background-color: {bg_app} !important; }}
+        html, body, [class*="css"] {{ font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important; }}
+        
+        .main-title {{ 
+            font-size: clamp(22px, 2.5vw, 32px) !important; font-weight: 900 !important; 
+            color: {text_color} !important; margin-bottom: 0px !important; padding-bottom: 0px !important;
+        }}
+        
+        button[kind="primary"] {{ background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }}
+        button[kind="primary"]:hover {{ background-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }}
+        
+        *:focus, *:active {{ outline: none !important; }}
+        div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, .stSelectbox > div > div, input {{ border-color: #2d3748 !important; }}
+        div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within {{ border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }}
+        [aria-invalid="true"] {{ border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }}
+
+        div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {{
+            background: {glass_bg} !important; border: 1px solid {border_glass} !important; border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important; backdrop-filter: blur(12px);
+            position: relative; overflow: hidden !important; transition: all 0.4s ease !important; padding: 24px !important; margin-bottom: 20px !important;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-block:hover {{
+            border-color: #48bb78 !important; box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important; transform: translateY(-2px);
+        }}
+        
+        [data-testid="stMetricValue"] {{ font-size: 1.8rem !important; font-weight: 900 !important; color: {text_color} !important; text-align: center !important; width: 100% !important; display: block !important;}}
+        [data-testid="stMetricLabel"] {{ text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}}
+        [data-testid="stMetricDelta"] {{ justify-content: center !important; font-weight: 700 !important;}}
+
+        .sidebar-badge {{ 
+            background: {bg_sidebar_badge} !important; padding: 16px; border-radius: 10px; margin-bottom: 12px; 
+            border: 1px solid {border_glass} !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s ease; position: relative; overflow: hidden !important;
+        }}
+        .sidebar-badge:hover {{ transform: translateY(-2px); border-color: #48bb78 !important; box-shadow: 0 8px 25px rgba(72, 187, 120, 0.35); }}
+        
+        .sb-title {{ color: {text_color}; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }}
+        .sb-desc {{ color: #a0aec0; font-size: 11px; margin-top: 4px; }}
+        .sb-desc.highlight {{ color: #48bb78; font-weight: 600; }}
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
+inject_custom_css(st.session_state["is_light"])
+
+@st.dialog(" ")
+def hop_thoai_dang_xuat():
+    text_color = "#1E293B" if st.session_state["is_light"] else "#ffffff"
+    st.markdown("""
+        <style>
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important;
+            color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important;
+            color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover { box-shadow: 0 0 25px rgba(72,187,120,0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"<h3 style='color: {text_color}; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
     
     col_y, col_n = st.columns(2)
     with col_y:
@@ -261,20 +216,12 @@ def main_app():
         st.markdown("""
             <style>
             button[kind="secondary"] {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important;
-                border: 1px solid rgba(239, 68, 68, 0.6) !important;
-                color: #fca5a5 !important;
-                font-weight: 700 !important;
-                border-radius: 8px !important;
-                transition: all 0.3s ease !important;
-                position: relative; overflow: hidden !important;
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important;
+                color: #fca5a5 !important; font-weight: 700 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
             }
             button[kind="secondary"]:hover {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important;
-                border-color: #ef4444 !important;
-                color: white !important;
-                box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
-                transform: translateY(-2px);
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important; border-color: #ef4444 !important; color: white !important;
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.7) !important; transform: translateY(-2px);
             }
             </style>
         """, unsafe_allow_html=True)
@@ -373,9 +320,7 @@ def main_app():
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
-# KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
 if not st.session_state["logged_in"]:
-    # Cổng đăng nhập sẽ có đầy đủ Sidebar và hiệu ứng
-    hien_thi_cong_dang_nhap(st.session_state["current_lang"])
+    hien_thi_cong_dang_nhap(st.session_state["current_lang"], st.session_state["is_light"])
 else:
     main_app()
