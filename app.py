@@ -37,15 +37,6 @@ if "market_projects" not in st.session_state:
     st.session_state["market_projects"] = [
         {"id": "p1", "name": "Dự án giảm phát thải Bắc Trung Bộ", "owner": "Bộ NN&PTNT", "price": 10.5, "volume": 1030000, "duration": 5, "funding_goal": 50000.0, "funded_amount": 15000.0, "status": "Active"}
     ]
-if "social_posts" not in st.session_state:
-    st.session_state["social_posts"] = [
-        {"id": "post_1", "author": "Hệ Thống", "role": "Admin", "content": "Thử nghiệm công nghệ vệ tinh mới rất ấn tượng!", "time": "04/10/2026 09:30", "likes": 12, "comments": []}
-    ]
-if "green_diary" not in st.session_state:
-    st.session_state["green_diary"] = {
-        "2026-10-10": {"title": "Kỳ đánh giá sinh khối dự án", "type": "Quan trọng", "content": "Rà soát lại dữ liệu trên nền tảng GEE."},
-        "2026-10-15": {"title": "Phát hiện cháy rừng diện rộng", "type": "Bất thường", "content": "Rừng ở khu vực B bị suy giảm sinh khối nghiêm trọng."}
-    }
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 
@@ -98,7 +89,6 @@ LANG_DICT = {
     }
 }
 
-# ================= CSS TOÀN CỤC CHUẨN DARK MODE VÀ HIỆU ỨNG =================
 def inject_custom_css():
     st.markdown("""
         <style>
@@ -121,69 +111,14 @@ def inject_custom_css():
         div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
         [aria-invalid="true"] { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
 
-        /* Hiệu ứng quét sáng khi hover cho tất cả các khối */
-        @keyframes hoverSweepLight {
-            0% { left: -100%; opacity: 0; }
-            50% { opacity: 1; }
-            100% { left: 200%; opacity: 0; }
-        }
-
-        /* Hiệu ứng quét sáng tự động mỗi 10 giây cho các khối đặc biệt (Cột phải) */
-        @keyframes autoSweepLight10s {
-            0%, 85% { left: -100%; opacity: 0; }
-            86% { opacity: 1; left: -100%; }
-            95%, 100% { left: 200%; opacity: 0; }
-        }
-
-        /* Định dạng chung cho các khối kính */
         div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
-            background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important; 
-            border: 1px solid rgba(72, 187, 120, 0.4) !important; 
-            border-radius: 12px !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important; 
-            backdrop-filter: blur(12px);
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important; border: 1px solid rgba(72, 187, 120, 0.4) !important; border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(72, 187, 120, 0.05) !important; backdrop-filter: blur(12px);
             position: relative; overflow: hidden !important; transition: all 0.4s ease !important; padding: 24px !important; margin-bottom: 20px !important;
         }
-
-        /* Ánh sáng lướt khi trỏ chuột vào các khối (Cột trái) */
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after {
-             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-             transform: skewX(-25deg); animation: hoverSweepLight 1.5s ease-in-out; z-index: 10; pointer-events: none;
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-block:hover {
+            border-color: #48bb78 !important; box-shadow: 0 15px 35px rgba(72, 187, 120, 0.3), inset 0 0 20px rgba(72, 187, 120, 0.2) !important; transform: translateY(-2px);
         }
-
-        /* -----------------------------------------------------------
-           TÙY CHỈNH RIÊNG CHO 2 KHỐI CỘT PHẢI (THÀNH TỰU & DỰ ÁN) 
-           ----------------------------------------------------------- */
-        /* Tạo quầng sáng xanh lá nhịp nhàng */
-        @keyframes unifiedGreenGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.3) !important; }
-            50% { box-shadow: 0 0 30px rgba(72, 187, 120, 0.8), inset 0 0 10px rgba(72, 187, 120, 0.2); border-color: #48bb78 !important; }
-        }
-
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block) {
-             animation: unifiedGreenGlow 4s infinite ease-in-out !important;
-        }
-
-        /* Hiệu ứng nổi bật + lóa sáng khi Hover vào 2 khối cột phải */
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block):hover {
-            transform: translateY(-8px) scale(1.02) !important;
-            box-shadow: 0 20px 40px rgba(72, 187, 120, 0.9), inset 0 0 20px rgba(72, 187, 120, 0.5) !important;
-            border-color: #48bb78 !important;
-            z-index: 5 !important;
-        }
-        
-        /* Hiệu ứng ánh sáng lướt qua TỰ ĐỘNG mỗi 10 giây cho 2 khối cột phải */
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block)::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-            transform: skewX(-25deg); animation: autoSweepLight10s 10s infinite linear; z-index: 10; pointer-events: none;
-        }
-        /* Ngăn hiệu ứng hover lướt sáng mặc định ghi đè lên khối này */
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block):hover::after {
-            display: none !important;
-        }
-
 
         [data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 900 !important; color: #E2E8F0 !important; text-align: center !important; width: 100% !important; display: block !important;}
         [data-testid="stMetricLabel"] { text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}
@@ -195,11 +130,6 @@ def inject_custom_css():
             transition: all 0.4s ease; position: relative; overflow: hidden !important;
         }
         .sidebar-badge:hover { transform: translateY(-2px); border-color: #48bb78 !important; box-shadow: 0 8px 25px rgba(72, 187, 120, 0.35); }
-        .sidebar-badge:hover::after {
-             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-             transform: skewX(-25deg); animation: hoverSweepLight 1.5s ease-in-out; z-index: 10; pointer-events: none;
-        }
         
         .sb-title { color: #E2E8F0; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 4px; }
@@ -225,7 +155,6 @@ with st.sidebar:
     st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
     st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
-
 
 @st.dialog(" ")
 def hop_thoai_dang_xuat():
@@ -370,7 +299,14 @@ def main_app():
 
     with tab_market: hien_thi_san_giao_dich()
     with tab_invest: hien_thi_cong_dau_tu()
-    with tab_social: hien_thi_mang_xa_hoi()
+    
+    # Bọc tab_social trong Try-Except để tránh lỗi CSDL sập toàn bộ web
+    with tab_social: 
+        try:
+            hien_thi_mang_xa_hoi()
+        except Exception as e:
+            st.error(f"Đang bảo trì Mạng xã hội hoặc lỗi Cơ sở dữ liệu: {e}")
+            
     with tab_diary: hien_thi_nhat_ky_xanh()
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
