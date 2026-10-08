@@ -95,14 +95,22 @@ def seed_default_data(conn):
         ])
     conn.commit()
 
+# Tự động khởi tạo cấu trúc CSDL nếu chưa có
+init_db()
+
 # --- USER FUNCTIONS ---
 def load_users():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT username, password, role, wallet_balance FROM users")
-    rows = cursor.fetchall()
-    conn.close()
-    return {row["username"]: {"password": row["password"], "role": row["role"], "wallet_balance": row["wallet_balance"]} for row in rows}
+    try:
+        cursor.execute("SELECT username, password, role, wallet_balance FROM users")
+        rows = cursor.fetchall()
+        return {row["username"]: {"password": row["password"], "role": row["role"], "wallet_balance": row["wallet_balance"]} for row in rows}
+    except sqlite3.OperationalError:
+        init_db()
+        return {}
+    finally:
+        conn.close()
 
 def register_user(username, password, role):
     conn = get_connection()
@@ -113,6 +121,9 @@ def register_user(username, password, role):
         return True, "Thành công"
     except sqlite3.IntegrityError:
         return False, "Tài khoản đã tồn tại."
+    except sqlite3.OperationalError:
+        init_db()
+        return False, "Hệ thống đang đồng bộ dữ liệu, vui lòng thử lại."
     finally:
         conn.close()
 
@@ -120,55 +131,78 @@ def register_user(username, password, role):
 def load_market_projects():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM market_projects")
-    rows = cursor.fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    try:
+        cursor.execute("SELECT * FROM market_projects")
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+    except sqlite3.OperationalError:
+        init_db()
+        return []
+    finally:
+        conn.close()
 
 # --- SOCIAL FUNCTIONS ---
 def load_social_posts():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM social_posts ORDER BY rowid DESC")
-    rows = cursor.fetchall()
-    conn.close()
-    result = []
-    for row in rows:
-        d = dict(row)
-        d["comments"] = []
-        result.append(d)
-    return result
+    try:
+        cursor.execute("SELECT * FROM social_posts ORDER BY rowid DESC")
+        rows = cursor.fetchall()
+        result = []
+        for row in rows:
+            d = dict(row)
+            d["comments"] = []
+            result.append(d)
+        return result
+    except sqlite3.OperationalError:
+        init_db()
+        return []
+    finally:
+        conn.close()
 
 def add_social_post(author, role, content, post_time):
     conn = get_connection()
     cursor = conn.cursor()
-    post_id = f"post_{int(os.urandom(4).hex(), 16)}"
-    cursor.execute("""
-    INSERT INTO social_posts (id, author, role, content, time, likes)
-    VALUES (?, ?, ?, ?, ?, 0)
-    """, (post_id, author, role, content, post_time))
-    conn.commit()
-    conn.close()
+    try:
+        post_id = f"post_{int(os.urandom(4).hex(), 16)}"
+        cursor.execute("""
+        INSERT INTO social_posts (id, author, role, content, time, likes)
+        VALUES (?, ?, ?, ?, ?, 0)
+        """, (post_id, author, role, content, post_time))
+        conn.commit()
+    except sqlite3.OperationalError:
+        init_db()
+    finally:
+        conn.close()
 
 # --- DIARY FUNCTIONS ---
 def load_green_diary():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM green_diary")
-    rows = cursor.fetchall()
-    conn.close()
-    return {row["date_str"]: {"title": row["title"], "type": row["type"], "content": row["content"]} for row in rows}
+    try:
+        cursor.execute("SELECT * FROM green_diary")
+        rows = cursor.fetchall()
+        return {row["date_str"]: {"title": row["title"], "type": row["type"], "content": row["content"]} for row in rows}
+    except sqlite3.OperationalError:
+        init_db()
+        return {}
+    finally:
+        conn.close()
 
 def save_diary_entry(date_str, title, event_type, content):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-    INSERT INTO green_diary (date_str, title, type, content)
-    VALUES (?, ?, ?, ?)
-    ON CONFLICT(date_str) DO UPDATE SET
-        title=excluded.title,
-        type=excluded.type,
-        content=excluded.content
-    """, (date_str, title, event_type, content))
-    conn.commit()
-    conn.close()
+    try:
+        cursor.execute("""
+        INSERT INTO green_diary (date_str, title, type, content)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(date_str) DO UPDATE SET
+            title=excluded.title,
+            type=excluded.type,
+            content=excluded.content
+        """, (date_str, title, event_type, content))
+        conn.commit()
+    except sqlite3.OperationalError:
+        init_db()
+    finally:
+        conn.close()
