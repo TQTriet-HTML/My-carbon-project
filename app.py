@@ -345,14 +345,12 @@ def main_app():
                     col_r1.metric(f"{l['mrv_base_val']} {nam_co_so}", f"{base_val:,.0f} {l['mrv_unit']}")
                     delta_str = f"+{diff:,.0f} {l['mrv_unit']}" if diff >= 0 else f"{diff:,.0f} {l['mrv_unit']}"
                     col_r2.metric(f"{l['mrv_comp_val']} {nam_so_sanh}", f"{comp_val:,.0f} {l['mrv_unit']}", delta=delta_str, delta_color="normal" if diff >= 0 else "inverse")
-                    col_r3.metric(l["mrv_total_val"], tong_tien_str, "Quy đổi thị trường" if st.session_state["current_lang"]=="Tiếng Việt" else "Market Converted")
-                    
-                    st.markdown("<br>", unsafe_allow_html=True)
+                    diff_text = f"{diff:,.0f} {l['mrv_unit']}"
                     if diff >= 0:
-                        st.markdown(f"<div style='color:#48bb78; text-align:center; font-weight:600;'>{l['mrv_success_msg'].format(diff=f'{diff:,.0f} {l['mrv_unit']}')}</div>", unsafe_allow_html=True)
+                        msg = l['mrv_success_msg'].format(diff=diff_text)
+                        st.markdown(f"<div style='color:#48bb78; text-align:center; font-weight:600;'>{msg}</div>", unsafe_allow_html=True)
                     else:
                         st.markdown(f"<div style='color:#fc8181; text-align:center; font-weight:600;'>{l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
-
             try:
                 with st.spinner(l["mrv_loading"]):
                     map_base = tao_ban_do_carbon(nam_co_so)
