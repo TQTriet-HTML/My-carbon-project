@@ -42,10 +42,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     t = T.get(lang, T["Tiếng Việt"])
     
     text_sub = "#cbd5e1"
-    bg_auth_block = "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
+    bg_auth_block = "linear-gradient(135deg, rgba(20, 27, 45, 0.96), rgba(10, 15, 29, 0.98))"
 
     st.markdown(f"""
         <style>
+        /* TIÊU ĐỀ LÓA SÁNG TỪNG CHỮ CHO CÂU CHÀO */
         @keyframes char-green-blue-glow {{
             0%, 100% {{ color: #48bb78; text-shadow: 0 0 4px rgba(72,187,120,0.3); }}
             50% {{ color: #63b3ed; text-shadow: 0 0 20px rgba(99,179,237,1), 0 0 8px rgba(72,187,120,0.8); transform: translateY(-2px); }}
@@ -54,6 +55,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .welcome-container::-webkit-scrollbar {{ display: none; }}
         .welcome-char {{ display: inline-block; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; animation: char-green-blue-glow 8s infinite ease-in-out; }}
 
+        /* SLOGAN SÓNG NHẤP NHÔ 10 GIÂY */
         @keyframes waveUp {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
             10% {{ transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 10px rgba(104,211,145,0.8); }}
@@ -67,7 +69,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }}
         .hero-subtitle {{ text-align: center; color: {text_sub}; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; padding: 0 20px; }}
 
-        /* TÙY CHỈNH THÔNG BÁO ĐĂNG KÝ THÀNH CÔNG NỔI 5 GIÂY (2 DÒNG) */
+        /* THÔNG BÁO ĐĂNG KÝ THÀNH CÔNG NỔI 5 GIÂY (2 DÒNG) */
         @keyframes successWaveUp {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
             10% {{ transform: translateY(-10px); text-shadow: 0 0 15px rgba(72,187,120,0.8); }}
@@ -77,39 +79,64 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: successWaveUp 5s infinite ease-in-out;
         }}
 
-        @keyframes unifiedGreenGlow {{
-            0%, 100% {{ box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.3) !important; }}
-            50% {{ box-shadow: 0 0 30px rgba(72, 187, 120, 0.8), inset 0 0 10px rgba(72, 187, 120, 0.2); border-color: #48bb78 !important; }}
+        /* ============================================================
+           HIỆU ỨNG ÁNH SÁNG & NỔI KHỐI CHO 2 KHỐI BÊN PHẢI (VÀ KHỐI FORM)
+           ============================================================ */
+        @keyframes greenNeonBreath {{
+            0%, 100% {{ 
+                box-shadow: 0 0 15px rgba(72, 187, 120, 0.25), inset 0 0 10px rgba(72, 187, 120, 0.05); 
+                border-color: rgba(72, 187, 120, 0.45); 
+            }}
+            50% {{ 
+                box-shadow: 0 0 35px rgba(72, 187, 120, 0.75), inset 0 0 20px rgba(72, 187, 120, 0.2); 
+                border-color: #48bb78; 
+            }}
         }}
-        @keyframes autoSweepLight10s {{ 
+
+        @keyframes autoSweepRight10s {{ 
             0%, 85%   {{ left: -100%; opacity: 0; }} 
             86%       {{ opacity: 1; left: -100%; }}
-            95%       {{ left: 200%; opacity: 0; }} 
+            95%       {{ left: 200%; opacity: 0.9; }} 
             100%      {{ left: 200%; opacity: 0; }} 
         }}
-        
+
+        /* Áp dụng trực tiếp vào tất cả các container có viền */
         div[data-testid="stVerticalBlockBorderWrapper"] {{
             background: {bg_auth_block} !important;
             border: 2px solid rgba(72, 187, 120, 0.5) !important;
-            border-radius: 16px !important;
-            padding: 25px !important;
-            animation: unifiedGreenGlow 4s infinite ease-in-out !important;
-            position: relative; overflow: hidden !important; 
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
+            border-radius: 18px !important;
+            padding: 26px !important;
+            animation: greenNeonBreath 4s infinite ease-in-out !important;
+            position: relative; 
+            overflow: hidden !important; 
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
+            margin-bottom: 22px !important;
         }}
+
+        /* Ánh sáng quét qua mỗi 10 giây */
         div[data-testid="stVerticalBlockBorderWrapper"]::after {{
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-            transform: skewX(-25deg); animation: autoSweepLight10s 10s infinite linear; 
-            z-index: 10; pointer-events: none;
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: -100%; 
+            width: 55%; 
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.65), transparent);
+            transform: skewX(-25deg); 
+            animation: autoSweepRight10s 10s infinite linear; 
+            z-index: 10; 
+            pointer-events: none;
         }}
+
+        /* Nổi lên khi rê chuột vào */
         div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
             transform: translateY(-8px) scale(1.02) !important;
-            box-shadow: 0 20px 40px rgba(72, 187, 120, 0.9), inset 0 0 20px rgba(72, 187, 120, 0.5) !important;
+            box-shadow: 0 22px 48px rgba(72, 187, 120, 0.9), inset 0 0 25px rgba(72, 187, 120, 0.35) !important;
             border-color: #48bb78 !important;
             z-index: 5 !important;
         }}
 
+        /* NÚT BẤM (BUTTON) */
         @keyframes btnGreenGlow {{
             0%, 100% {{ box-shadow: 0 0 8px rgba(72, 187, 120, 0.4); border-color: rgba(72, 187, 120, 0.6) !important; }}
             50% {{ box-shadow: 0 0 25px rgba(72, 187, 120, 0.9); border-color: #48bb78 !important; }}
@@ -120,8 +147,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #2f855a 0%, #276749 100%) !important;
             color: white !important; font-weight: 800 !important; letter-spacing: 1px;
             animation: btnGreenGlow 3s infinite ease-in-out !important;
-            position: relative; overflow: hidden !important; z-index: 1; transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
-            border-radius: 8px !important; margin-top: 10px;
+            position: relative; overflow: hidden !important; z-index: 1; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
+            border-radius: 10px !important; margin-top: 10px;
         }}
         button[kind="primary"]::before {{
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -130,17 +158,56 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }}
         button[kind="primary"]:hover {{
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
-            transform: translateY(-4px) scale(1.03) !important; box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important; border-color: #48bb78 !important;
+            transform: translateY(-4px) scale(1.03) !important; 
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important; 
+            border-color: #48bb78 !important;
         }}
 
-        .section-title {{ color: #ffffff; font-size: 1.15rem; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 25px; border-left: 5px solid #48bb78; padding-left: 12px; text-transform: uppercase; }}
-        .stat-value {{ font-size: 2.2rem; font-weight: 900; color: #63b3ed; margin-bottom: 5px; line-height: 1.1; }}
-        .stat-label {{ color: {text_sub}; font-size: 0.9rem; font-weight: 500;}}
-        .project-title {{ color: #48bb78; font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }}
-        .project-desc {{ color: {text_sub}; font-size: 0.95rem; margin-bottom: 15px; line-height: 1.5; }}
-        .verified-badge {{ display: inline-block; background: rgba(72, 187, 120, 0.15); border: 1px solid #48bb78; color: #48bb78; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;}}
+        .section-title {{ 
+            color: #ffffff; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 22px; 
+            border-left: 5px solid #48bb78; 
+            padding-left: 12px; 
+            text-transform: uppercase; 
+        }}
+        .stat-value {{ 
+            font-size: 2.3rem; 
+            font-weight: 900; 
+            color: #63b3ed; 
+            margin-bottom: 5px; 
+            line-height: 1.1; 
+            letter-spacing: 0.5px;
+        }}
+        .stat-label {{ color: {text_sub}; font-size: 0.92rem; font-weight: 500; }}
+        .project-title {{ color: #48bb78; font-weight: 700; font-size: 1.25rem; margin-bottom: 10px; }}
+        .project-desc {{ color: {text_sub}; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.5; }}
+        .verified-badge {{ 
+            display: inline-block; 
+            background: rgba(72, 187, 120, 0.15); 
+            border: 1px solid #48bb78; 
+            color: #48bb78; 
+            padding: 6px 14px; 
+            border-radius: 8px; 
+            font-size: 0.82rem; 
+            font-weight: 700; 
+        }}
         
-        .news-ticker-container {{ position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 12px 25px; display: flex; align-items: center; z-index: 1000; }}
+        .news-ticker-container {{ 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: rgba(15, 23, 42, 0.95); 
+            border-top: 1px solid rgba(72, 187, 120, 0.3); 
+            color: #e2e8f0; 
+            padding: 12px 25px; 
+            display: flex; 
+            align-items: center; 
+            z-index: 1000; 
+        }}
         .news-label {{ font-weight: 900; color: #fc8181; margin-right: 20px; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }}
         .news-marquee {{ overflow: hidden; white-space: nowrap; width: 100%; }}
         .news-marquee span {{ display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }}
@@ -148,6 +215,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
+    # Hiển thị câu Slogan
     wave_html = '<div class="wave-text-container">'
     delay = 0.0
     for char in t["slogan"]:
@@ -161,6 +229,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     _, col_form, col_space, col_info, _ = st.columns([0.15, 1.25, 0.1, 1.25, 0.15])
     
+    # ================= CỘT TRÁI: ĐĂNG NHẬP / ĐĂNG KÝ =================
     with col_form:
         with st.container(border=True):
             welcome_text = t["welcome_msg"]
@@ -192,7 +261,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                             
             with tab_dang_ky:
                 if st.session_state["reg_success_data"]:
-                    # Xây dựng chữ tạo sóng 5 giây cho thông báo thành công (chia 2 dòng)
+                    # Hiệu ứng chữ sóng 5 giây cho thông báo thành công (2 dòng)
                     success_html = ""
                     success_delay = 0.0
                     
@@ -210,9 +279,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                     success_html += "</div>"
 
                     st.markdown(f"""
-                        <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:10px; margin-top: 15px;">
+                        <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:12px; margin-top: 15px;">
                             <div style="margin-bottom: 15px; line-height: 1.5;">{success_html}</div>
-                            <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản / Account: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
+                            <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
                         </div>
                     """, unsafe_allow_html=True)
                     st.write("")
@@ -250,7 +319,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                         st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                         st.rerun()
 
+    # ================= CỘT PHẢI: 2 KHỐI THÀNH TỰU & DỰ ÁN TIÊU BIỂU =================
     with col_info:
+        # Khối 1: Thành tựu nền tảng
         with st.container(border=True):
             st.markdown(f'<div class="section-title">{t["achieve"]}</div>', unsafe_allow_html=True)
             c_st1, c_st2 = st.columns(2)
@@ -259,14 +330,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             with c_st2:
                 st.markdown(f'<div style="text-align:center;"><div class="stat-value" style="color:#48bb78;">{t["ach_2_val"]}</div><div class="stat-label">{t["ach_2_lbl"]}</div></div>', unsafe_allow_html=True)
 
-        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-
+        # Khối 2: Dự án tiêu biểu
         with st.container(border=True):
             st.markdown(f'<div class="section-title">{t["projects"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="project-title">{t["proj_name"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="project-desc">{t["proj_desc"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div style="text-align:right;"><span class="verified-badge">{t["proj_badge"]}</span></div>', unsafe_allow_html=True)
 
+    # Thanh tin tức chạy marquee
     st.markdown(f"""
     <div class="news-ticker-container">
         <div class="news-label">{t['news_lbl']}</div>
