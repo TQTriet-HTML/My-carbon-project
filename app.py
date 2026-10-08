@@ -16,7 +16,11 @@ except ImportError:
     def hien_thi_mang_xa_hoi(): st.info("Hệ thống đang được bảo trì.")
     def hien_thi_vinh_danh_va_gop_y(): st.info("Hệ thống đang được bảo trì.")
     def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang được bảo trì.")
-
+try:
+    import db_manager
+    db_manager.init_db()
+except Exception:
+    pass
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide")
 
 if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
