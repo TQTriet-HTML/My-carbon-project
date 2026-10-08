@@ -1,4 +1,4 @@
-mport streamlit as st
+import streamlit as st
 import ee
 import geemap.foliumap as geemap
 from streamlit_folium import folium_static 
