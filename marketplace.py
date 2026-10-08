@@ -116,18 +116,10 @@ def hien_thi_san_giao_dich():
             box-shadow: 0 0 20px rgba(72, 187, 120, 0.8) !important;
             transform: translateY(-2px);
         }
-
-        .market-project-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(72, 187, 120, 0.3);
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 12px;
-        }
         </style>
     """, unsafe_allow_html=True)
 
-    # ================= 1. DASHBOARD QUẢN LÝ TÀI KHOẢN =================
+    # 1. DASHBOARD QUẢN LÝ TÀI KHOẢN
     st.markdown('<div class="dash-title-green">DASHBOARD QUẢN LÝ TÀI KHOẢN</div>', unsafe_allow_html=True)
 
     wallet_bal = st.session_state.get("wallet_balance", 150000.0)
@@ -171,7 +163,7 @@ def hien_thi_san_giao_dich():
             else:
                 st.write("Hiện tại tài khoản chưa nắm giữ tín chỉ nào. Bạn có thể đặt lệnh mua ở sàn bên dưới.")
 
-    # ================= 2. BIỂU ĐỒ GIÁ TÍN CHỈ THỜI GIAN THỰC NHƯ SÀN CHỨNG KHOÁN =================
+    # 2. BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY
     st.markdown('<div class="dash-title-green" style="margin-top: 35px;">BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY</div>', unsafe_allow_html=True)
 
     with st.container(border=True):
@@ -187,7 +179,6 @@ def hien_thi_san_giao_dich():
                 </div>
             """, unsafe_allow_html=True)
 
-        # Tạo tập dữ liệu biến động tương ứng với khung thời gian
         today = datetime.date.today()
         if time_frame == "Từng ngày":
             dates = [today - datetime.timedelta(days=i) for i in range(29, -1, -1)]
@@ -198,20 +189,19 @@ def hien_thi_san_giao_dich():
         elif time_frame == "Từng tháng":
             date_labels = ["T11/25", "T12/25", "T01/26", "T02/26", "T03/26", "T04/26", "T05/26", "T06/26", "T07/26", "T08/26", "T09/26", "T10/26"]
             prices = [8.50, 8.80, 9.10, 8.95, 9.40, 9.65, 9.80, 10.10, 9.90, 10.25, 10.40, 10.50]
-        else: # Từng năm
+        else:
             date_labels = ["2021", "2022", "2023", "2024", "2025", "2026"]
             prices = [4.50, 5.80, 7.20, 8.90, 9.80, 10.50]
 
         chart_df = pd.DataFrame({"Giá niêm yết (USD)": prices}, index=date_labels)
         st.line_chart(chart_df, color="#22c55e", use_container_width=True)
 
-    # ================= 3. KHU VỰC GIAO DỊCH DỰA VÀO VAI TRÒ CỦA TÀI KHOẢN =================
+    # 3. TRUNG TÂM KHỚP LỆNH THEO VAI TRÒ
     st.markdown('<div class="dash-title-green" style="margin-top: 35px;">TRUNG TÂM KHỚP LỆNH THEO VAI TRÒ</div>', unsafe_allow_html=True)
 
     with st.container(border=True):
         st.markdown(f"<div style='color:#38bdf8; font-weight:800; font-size:1.15rem; margin-bottom:15px;'>VAI TRÒ HIỆN TẠI: {current_role.upper()}</div>", unsafe_allow_html=True)
         
-        # VAI TRÒ 1: DOANH NGHIỆP MUA TÍN CHỈ
         if "Doanh nghiệp" in current_role or "buyer" in current_u.lower():
             col_b1, col_b2 = st.columns([0.6, 0.4])
             with col_b1:
@@ -248,7 +238,6 @@ def hien_thi_san_giao_dich():
                     else:
                         st.error("Số dư ví hệ thống không đủ để thực hiện giao dịch này.")
 
-        # VAI TRÒ 2: CHỦ RỪNG / KỸ SƯ MRV
         elif "Chủ rừng" in current_role or "MRV" in current_role or "admin" in current_u.lower():
             st.markdown("<p style='color:#cbd5e1;'>Niêm yết tín chỉ mới từ diện tích rừng đã được đo đạc và xác thực bởi viễn thám AI:</p>", unsafe_allow_html=True)
             c_s1, c_s2 = st.columns(2)
@@ -267,7 +256,6 @@ def hien_thi_san_giao_dich():
             if st.button("NIÊM YẾT LÊN SÀN GIAO DỊCH", type="primary", use_container_width=True):
                 st.success(f"Đã gửi hồ sơ niêm yết dự án '{forest_name}' với {list_vol:,.0f} tấn lên sàn giao dịch!")
 
-        # VAI TRÒ 3: NHÀ ĐẦU TƯ TỪ XA (CỔ ĐÔNG)
         else:
             st.markdown("<p style='color:#cbd5e1;'>Thị trường thứ cấp: Giao dịch lướt sóng hoặc đầu tư ủy thác vào các dự án tín chỉ có tiềm năng tăng trưởng:</p>", unsafe_allow_html=True)
             ci1, ci2 = st.columns(2)
@@ -289,7 +277,7 @@ def hien_thi_san_giao_dich():
                 else:
                     st.error("Số dư ví không đủ.")
 
-    # ================= 4. DANH SÁCH CÁC DỰ ÁN & BÀI ĐĂNG BÁN ĐANG NIÊM YẾT =================
+    # 4. DANH SÁCH DỰ ÁN ĐANG NIÊM YẾT
     st.markdown('<div class="dash-title-green" style="margin-top: 35px;">DANH SÁCH DỰ ÁN ĐANG NIÊM YẾT</div>', unsafe_allow_html=True)
 
     projects_data = [
@@ -320,7 +308,6 @@ def hien_thi_san_giao_dich():
     ]
 
     for p in projects_data:
-        # Bọc mỗi dự án bằng container border để có viền lóa sáng và nổi lên khi rê chuột
         with st.container(border=True):
             col_info_p, col_action_p = st.columns([0.75, 0.25])
             with col_info_p:
@@ -345,6 +332,7 @@ def hien_thi_cong_dau_tu():
     """, unsafe_allow_html=True)
     st.info("Danh mục đầu tư sinh thái đang mở nhận vốn kỳ 2026.")
 
+# ================= 5. VỀ CHÚNG TÔI & LỘ TRÌNH PHÁT TRIỂN (CÁC Ô ĐÓNG KHUNG LÓA SÁNG & NỔI BỔNG) =================
 def hien_thi_gioi_thieu_va_goi_von():
     st.markdown("""
         <style>
@@ -364,63 +352,114 @@ def hien_thi_gioi_thieu_va_goi_von():
             font-weight: 800;
             margin-bottom: 12px;
             letter-spacing: 0.5px;
-            border-left: 4px solid #48bb78;
-            padding-left: 10px;
+            border-left: 5px solid #48bb78;
+            padding-left: 12px;
+            text-transform: uppercase;
         }
-        .about-box {
-            background: rgba(15, 23, 42, 0.65);
-            border: 1px solid rgba(72, 187, 120, 0.35);
-            border-radius: 12px;
-            padding: 22px;
-            margin-bottom: 20px;
-            line-height: 1.7;
-            color: #e2e8f0;
+
+        /* HIỆU ỨNG THỞ PHÁT QUANG XANH LÁ CHO CÁC Ô KHUNG */
+        @keyframes greenCardBreath {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(72, 187, 120, 0.28), inset 0 0 12px rgba(72, 187, 120, 0.1);
+                border-color: rgba(72, 187, 120, 0.5) !important;
+            }
+            50% {
+                box-shadow: 0 0 38px rgba(72, 187, 120, 0.8), inset 0 0 22px rgba(72, 187, 120, 0.28);
+                border-color: #48bb78 !important;
+            }
+        }
+
+        /* TIA SÁNG QUÉT TỰ ĐỘNG MỖI 10 GIÂY */
+        @keyframes sweep10sAbout {
+            0%, 85% { left: -120%; opacity: 0; }
+            86% { opacity: 1; left: -120%; }
+            95%, 100% { left: 220%; opacity: 0; }
+        }
+
+        /* Ô KHUNG LỚN VÀ NHỎ TRONG TRANG VỀ CHÚNG TÔI */
+        .about-card-glow {
+            background: linear-gradient(135deg, rgba(13, 31, 60, 0.95), rgba(18, 42, 77, 0.92)) !important;
+            border: 2px solid rgba(72, 187, 120, 0.5) !important;
+            border-radius: 16px !important;
+            padding: 22px 24px !important;
+            margin-bottom: 22px !important;
+            line-height: 1.7 !important;
+            color: #cbd5e1 !important;
+            font-size: 0.98rem !important;
+            position: relative !important;
+            overflow: hidden !important;
+            animation: greenCardBreath 4s infinite ease-in-out !important;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
+        }
+
+        .about-card-glow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.65), transparent);
+            transform: skewX(-25deg);
+            animation: sweep10sAbout 10s infinite linear;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* HIỆU ỨNG NỔI BỔNG LÊN 3D KHI RÊ CHUỘT VÀO */
+        .about-card-glow:hover {
+            transform: translateY(-8px) scale(1.022) !important;
+            box-shadow: 0 22px 50px rgba(72, 187, 120, 0.92), inset 0 0 25px rgba(72, 187, 120, 0.4) !important;
+            border-color: #48bb78 !important;
+            z-index: 5 !important;
         }
         </style>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="about-title-green">VỀ CHÚNG TÔI & LỘ TRÌNH PHÁT TRIỂN</div>', unsafe_allow_html=True)
 
-    with st.container(border=True):
-        st.markdown('<div class="about-section-title">SỨ MỆNH & TẦM NHÌN</div>', unsafe_allow_html=True)
+    # Khung 1: Sứ mệnh & Tầm nhìn (Lóa sáng & nổi khối)
+    st.markdown('<div class="about-section-title">SỨ MỆNH & TẦM NHÌN</div>', unsafe_allow_html=True)
+    st.markdown("""
+        <div class="about-card-glow">
+            Nền tảng được xây dựng với mục tiêu thương mại hóa và minh bạch hóa thị trường tín chỉ carbon tại Việt Nam. 
+            Bằng cách kết hợp dữ liệu viễn thám vệ tinh đa quang phổ (Copernicus Sentinel-2) cùng mô hình trí tuệ nhân tạo (AI), 
+            chúng tôi số hóa quy trình kiểm kê MRV (Measurement, Reporting, and Verification), xóa bỏ rào cản chi phí cao và 
+            thời gian thẩm định kéo dài của các phương pháp thủ công truyền thống.
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Khung 2: Công nghệ lõi (3 ô riêng biệt đều có lóa sáng & nổi khối)
+    st.markdown('<div class="about-section-title">CÔNG NGHỆ LÕI (CORE TECHNOLOGY)</div>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
         st.markdown("""
-            <div class="about-box">
-                Nền tảng được xây dựng với mục tiêu thương mại hóa và minh bạch hóa thị trường tín chỉ carbon tại Việt Nam. 
-                Bằng cách kết hợp dữ liệu viễn thám vệ tinh đa quang phổ (Copernicus Sentinel-2) cùng mô hình trí tuệ nhân tạo (AI), 
-                chúng tôi số hóa quy trình kiểm kê MRV (Measurement, Reporting, and Verification), xóa bỏ rào cản chi phí cao và 
-                thời gian thẩm định kéo dài của các phương pháp thủ công truyền thống.
+            <div class="about-card-glow" style="text-align:center; min-height:190px;">
+                <div style="color:#38bdf8; font-size:1.15rem; font-weight:800; margin-bottom:8px;">Google Earth Engine</div>
+                Xử lý dữ liệu không gian thời gian thực trên quy mô cấp tỉnh và toàn quốc với độ trễ cực thấp.
+            </div>
+        """, unsafe_allow_html=True)
+    with c2:
+        st.markdown("""
+            <div class="about-card-glow" style="text-align:center; min-height:190px;">
+                <div style="color:#48bb78; font-size:1.15rem; font-weight:800; margin-bottom:8px;">AI Biomass Estimation</div>
+                Thuật toán máy học tự động bóc tách chỉ số thực vật NDVI và tính toán độ che phủ sinh khối rừng.
+            </div>
+        """, unsafe_allow_html=True)
+    with c3:
+        st.markdown("""
+            <div class="about-card-glow" style="text-align:center; min-height:190px;">
+                <div style="color:#f6e05e; font-size:1.15rem; font-weight:800; margin-bottom:8px;">Escrow Smart Matching</div>
+                Cơ chế giao dịch ký quỹ tự động bảo đảm quyền lợi tài chính an toàn tuyệt đối cho người mua và chủ rừng.
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown('<div class="about-section-title">CÔNG NGHỆ LÕI (CORE TECHNOLOGY)</div>', unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            st.markdown("""
-                <div class="about-box" style="text-align:center;">
-                    <b style="color:#38bdf8; font-size:1.1rem;">Google Earth Engine</b><br>
-                    Xử lý dữ liệu không gian thời gian thực trên quy mô cấp tỉnh và toàn quốc với độ trễ cực thấp.
-                </div>
-            """, unsafe_allow_html=True)
-        with c2:
-            st.markdown("""
-                <div class="about-box" style="text-align:center;">
-                    <b style="color:#48bb78; font-size:1.1rem;">AI Biomass Estimation</b><br>
-                    Thuật toán máy học tự động bóc tách chỉ số thực vật NDVI và tính toán độ che phủ sinh khối rừng.
-                </div>
-            """, unsafe_allow_html=True)
-        with c3:
-            st.markdown("""
-                <div class="about-box" style="text-align:center;">
-                    <b style="color:#eab308; font-size:1.1rem;">Escrow Smart Matching</b><br>
-                    Cơ chế giao dịch ký quỹ tự động bảo đảm quyền lợi tài chính an toàn tuyệt đối cho người mua và chủ rừng.
-                </div>
-            """, unsafe_allow_html=True)
-
-        st.markdown('<div class="about-section-title">LỘ TRÌNH PHÁT TRIỂN (ROADMAP 2026 - 2030)</div>', unsafe_allow_html=True)
-        st.markdown("""
-            <div class="about-box">
-                <b>Giai đoạn 1 (2026):</b> Hoàn thiện hệ sinh thái kiểm kê tự động MRV, kết nối dữ liệu thí điểm các vùng rừng ngập mặn Cà Mau và rừng phòng hộ Bắc Trung Bộ.<br>
-                <b>Giai đoạn 2 (2027 - 2028):</b> Tích hợp sàn giao dịch thứ cấp cho các doanh nghiệp FDI, niêm yết chứng chỉ tiêu chuẩn Verra/Gold Standard.<br>
-                <b>Giai đoạn 3 (2029 - 2030):</b> Mở rộng quy mô ra toàn khu vực Đông Nam Á, trở thành trung tâm giao dịch hạn ngạch phát thải hàng đầu.
-            </div>
-        """, unsafe_allow_html=True)
+    # Khung 3: Lộ trình phát triển (Lóa sáng & nổi khối)
+    st.markdown('<div class="about-section-title">LỘ TRÌNH PHÁT TRIỂN (ROADMAP 2026 - 2030)</div>', unsafe_allow_html=True)
+    st.markdown("""
+        <div class="about-card-glow">
+            <div style="margin-bottom:6px;"><b style="color:#48bb78;">Giai đoạn 1 (2026):</b> Hoàn thiện hệ sinh thái kiểm kê tự động MRV, kết nối dữ liệu thí điểm các vùng rừng ngập mặn Cà Mau và rừng phòng hộ Bắc Trung Bộ.</div>
+            <div style="margin-bottom:6px;"><b style="color:#48bb78;">Giai đoạn 2 (2027 - 2028):</b> Tích hợp sàn giao dịch thứ cấp cho các doanh nghiệp FDI, niêm yết chứng chỉ tiêu chuẩn Verra/Gold Standard.</div>
+            <div><b style="color:#48bb78;">Giai đoạn 3 (2029 - 2030):</b> Mở rộng quy mô ra toàn khu vực Đông Nam Á, trở thành trung tâm giao dịch hạn ngạch phát thải hàng đầu.</div>
+        </div>
+    """, unsafe_allow_html=True)
