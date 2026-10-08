@@ -5,6 +5,7 @@ from streamlit_folium import folium_static
 import os
 import random
 
+from i18n import t
 from auth import hien_thi_cong_dang_nhap
 from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
 
@@ -13,11 +14,11 @@ try:
     from community import hien_thi_vinh_danh_va_gop_y
     from diary import hien_thi_nhat_ky_xanh
 except ImportError:
-    def hien_thi_mang_xa_hoi(): st.info("Hệ thống đang được bảo trì.")
-    def hien_thi_vinh_danh_va_gop_y(): st.info("Hệ thống đang được bảo trì.")
-    def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang được bảo trì.")
+    def hien_thi_mang_xa_hoi(): st.info("Hệ thống đang bảo trì.")
+    def hien_thi_vinh_danh_va_gop_y(): st.info("Hệ thống đang bảo trì.")
+    def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang bảo trì.")
 
-# Tự động nạp CSDL SQLite
+# Khởi tạo CSDL SQLite tự động
 try:
     import db_manager
     db_manager.init_db()
@@ -27,6 +28,7 @@ except Exception:
 st.set_page_config(page_title="MRV & Carbon Exchange", layout="wide")
 
 if "current_lang" not in st.session_state: st.session_state["current_lang"] = "Tiếng Việt"
+
 if "users_db" not in st.session_state:
     st.session_state["users_db"] = {
         "admin": {"password": "123", "role": "Chủ rừng / Kỹ sư MRV", "wallet_balance": 150000.0},
@@ -47,55 +49,6 @@ if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] 
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 if "currency_mode" not in st.session_state: st.session_state["currency_mode"] = "VND"
 
-LANG_DICT = {
-    "Tiếng Việt": {
-        "title": "NỀN TẢNG MRV & SÀN GIAO DỊCH", "logout": "ĐĂNG XUẤT", "lang_select": "TÙY CHỌN NGÔN NGỮ",
-        "tabs": ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Nhật ký Xanh", "Bảng Vàng", "Về chúng tôi"],
-        "sidebar_partners": "ĐỐI TÁC CHIẾN LƯỢC", "sidebar_certs": "CHỨNG NHẬN PHÁP LÝ",
-        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "Đối tác Không gian AI",
-        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Thanh toán Escrow",
-        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Tiêu chuẩn Toàn cầu",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Bảo mật Thông tin Cấp cao",
-        "welcome": "Xin chào",
-        "mrv_success": "HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI",
-        "mrv_base_yr": "Năm cơ sở:", "mrv_comp_yr": "Năm so sánh:",
-        "mrv_loading": "AI đang phân tích dữ liệu không gian...",
-        "mrv_biomass": "Sinh khối",
-        "mrv_calc_btn": "PHÂN TÍCH VÙNG KHOANH",
-        "mrv_reset_btn": "LÀM MỚI DỮ LIỆU",
-        "mrv_result_title": "KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG",
-        "mrv_base_val": "Sinh khối Năm",
-        "mrv_comp_val": "Sinh khối Năm",
-        "mrv_total_val": "Tổng Giá Trị Quy Đổi",
-        "mrv_unit": "Tấn",
-        "mrv_success_msg": "Khu vực phân tích ghi nhận sự tăng trưởng sinh khối. Bạn có thể niêm yết thêm {diff} tín chỉ carbon.",
-        "mrv_warning_msg": "Mật độ sinh khối trong khu vực sụt giảm. Cần rà soát biến động rừng."
-    },
-    "English": {
-        "title": "MRV PLATFORM & CARBON EXCHANGE", "logout": "LOGOUT", "lang_select": "LANGUAGE SETTINGS",
-        "tabs": ["MRV System", "Marketplace", "Forest Investment", "Social Network", "Green Diary", "Leaderboard", "About Us"],
-        "sidebar_partners": "STRATEGIC PARTNERS", "sidebar_certs": "CERTIFICATIONS",
-        "sb_p1_title": "Google Earth Engine", "sb_p1_desc": "AI Spatial Partner",
-        "sb_p2_title": "Vietcombank", "sb_p2_desc": "Escrow Payment",
-        "sb_c1_title": "VCS (Verra)", "sb_c1_desc": "Global Standard",
-        "sb_c2_title": "ISO/IEC 27001", "sb_c2_desc": "Information Security",
-        "welcome": "Welcome",
-        "mrv_success": "AI SPATIAL MONITORING SYSTEM",
-        "mrv_base_yr": "Base Year:", "mrv_comp_yr": "Comparison Year:",
-        "mrv_loading": "AI is analyzing spatial data...",
-        "mrv_biomass": "Biomass",
-        "mrv_calc_btn": "ANALYZE AREA",
-        "mrv_reset_btn": "RESET DATA",
-        "mrv_result_title": "QUANTITATIVE ANALYSIS RESULT",
-        "mrv_base_val": "Biomass Year",
-        "mrv_comp_val": "Biomass Year",
-        "mrv_total_val": "Total Converted Value",
-        "mrv_unit": "Tons",
-        "mrv_success_msg": "Biomass growth detected. You can list {diff} additional carbon credits.",
-        "mrv_warning_msg": "Biomass density decreased. Forest inspection required."
-    }
-}
-
 def inject_custom_css():
     st.markdown("""
         <style>
@@ -110,8 +63,7 @@ def inject_custom_css():
             animation: titleWave 4s linear infinite; margin-bottom: 0px !important; padding-bottom: 0px !important; letter-spacing: 1px;
         }
         
-        /* Gạch chân và chữ Tab đổi thành màu xanh lá */
-        button[data-baseweb="tab"] { font-weight: 700 !important; }
+        button[data-baseweb="tab"] { font-weight: 700 !important; font-size: 0.95rem !important; }
         button[data-baseweb="tab"][aria-selected="true"] { 
             color: #48bb78 !important; 
             text-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important; 
@@ -177,9 +129,6 @@ def inject_custom_css():
             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
             transform: skewX(-25deg); animation: autoSweepLight10s 10s infinite linear; z-index: 10; pointer-events: none;
         }
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block):hover::after {
-            display: none !important;
-        }
 
         .sidebar-badge { 
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important; padding: 16px; border-radius: 10px; margin-bottom: 12px; 
@@ -203,20 +152,18 @@ inject_custom_css()
 
 # ================= SIDEBAR =================
 with st.sidebar:
-    l = LANG_DICT[st.session_state["current_lang"]]
-
-    st.markdown(f"<h3 style='color: #48bb78; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px; margin-top: 15px;'>{l['lang_select']}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: #48bb78; font-weight: 800; text-align: center; font-size: 1.1rem; letter-spacing: 1px; margin-top: 15px;'>{t('TÙY CHỌN NGÔN NGỮ')}</h3>", unsafe_allow_html=True)
     st.selectbox("Ngôn ngữ:", ["Tiếng Việt", "English"], key="current_lang", label_visibility="collapsed")
     st.divider()
     
-    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_partners']}</p>", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p1_title']}</div><div class="sb-desc">{l['sb_p1_desc']}</div></div></div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_p2_title']}</div><div class="sb-desc">{l['sb_p2_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{t('ĐỐI TÁC CHIẾN LƯỢC')}</p>", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">Google Earth Engine</div><div class="sb-desc">{t("Đối tác Không gian AI")}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">Vietcombank</div><div class="sb-desc">{t("Thanh toán Escrow")}</div></div></div>""", unsafe_allow_html=True)
     
     st.divider()
-    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{l['sidebar_certs']}</p>", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c1_title']}</div><div class="sb-desc highlight">{l['sb_c1_desc']}</div></div></div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">{l['sb_c2_title']}</div><div class="sb-desc highlight">{l['sb_c2_desc']}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a0aec0; font-size:12px; font-weight:bold; letter-spacing:1px;'>{t('CHỨNG NHẬN PHÁP LÝ')}</p>", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">VCS (Verra)</div><div class="sb-desc highlight">{t("Tiêu chuẩn Toàn cầu")}</div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="sidebar-badge"><div><div class="sb-title">ISO/IEC 27001</div><div class="sb-desc highlight">{t("Bảo mật Thông tin Cấp cao")}</div></div></div>""", unsafe_allow_html=True)
 
 @st.dialog(" ")
 def hop_thoai_dang_xuat():
@@ -235,21 +182,22 @@ def hop_thoai_dang_xuat():
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?</h3>", unsafe_allow_html=True)
+    logout_question = t("Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?")
+    st.markdown(f"<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>{logout_question}</h3>", unsafe_allow_html=True)
     
     col_y, col_n = st.columns(2)
     with col_y:
-        if st.button("Tạm thời nghỉ chân", use_container_width=True, key="confirm_out_yes"):
+        if st.button(t("Tạm thời nghỉ chân"), use_container_width=True, key="confirm_out_yes"):
             st.session_state["logged_in"] = False
             st.session_state["current_user"] = ""
             st.session_state["current_role"] = ""
             st.rerun()
     with col_n:
-        if st.button("Tiếp tục chặng đường", use_container_width=True, key="confirm_out_no"):
+        if st.button(t("Tiếp tục chặng đường"), use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
-# ================= HÀM HIỂN THỊ KẾT QUẢ MRV =================
-def render_mrv_results(l, nam_co_so, nam_so_sanh):
+# ================= HÀM HIỂN THỊ KẾT QUẢ MRV HOÀN THIỆN =================
+def render_mrv_results(nam_co_so, nam_so_sanh):
     seed = st.session_state["mrv_polygon_seed"]
     dien_tich_hecta = 8000.0 + (seed % 12000) 
     
@@ -391,7 +339,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
     with st.container(border=True):
         st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
         
-        title_text = l['mrv_result_title']
+        title_text = t("KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG")
         title_html = '<div class="mrv-blue-title-container">'
         delay = 0.0
         for char in title_text:
@@ -405,9 +353,9 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
         with col_r1:
             st.markdown(f"""
                 <div class="mrv-stat-box">
-                    <div class="mrv-stat-title">{l['mrv_base_val']} {nam_co_so}</div>
-                    <div class="mrv-stat-num">{base_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{l['mrv_unit']}</span></div>
-                    <div class="mrv-sub-credit">{base_credits:,.0f} Tín chỉ</div>
+                    <div class="mrv-stat-title">{t('Sinh khối Năm')} {nam_co_so}</div>
+                    <div class="mrv-stat-num">{base_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{t('Tấn')}</span></div>
+                    <div class="mrv-sub-credit">{base_credits:,.0f} {t('Tín chỉ')}</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -416,10 +364,10 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             sign = "+" if diff >= 0 else ""
             st.markdown(f"""
                 <div class="mrv-stat-box">
-                    <div class="mrv-stat-title">{l['mrv_comp_val']} {nam_so_sanh}</div>
-                    <div class="mrv-stat-num">{comp_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{l['mrv_unit']}</span></div>
-                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.4); background: rgba(72,187,120,0.12);">{comp_credits:,.0f} Tín chỉ</div>
-                    <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {l['mrv_unit']}</div>
+                    <div class="mrv-stat-title">{t('Sinh khối Năm')} {nam_so_sanh}</div>
+                    <div class="mrv-stat-num">{comp_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{t('Tấn')}</span></div>
+                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.4); background: rgba(72,187,120,0.12);">{comp_credits:,.0f} {t('Tín chỉ')}</div>
+                    <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {t('Tấn')}</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -436,7 +384,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
 
             st.markdown(f"""
                 <div class="mrv-stat-box">
-                    <div class="mrv-stat-title">{l['mrv_total_val']}</div>
+                    <div class="mrv-stat-title">{t('Tổng Giá Trị Quy Đổi')}</div>
                     <div class="mrv-stat-num">{tien_hien_thi}</div>
                     <div class="mrv-delta-badge {money_badge_cls}">{diff_money_str}</div>
                 </div>
@@ -449,38 +397,37 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                     st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
 
-        diff_text = f"{diff:,.0f} {l['mrv_unit']}"
+        diff_text = f"{diff:,.0f} {t('Tấn')}"
         if diff >= 0:
-            msg = l['mrv_success_msg'].format(diff=diff_text)
-            st.markdown(f"<div class='mrv-highlight-banner'>{msg}</div>", unsafe_allow_html=True)
+            msg = f"Khu vực phân tích ghi nhận sự tăng trưởng sinh khối. Bạn có thể niêm yết thêm {diff_text} tín chỉ carbon."
+            st.markdown(f"<div class='mrv-highlight-banner'>{t(msg)}</div>", unsafe_allow_html=True)
         else:
-            st.markdown(f"<div class='mrv-highlight-banner' style='color:#fca5a5; border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.15);'>{l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
+            msg = "Mật độ sinh khối trong khu vực sụt giảm. Cần rà soát biến động rừng."
+            st.markdown(f"<div class='mrv-highlight-banner' style='color:#fca5a5; border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.15);'>{t(msg)}</div>", unsafe_allow_html=True)
 
 def main_app():
-    l = LANG_DICT[st.session_state["current_lang"]]
-    role_display = st.session_state['current_role']
+    role_display = t(st.session_state['current_role'])
     
     col_t, col_l = st.columns([7, 1])
     with col_t:
-        st.markdown(f'<div class="main-title">{l["title"]}</div>', unsafe_allow_html=True)
-        st.caption(f"{l['welcome']}, **{st.session_state['current_user']}** ({role_display})")
+        st.markdown(f'<div class="main-title">{t("NỀN TẢNG MRV & SÀN GIAO DỊCH")}</div>', unsafe_allow_html=True)
+        st.caption(f"{t('Xin chào')}, **{st.session_state['current_user']}** ({role_display})")
     
     with col_l:
         st.markdown("""
             <style>
             button[kind="secondary"] {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important;
-                color: #fca5a5 !important; font-weight: 700 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
-                position: relative; overflow: hidden !important;
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important;
+                border: 1px solid rgba(239, 68, 68, 0.6) !important; color: #fca5a5 !important; font-weight: 700 !important;
+                border-radius: 8px !important; transition: all 0.3s ease !important;
             }
             button[kind="secondary"]:hover {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important; border-color: #ef4444 !important; color: white !important;
-                box-shadow: 0 0 20px rgba(239, 68, 68, 0.7) !important; transform: translateY(-2px);
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important;
+                border-color: #ef4444 !important; color: white !important; transform: translateY(-2px);
             }
             </style>
         """, unsafe_allow_html=True)
-        
-        if st.button(l["logout"], type="secondary", use_container_width=True):
+        if st.button(t("ĐĂNG XUẤT"), type="secondary", use_container_width=True):
             hop_thoai_dang_xuat()
 
     try:
@@ -500,23 +447,24 @@ def main_app():
         carbon = ndvi.updateMask(ndvi.gt(0.2)).multiply(120).rename('Carbon_Proxy')
         return carbon.clip(vung)
 
-    tab_mrv, tab_market, tab_invest, tab_social, tab_diary, tab_community, tab_about = st.tabs(l["tabs"])
+    tab_titles = [t(name) for name in ["Hệ thống MRV", "Sàn Giao dịch", "Đầu tư Trồng rừng", "Mạng xã hội", "Nhật ký Xanh", "Bảng Vàng", "Về chúng tôi"]]
+    tab_mrv, tab_market, tab_invest, tab_social, tab_diary, tab_community, tab_about = st.tabs(tab_titles)
 
     with tab_mrv:
         _, col_center, _ = st.columns([0.05, 0.9, 0.05])
         with col_center:
-            st.markdown(f"<div style='text-align:center; color:#48bb78; font-weight:800; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;'>{l['mrv_success']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align:center; color:#48bb78; font-weight:800; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;'>{t('HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI')}</div>", unsafe_allow_html=True)
             
             with st.container(border=True):
                 c1, c2 = st.columns(2)
-                with c1: nam_co_so = st.selectbox(l["mrv_base_yr"], range(2016, 2027), index=4) 
-                with c2: nam_so_sanh = st.selectbox(l["mrv_comp_yr"], range(2016, 2027), index=8) 
+                with c1: nam_co_so = st.selectbox(t("Năm cơ sở:"), range(2016, 2027), index=4) 
+                with c2: nam_so_sanh = st.selectbox(t("Năm so sánh:"), range(2016, 2027), index=8) 
                 
                 col_b1, col_b2 = st.columns(2)
                 with col_b1:
-                    btn_calc = st.button(l["mrv_calc_btn"], type="primary", use_container_width=True)
+                    btn_calc = st.button(t("PHÂN TÍCH VÙNG KHOANH"), type="primary", use_container_width=True)
                 with col_b2:
-                    btn_reset = st.button(l["mrv_reset_btn"], type="secondary", use_container_width=True)
+                    btn_reset = st.button(t("LÀM MỚI DỮ LIỆU"), type="secondary", use_container_width=True)
                 
             if btn_reset:
                 st.session_state["mrv_calc_state"] = False
@@ -527,32 +475,26 @@ def main_app():
                 st.session_state["mrv_calc_state"] = True
 
             if st.session_state["mrv_calc_state"]:
-                render_mrv_results(l, nam_co_so, nam_so_sanh)
+                render_mrv_results(nam_co_so, nam_so_sanh)
 
             try:
-                with st.spinner(l["mrv_loading"]):
+                with st.spinner(t("AI đang phân tích dữ liệu không gian...")):
                     map_base = tao_ban_do_carbon(nam_co_so)
                     map_comp = tao_ban_do_carbon(nam_so_sanh)
                     
                 m = geemap.Map(center=[11.4280, 107.4286], zoom=11)
                 vis = {'min': 0, 'max': 100, 'palette': ['#ffffcc', '#c2e699', '#78c679', '#31a354', '#006837']}
-                m.addLayer(map_base, vis, f"{l['mrv_biomass']} {nam_co_so}")
-                m.addLayer(map_comp, vis, f"{l['mrv_biomass']} {nam_so_sanh}")
+                m.addLayer(map_base, vis, f"{t('Sinh khối')} {nam_co_so}")
+                m.addLayer(map_comp, vis, f"{t('Sinh khối')} {nam_so_sanh}")
                 
                 with st.container(border=True):
                     folium_static(m, width=1100, height=500)
             except Exception:
-                st.warning("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ.")
+                st.warning(t("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ."))
 
     with tab_market: hien_thi_san_giao_dich()
     with tab_invest: hien_thi_cong_dau_tu()
-    
-    with tab_social: 
-        try:
-            hien_thi_mang_xa_hoi()
-        except Exception as e:
-            st.error(f"Đang bảo trì Mạng xã hội: {e}")
-            
+    with tab_social: hien_thi_mang_xa_hoi()
     with tab_diary: hien_thi_nhat_ky_xanh()
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
