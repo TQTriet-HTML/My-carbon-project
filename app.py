@@ -182,8 +182,8 @@ def hop_thoai_dang_xuat():
         </style>
     """, unsafe_allow_html=True)
 
-    logout_question = t("Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?")
-    st.markdown(f"<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>{logout_question}</h3>", unsafe_allow_html=True)
+    logout_msg = t("Bạn có chắc muốn tạm nghỉ chân sau một chặng đường xanh đã qua không?")
+    st.markdown(f"<h3 style='color: #ffffff; font-weight: 900; line-height: 1.5; margin-bottom: 25px; font-size: 1.25rem; text-align: center;'>{logout_msg}</h3>", unsafe_allow_html=True)
     
     col_y, col_n = st.columns(2)
     with col_y:
@@ -353,9 +353,9 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
         with col_r1:
             st.markdown(f"""
                 <div class="mrv-stat-box">
-                    <div class="mrv-stat-title">{t('Sinh khối Năm')} {nam_co_so}</div>
-                    <div class="mrv-stat-num">{base_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{t('Tấn')}</span></div>
-                    <div class="mrv-sub-credit">{base_credits:,.0f} {t('Tín chỉ')}</div>
+                    <div class="mrv-stat-title">{t("Sinh khối Năm")} {nam_co_so}</div>
+                    <div class="mrv-stat-num">{base_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{t("Tấn")}</span></div>
+                    <div class="mrv-sub-credit">{base_credits:,.0f} {t("Tín chỉ")}</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -364,10 +364,10 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
             sign = "+" if diff >= 0 else ""
             st.markdown(f"""
                 <div class="mrv-stat-box">
-                    <div class="mrv-stat-title">{t('Sinh khối Năm')} {nam_so_sanh}</div>
-                    <div class="mrv-stat-num">{comp_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{t('Tấn')}</span></div>
-                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.4); background: rgba(72,187,120,0.12);">{comp_credits:,.0f} {t('Tín chỉ')}</div>
-                    <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {t('Tấn')}</div>
+                    <div class="mrv-stat-title">{t("Sinh khối Năm")} {nam_so_sanh}</div>
+                    <div class="mrv-stat-num">{comp_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{t("Tấn")}</span></div>
+                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.4); background: rgba(72,187,120,0.12);">{comp_credits:,.0f} {t("Tín chỉ")}</div>
+                    <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {t("Tấn")}</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -384,7 +384,7 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
 
             st.markdown(f"""
                 <div class="mrv-stat-box">
-                    <div class="mrv-stat-title">{t('Tổng Giá Trị Quy Đổi')}</div>
+                    <div class="mrv-stat-title">{t("Tổng Giá Trị Quy Đổi")}</div>
                     <div class="mrv-stat-num">{tien_hien_thi}</div>
                     <div class="mrv-delta-badge {money_badge_cls}">{diff_money_str}</div>
                 </div>
@@ -392,7 +392,7 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
             
             _, c_btn, _ = st.columns([0.1, 0.8, 0.1])
             with c_btn:
-                btn_label = "Đổi sang USD" if is_vnd else "Đổi sang VND"
+                btn_label = t("Đổi sang USD") if is_vnd else t("Đổi sang VND")
                 if st.button(btn_label, type="primary", use_container_width=True, key="btn_toggle_curr"):
                     st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
