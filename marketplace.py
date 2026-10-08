@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import datetime
+import plotly.graph_objects as go
 
 def hien_thi_san_giao_dich():
     # CSS hiệu ứng viền phát quang xanh lá + nổi bổng 3D cho toàn bộ container
@@ -119,7 +120,7 @@ def hien_thi_san_giao_dich():
         </style>
     """, unsafe_allow_html=True)
 
-    # 1. DASHBOARD QUẢN LÝ TÀI KHOẢN
+    # ================= 1. DASHBOARD QUẢN LÝ TÀI KHOẢN =================
     st.markdown('<div class="dash-title-green">DASHBOARD QUẢN LÝ TÀI KHOẢN</div>', unsafe_allow_html=True)
 
     wallet_bal = st.session_state.get("wallet_balance", 150000.0)
@@ -163,11 +164,11 @@ def hien_thi_san_giao_dich():
             else:
                 st.write("Hiện tại tài khoản chưa nắm giữ tín chỉ nào. Bạn có thể đặt lệnh mua ở sàn bên dưới.")
 
-    # 2. BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY
+    # ================= 2. BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY (TRỤC NGÀY NẰM NGANG) =================
     st.markdown('<div class="dash-title-green" style="margin-top: 35px;">BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY</div>', unsafe_allow_html=True)
 
     with st.container(border=True):
-        col_view, col_stat = st.columns([0.4, 0.6])
+        col_view, col_stat = st.columns([0.45, 0.55])
         with col_view:
             time_frame = st.radio("Khung thời gian phân tích:", ["Từng ngày", "Từng tháng", "Từng năm"], horizontal=True)
         with col_stat:
@@ -184,7 +185,7 @@ def hien_thi_san_giao_dich():
             dates = [today - datetime.timedelta(days=i) for i in range(29, -1, -1)]
             date_labels = [d.strftime("%d/%m") for d in dates]
             base_p = 10.2
-            noise = np.cumsum(np.random.normal(0.02, 0.15, len(dates)))
+            noise = np.cumsum(np.random.normal(0.015, 0.12, len(dates)))
             prices = [round(max(8.0, base_p + n), 2) for n in noise]
         elif time_frame == "Từng tháng":
             date_labels = ["T11/25", "T12/25", "T01/26", "T02/26", "T03/26", "T04/26", "T05/26", "T06/26", "T07/26", "T08/26", "T09/26", "T10/26"]
@@ -193,10 +194,46 @@ def hien_thi_san_giao_dich():
             date_labels = ["2021", "2022", "2023", "2024", "2025", "2026"]
             prices = [4.50, 5.80, 7.20, 8.90, 9.80, 10.50]
 
-        chart_df = pd.DataFrame({"Giá niêm yết (USD)": prices}, index=date_labels)
-        st.line_chart(chart_df, color="#22c55e", use_container_width=True)
+        # Biểu đồ Plotly chuyên nghiệp với trục hoành nằm ngang hoàn toàn (tickangle = 0)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=date_labels,
+            y=prices,
+            mode='lines',
+            line=dict(color='#22c55e', width=2.5),
+            fill='tozeroy',
+            fillcolor='rgba(34, 197, 94, 0.08)',
+            hovertemplate='Thời gian: %{x}<br>Giá: $%{y:.2f} USD<extra></extra>'
+        ))
 
-    # 3. TRUNG TÂM KHỚP LỆNH THEO VAI TRÒ
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=10, r=10, t=20, b=20),
+            height=360,
+            xaxis=dict(
+                showgrid=True,
+                gridcolor='rgba(255, 255, 255, 0.05)',
+                tickfont=dict(color='#94a3b8', size=12),
+                tickangle=0,  # Ép chữ luôn nằm ngang hoàn toàn
+                nticks=10,    # Chia khoảng đều đặn để chữ không bị đè lên nhau
+                showline=True,
+                linecolor='rgba(72, 187, 120, 0.3)'
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='rgba(255, 255, 255, 0.08)',
+                tickfont=dict(color='#94a3b8', size=12),
+                tickprefix='$',
+                range=[max(0, min(prices) - 1.5), max(prices) + 1.5],
+                showline=False
+            ),
+            hovermode='x unified'
+        )
+
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+    # ================= 3. TRUNG TÂM KHỚP LỆNH THEO VAI TRÒ =================
     st.markdown('<div class="dash-title-green" style="margin-top: 35px;">TRUNG TÂM KHỚP LỆNH THEO VAI TRÒ</div>', unsafe_allow_html=True)
 
     with st.container(border=True):
@@ -277,7 +314,7 @@ def hien_thi_san_giao_dich():
                 else:
                     st.error("Số dư ví không đủ.")
 
-    # 4. DANH SÁCH DỰ ÁN ĐANG NIÊM YẾT
+    # ================= 4. DANH SÁCH DỰ ÁN ĐANG NIÊM YẾT =================
     st.markdown('<div class="dash-title-green" style="margin-top: 35px;">DANH SÁCH DỰ ÁN ĐANG NIÊM YẾT</div>', unsafe_allow_html=True)
 
     projects_data = [
@@ -332,7 +369,6 @@ def hien_thi_cong_dau_tu():
     """, unsafe_allow_html=True)
     st.info("Danh mục đầu tư sinh thái đang mở nhận vốn kỳ 2026.")
 
-# ================= 5. VỀ CHÚNG TÔI & LỘ TRÌNH PHÁT TRIỂN (CÁC Ô ĐÓNG KHUNG LÓA SÁNG & NỔI BỔNG) =================
 def hien_thi_gioi_thieu_va_goi_von():
     st.markdown("""
         <style>
@@ -356,8 +392,6 @@ def hien_thi_gioi_thieu_va_goi_von():
             padding-left: 12px;
             text-transform: uppercase;
         }
-
-        /* HIỆU ỨNG THỞ PHÁT QUANG XANH LÁ CHO CÁC Ô KHUNG */
         @keyframes greenCardBreath {
             0%, 100% {
                 box-shadow: 0 0 15px rgba(72, 187, 120, 0.28), inset 0 0 12px rgba(72, 187, 120, 0.1);
@@ -368,15 +402,11 @@ def hien_thi_gioi_thieu_va_goi_von():
                 border-color: #48bb78 !important;
             }
         }
-
-        /* TIA SÁNG QUÉT TỰ ĐỘNG MỖI 10 GIÂY */
         @keyframes sweep10sAbout {
             0%, 85% { left: -120%; opacity: 0; }
             86% { opacity: 1; left: -120%; }
             95%, 100% { left: 220%; opacity: 0; }
         }
-
-        /* Ô KHUNG LỚN VÀ NHỎ TRONG TRANG VỀ CHÚNG TÔI */
         .about-card-glow {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.95), rgba(18, 42, 77, 0.92)) !important;
             border: 2px solid rgba(72, 187, 120, 0.5) !important;
@@ -391,7 +421,6 @@ def hien_thi_gioi_thieu_va_goi_von():
             animation: greenCardBreath 4s infinite ease-in-out !important;
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
         }
-
         .about-card-glow::after {
             content: '';
             position: absolute;
@@ -405,8 +434,6 @@ def hien_thi_gioi_thieu_va_goi_von():
             z-index: 10;
             pointer-events: none;
         }
-
-        /* HIỆU ỨNG NỔI BỔNG LÊN 3D KHI RÊ CHUỘT VÀO */
         .about-card-glow:hover {
             transform: translateY(-8px) scale(1.022) !important;
             box-shadow: 0 22px 50px rgba(72, 187, 120, 0.92), inset 0 0 25px rgba(72, 187, 120, 0.4) !important;
@@ -418,7 +445,6 @@ def hien_thi_gioi_thieu_va_goi_von():
 
     st.markdown('<div class="about-title-green">VỀ CHÚNG TÔI & LỘ TRÌNH PHÁT TRIỂN</div>', unsafe_allow_html=True)
 
-    # Khung 1: Sứ mệnh & Tầm nhìn (Lóa sáng & nổi khối)
     st.markdown('<div class="about-section-title">SỨ MỆNH & TẦM NHÌN</div>', unsafe_allow_html=True)
     st.markdown("""
         <div class="about-card-glow">
@@ -429,7 +455,6 @@ def hien_thi_gioi_thieu_va_goi_von():
         </div>
     """, unsafe_allow_html=True)
 
-    # Khung 2: Công nghệ lõi (3 ô riêng biệt đều có lóa sáng & nổi khối)
     st.markdown('<div class="about-section-title">CÔNG NGHỆ LÕI (CORE TECHNOLOGY)</div>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -454,7 +479,6 @@ def hien_thi_gioi_thieu_va_goi_von():
             </div>
         """, unsafe_allow_html=True)
 
-    # Khung 3: Lộ trình phát triển (Lóa sáng & nổi khối)
     st.markdown('<div class="about-section-title">LỘ TRÌNH PHÁT TRIỂN (ROADMAP 2026 - 2030)</div>', unsafe_allow_html=True)
     st.markdown("""
         <div class="about-card-glow">
