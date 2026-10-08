@@ -42,11 +42,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     t = T.get(lang, T["Tiếng Việt"])
     
     text_sub = "#cbd5e1"
-    bg_auth_block = "linear-gradient(135deg, rgba(20, 27, 45, 0.96), rgba(10, 15, 29, 0.98))"
+    bg_auth_block = "linear-gradient(135deg, rgba(13, 31, 60, 0.95), rgba(18, 42, 77, 0.92))"
 
     st.markdown(f"""
         <style>
-        /* TIÊU ĐỀ LÓA SÁNG TỪNG CHỮ CHO CÂU CHÀO */
+        /* TIÊU ĐỀ LÓA SÁNG TỪNG CHỮ CÂU CHÀO */
         @keyframes char-green-blue-glow {{
             0%, 100% {{ color: #48bb78; text-shadow: 0 0 4px rgba(72,187,120,0.3); }}
             50% {{ color: #63b3ed; text-shadow: 0 0 20px rgba(99,179,237,1), 0 0 8px rgba(72,187,120,0.8); transform: translateY(-2px); }}
@@ -80,16 +80,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }}
 
         /* ============================================================
-           HIỆU ỨNG ÁNH SÁNG & NỔI KHỐI CHO 2 KHỐI BÊN PHẢI (VÀ KHỐI FORM)
+           HIỆU ỨNG LÓA SÁNG & NỔI LÊN CHO TẤT CẢ CÁC KHỐI BORDER CỦA AUTH
            ============================================================ */
         @keyframes greenNeonBreath {{
             0%, 100% {{ 
-                box-shadow: 0 0 15px rgba(72, 187, 120, 0.25), inset 0 0 10px rgba(72, 187, 120, 0.05); 
-                border-color: rgba(72, 187, 120, 0.45); 
+                box-shadow: 0 0 16px rgba(72, 187, 120, 0.28), inset 0 0 15px rgba(56, 189, 248, 0.08); 
+                border-color: rgba(72, 187, 120, 0.5) !important; 
             }}
             50% {{ 
-                box-shadow: 0 0 35px rgba(72, 187, 120, 0.75), inset 0 0 20px rgba(72, 187, 120, 0.2); 
-                border-color: #48bb78; 
+                box-shadow: 0 0 38px rgba(72, 187, 120, 0.8), inset 0 0 25px rgba(56, 189, 248, 0.18); 
+                border-color: #48bb78 !important; 
             }}
         }}
 
@@ -100,21 +100,23 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             100%      {{ left: 200%; opacity: 0; }} 
         }}
 
-        /* Áp dụng trực tiếp vào tất cả các container có viền */
-        div[data-testid="stVerticalBlockBorderWrapper"] {{
+        /* Áp dụng cưỡng bức lên MỌI container có viền (cả form và 2 khối phải) */
+        div[data-testid="stVerticalBlockBorderWrapper"],
+        div[data-testid="stForm"] {{
             background: {bg_auth_block} !important;
-            border: 2px solid rgba(72, 187, 120, 0.5) !important;
+            border: 2px solid rgba(72, 187, 120, 0.6) !important;
             border-radius: 18px !important;
-            padding: 26px !important;
+            padding: 24px !important;
             animation: greenNeonBreath 4s infinite ease-in-out !important;
             position: relative; 
             overflow: hidden !important; 
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
-            margin-bottom: 22px !important;
+            margin-bottom: 20px !important;
         }}
 
-        /* Ánh sáng quét qua mỗi 10 giây */
-        div[data-testid="stVerticalBlockBorderWrapper"]::after {{
+        /* Tia sáng quét 10s tự động */
+        div[data-testid="stVerticalBlockBorderWrapper"]::after,
+        div[data-testid="stForm"]::after {{
             content: ''; 
             position: absolute; 
             top: 0; 
@@ -128,39 +130,57 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             pointer-events: none;
         }}
 
-        /* Nổi lên khi rê chuột vào */
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
+        /* Hiệu ứng nổi lên khi rê chuột vào */
+        div[data-testid="stVerticalBlockBorderWrapper"]:hover,
+        div[data-testid="stForm"]:hover {{
             transform: translateY(-8px) scale(1.02) !important;
-            box-shadow: 0 22px 48px rgba(72, 187, 120, 0.9), inset 0 0 25px rgba(72, 187, 120, 0.35) !important;
+            box-shadow: 0 22px 50px rgba(72, 187, 120, 0.92), inset 0 0 25px rgba(72, 187, 120, 0.4) !important;
             border-color: #48bb78 !important;
             z-index: 5 !important;
         }}
 
-        /* NÚT BẤM (BUTTON) */
-        @keyframes btnGreenGlow {{
-            0%, 100% {{ box-shadow: 0 0 8px rgba(72, 187, 120, 0.4); border-color: rgba(72, 187, 120, 0.6) !important; }}
-            50% {{ box-shadow: 0 0 25px rgba(72, 187, 120, 0.9); border-color: #48bb78 !important; }}
+        /* ============================================================
+           TAB ĐĂNG NHẬP / TẠO TÀI KHOẢN (ĐỔI TỪ ĐỎ SANG XANH LÁ NEON)
+           ============================================================ */
+        button[data-baseweb="tab"] {{
+            color: #94a3b8 !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            letter-spacing: 0.5px !important;
         }}
-        @keyframes button-shine {{ 0% {{ left: -100%; }} 20% {{ left: 100%; }} 100% {{ left: 100%; }} }}
-        
-        button[kind="primary"] {{
-            background: linear-gradient(135deg, #2f855a 0%, #276749 100%) !important;
-            color: white !important; font-weight: 800 !important; letter-spacing: 1px;
-            animation: btnGreenGlow 3s infinite ease-in-out !important;
-            position: relative; overflow: hidden !important; z-index: 1; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
-            border-radius: 10px !important; margin-top: 10px;
+        button[data-baseweb="tab"][aria-selected="true"] {{
+            color: #48bb78 !important;
+            border-bottom-color: #48bb78 !important;
+            text-shadow: 0 0 12px rgba(72, 187, 120, 0.8) !important;
         }}
-        button[kind="primary"]::before {{
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transform: skewX(-25deg); animation: button-shine 4s infinite ease-in-out; z-index: -1;
+        div[data-baseweb="tab-highlight"] {{
+            background-color: #48bb78 !important;
+            box-shadow: 0 0 15px rgba(72, 187, 120, 0.9) !important;
         }}
-        button[kind="primary"]:hover {{
-            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+
+        /* ============================================================
+           NÚT XÁC THỰC TRUY CẬP (ĐỔI TỪ ĐỎ SANG XANH LÁ NEON GRADIENT)
+           ============================================================ */
+        button[kind="primary"],
+        div[data-testid="stFormSubmitButton"] button {{
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+            border: 1.5px solid #4ade80 !important;
+            color: white !important; 
+            font-weight: 900 !important; 
+            letter-spacing: 1px !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 18px rgba(34, 197, 94, 0.45) !important;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            position: relative; 
+            overflow: hidden !important; 
+            margin-top: 15px !important;
+        }}
+        button[kind="primary"]:hover,
+        div[data-testid="stFormSubmitButton"] button:hover {{
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
             transform: translateY(-4px) scale(1.03) !important; 
-            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important; 
-            border-color: #48bb78 !important;
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.85), inset 0 0 12px rgba(255, 255, 255, 0.4) !important; 
+            border-color: #86efac !important;
         }}
 
         .section-title {{ 
@@ -215,7 +235,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # Hiển thị câu Slogan
     wave_html = '<div class="wave-text-container">'
     delay = 0.0
     for char in t["slogan"]:
@@ -261,7 +280,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                             
             with tab_dang_ky:
                 if st.session_state["reg_success_data"]:
-                    # Hiệu ứng chữ sóng 5 giây cho thông báo thành công (2 dòng)
                     success_html = ""
                     success_delay = 0.0
                     
