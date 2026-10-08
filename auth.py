@@ -42,82 +42,83 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     text_sub = "#cbd5e1"
     bg_auth_block = "linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95))"
 
-    # --- CSS TOÀN CỤC CHUYÊN SÂU NHẮM ĐÍCH VÀO TẤT CẢ KHỐI BORDER ---
+    # --- CSS TOÀN CỤC CHUYÊN SÂU ---
     st.markdown(f"""
         <style>
-        /* 1. HIỆU ỨNG LÓA SÁNG TỪNG CHỮ (XANH LÁ -> XANH DƯƠNG) CHO CÂU CHÀO BÊN TRÁI */
+        /* HIỆU ỨNG LÓA SÁNG TỪNG CHỮ CHO CÂU CHÀO */
         @keyframes char-green-blue-glow {{
             0%, 100% {{ color: #48bb78; text-shadow: 0 0 4px rgba(72,187,120,0.3); }}
             50% {{ color: #63b3ed; text-shadow: 0 0 20px rgba(99,179,237,1), 0 0 8px rgba(72,187,120,0.8); transform: translateY(-2px); }}
         }}
         .welcome-container {{ text-align: center; margin-bottom: 25px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }}
         .welcome-container::-webkit-scrollbar {{ display: none; }}
-        .welcome-char {{
-            display: inline-block; font-size: 1.3rem; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 1px; animation: char-green-blue-glow 8s infinite ease-in-out;
-        }}
+        .welcome-char {{ display: inline-block; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; animation: char-green-blue-glow 8s infinite ease-in-out; }}
 
-        /* 2. HOẠT HỌA CÂU SLOGAN LƯỚT SÓNG MỖI 10 GIÂY */
+        /* CÂU SLOGAN LƯỚT SÓNG 10 GIÂY */
         @keyframes waveUp {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
             10% {{ transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 10px rgba(104,211,145,0.8); }}
         }}
-        .wave-text-container {{ 
-            text-align: center; margin-bottom: 10px; padding: 20px 0;
-            white-space: nowrap; overflow-x: auto; scrollbar-width: none; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }}
+        .wave-text-container {{ text-align: center; margin-bottom: 10px; padding: 20px 0; white-space: nowrap; overflow-x: auto; scrollbar-width: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }}
         .wave-text-container::-webkit-scrollbar {{ display: none; }}
         .wave-char {{
-            display: inline-block; position: relative; margin-right: 2px; 
-            font-size: clamp(24px, 3.5vw, 42px) !important; font-weight: 900 !important;
-            letter-spacing: 2px !important; background: linear-gradient(90deg, #48bb78, #68d391, #319795);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: waveUp 10s infinite ease-in-out;
-            animation-delay: var(--delay);
+            display: inline-block; position: relative; margin-right: 2px; font-size: clamp(24px, 3.5vw, 42px) !important; font-weight: 900 !important;
+            letter-spacing: 2px !important; background: linear-gradient(90deg, #48bb78, #68d391, #319795); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: waveUp 10s infinite ease-in-out; animation-delay: var(--delay);
         }}
         .hero-subtitle {{ text-align: center; color: {text_sub}; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; padding: 0 20px; }}
 
-        /* 3. HIỆU ỨNG ĐỒNG BỘ: TẤT CẢ KHỐI ĐỀU LÓA SÁNG XANH LÁ VÀ BẬT NẢY KHI TRỎ CHUỘT */
+        /* ============================================================
+           HIỆU ỨNG ÁP DỤNG TRỰC TIẾP LÊN MỌI KHỐI (CẢ TRÁI VÀ PHẢI) 
+           Bằng cách chèn thẳng thẻ div bọc nội dung
+           ============================================================ */
         @keyframes unifiedGreenGlow {{
-            0%, 100% {{ box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.3) !important; }}
-            50% {{ box-shadow: 0 0 30px rgba(72, 187, 120, 0.8), inset 0 0 10px rgba(72, 187, 120, 0.2); border-color: #48bb78 !important; }}
+            0%, 100% {{ box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.3); }}
+            50% {{ box-shadow: 0 0 30px rgba(72, 187, 120, 0.8), inset 0 0 10px rgba(72, 187, 120, 0.2); border-color: #48bb78; }}
         }}
-        @keyframes blockSweepLight12s {{ 
-            0%, 85%   {{ left: -100%; opacity: 0; }} 
-            86%       {{ opacity: 1; left: -100%; }}
-            95%       {{ left: 200%; opacity: 0; }} 
-            100%      {{ left: 200%; opacity: 0; }} 
-        }}
-        
-        /* Bắt chính xác TẤT CẢ các khối container có viền */
-        div[data-testid="stVerticalBlockBorderWrapper"] {{
-            background: {bg_auth_block} !important;
-            border: 2px solid rgba(72, 187, 120, 0.5) !important;
-            border-radius: 16px !important;
-            padding: 25px !important;
-            animation: unifiedGreenGlow 4s infinite ease-in-out !important;
-            position: relative; overflow: hidden !important; 
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
+        @keyframes autoSweepLight10s {{ 
+            0%, 85% {{ left: -100%; opacity: 0; }} 
+            86% {{ opacity: 1; left: -100%; }}
+            95%, 100% {{ left: 200%; opacity: 0; }} 
         }}
 
-        /* Ánh sáng xéo màu xanh lá lướt qua mỗi 12 giây */
-        div[data-testid="stVerticalBlockBorderWrapper"]::after {{
+        .auth-glow-box {{
+            background: {bg_auth_block};
+            border: 2px solid rgba(72, 187, 120, 0.5);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            animation: unifiedGreenGlow 4s infinite ease-in-out;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }}
+
+        /* Quét sáng tự động 10 giây */
+        .auth-glow-box::after {{
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-            transform: skewX(-25deg); animation: blockSweepLight12s 12s infinite linear; 
+            transform: skewX(-25deg); animation: autoSweepLight10s 10s infinite linear; 
             z-index: 10; pointer-events: none;
         }}
 
-        /* Nổi lên cực mạnh khi trỏ chuột */
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
-            transform: translateY(-8px) scale(1.02) !important;
-            box-shadow: 0 20px 40px rgba(72, 187, 120, 0.9), inset 0 0 20px rgba(72, 187, 120, 0.5) !important;
-            border-color: #48bb78 !important;
-            z-index: 5 !important;
+        /* Nổi lên khi Hover */
+        .auth-glow-box:hover {{
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(72, 187, 120, 0.9), inset 0 0 20px rgba(72, 187, 120, 0.5);
+            border-color: #48bb78;
+            z-index: 5;
         }}
 
-        /* 4. NÚT BẤM CŨNG ÁP DỤNG HIỆU ỨNG Y HỆT MỘT KHỐI */
+        /* Tắt viền mặc định của Streamlit cho các khối con nằm trong auth-glow-box */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auth-glow-box) {{
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }}
+
+        /* NÚT BẤM (BUTTON) */
         @keyframes btnGreenGlow {{
             0%, 100% {{ box-shadow: 0 0 8px rgba(72, 187, 120, 0.4); border-color: rgba(72, 187, 120, 0.6) !important; }}
             50% {{ box-shadow: 0 0 25px rgba(72, 187, 120, 0.9); border-color: #48bb78 !important; }}
@@ -128,10 +129,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, #2f855a 0%, #276749 100%) !important;
             color: white !important; font-weight: 800 !important; letter-spacing: 1px;
             animation: btnGreenGlow 3s infinite ease-in-out !important;
-            position: relative; overflow: hidden !important; z-index: 1; 
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease !important; 
-            border-radius: 8px !important;
-            margin-top: 10px;
+            position: relative; overflow: hidden !important; z-index: 1; transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
+            border-radius: 8px !important; margin-top: 10px;
         }}
         button[kind="primary"]::before {{
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -140,9 +139,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }}
         button[kind="primary"]:hover {{
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
-            transform: translateY(-4px) scale(1.03) !important; 
-            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important;
-            border-color: #48bb78 !important;
+            transform: translateY(-4px) scale(1.03) !important; box-shadow: 0 15px 35px rgba(72, 187, 120, 0.9) !important; border-color: #48bb78 !important;
         }}
 
         .section-title {{ color: #ffffff; font-size: 1.15rem; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 25px; border-left: 5px solid #48bb78; padding-left: 12px; text-transform: uppercase; }}
@@ -160,113 +157,111 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # Dựng Slogan lướt sóng KHÔNG BỊ RỚT DÒNG
     wave_html = '<div class="wave-text-container">'
     delay = 0.0
     for char in t["slogan"]:
-        char_display = "&nbsp;" if char == " " else char
-        wave_html += f'<span class="wave-char" style="--delay: {delay}s;">{char_display}</span>'
+        wave_html += f'<span class="wave-char" style="--delay: {delay}s;">{"&nbsp;" if char == " " else char}</span>'
         delay += 0.1
     wave_html += '</div>'
 
     st.markdown(wave_html, unsafe_allow_html=True)
     st.markdown(f'<div class="hero-subtitle">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
-    # Chia cột chính
     _, col_form, col_space, col_info, _ = st.columns([0.15, 1.25, 0.1, 1.25, 0.15])
     
     with col_form:
-        with st.container(border=True):
-            # Dựng Welcome lóa sáng
-            welcome_text = t["welcome_msg"]
-            welcome_html = '<div class="welcome-container">'
-            delay_wc = 0.0
-            for char in welcome_text:
-                char_display = "&nbsp;" if char == " " else char
-                welcome_html += f'<span class="welcome-char" style="animation-delay: {delay_wc}s;">{char_display}</span>'
-                delay_wc += 0.06
-            welcome_html += '</div>'
-            st.markdown(welcome_html, unsafe_allow_html=True)
+        # Bọc toàn bộ cột trái bằng thẻ div có class auth-glow-box
+        st.markdown("<div class='auth-glow-box'>", unsafe_allow_html=True)
+        
+        welcome_text = t["welcome_msg"]
+        welcome_html = '<div class="welcome-container">'
+        delay_wc = 0.0
+        for char in welcome_text:
+            welcome_html += f'<span class="welcome-char" style="animation-delay: {delay_wc}s;">{"&nbsp;" if char == " " else char}</span>'
+            delay_wc += 0.06
+        welcome_html += '</div>'
+        st.markdown(welcome_html, unsafe_allow_html=True)
 
-            tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
-            
-            with tab_dang_nhap:
-                with st.form("form_login"):
-                    u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
-                    u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
-                    submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
-                    if submitted:
-                        users = st.session_state.get("users_db", {})
-                        if u_name in users and users[u_name]["password"] == u_pass:
-                            st.session_state["logged_in"] = True
-                            st.session_state["current_user"] = u_name
-                            st.session_state["current_role"] = users[u_name]["role"]
-                            st.rerun()
-                        else:
-                            st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
-                            
-            with tab_dang_ky:
-                if st.session_state["reg_success_data"]:
-                    st.markdown(f"""
-                        <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:10px; margin-top: 15px;">
-                            <h4 style="color:#48bb78; font-weight:800; margin-bottom: 10px;">{t['reg_success_msg']}</h4>
-                            <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản / Account: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    st.write("")
-                    if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
-                        data = st.session_state["reg_success_data"]
+        tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
+        
+        with tab_dang_nhap:
+            with st.form("form_login"):
+                u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
+                u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
+                submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
+                if submitted:
+                    users = st.session_state.get("users_db", {})
+                    if u_name in users and users[u_name]["password"] == u_pass:
                         st.session_state["logged_in"] = True
-                        st.session_state["current_user"] = data["user"]
-                        st.session_state["current_role"] = data["role"]
-                        st.session_state["reg_success_data"] = None
+                        st.session_state["current_user"] = u_name
+                        st.session_state["current_role"] = users[u_name]["role"]
                         st.rerun()
-                else:
-                    with st.form("form_register", clear_on_submit=True):
-                        new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
-                        new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
-                        role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
-                        reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                    else:
+                        st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
                         
-                        if reg_submitted:
-                            if not new_user or not new_pass:
-                                st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+        with tab_dang_ky:
+            if st.session_state["reg_success_data"]:
+                st.markdown(f"""
+                    <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:10px; margin-top: 15px;">
+                        <h4 style="color:#48bb78; font-weight:800; margin-bottom: 10px;">{t['reg_success_msg']}</h4>
+                        <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản / Account: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
+                    </div>
+                """, unsafe_allow_html=True)
+                st.write("")
+                if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
+                    data = st.session_state["reg_success_data"]
+                    st.session_state["logged_in"] = True
+                    st.session_state["current_user"] = data["user"]
+                    st.session_state["current_role"] = data["role"]
+                    st.session_state["reg_success_data"] = None
+                    st.rerun()
+            else:
+                with st.form("form_register", clear_on_submit=True):
+                    new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
+                    new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
+                    role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
+                    reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                    
+                    if reg_submitted:
+                        if not new_user or not new_pass:
+                            st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+                        else:
+                            pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
+                            if not re.match(pwd_pattern, new_pass):
+                                st.error(t["pwd_error"])
                             else:
-                                pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
-                                if not re.match(pwd_pattern, new_pass):
-                                    st.error(t["pwd_error"])
+                                if "users_db" not in st.session_state:
+                                    st.session_state["users_db"] = {}
+                                if new_user in st.session_state["users_db"]:
+                                    st.error("Tài khoản đã tồn tại!" if lang=="Tiếng Việt" else "Account already exists!")
                                 else:
-                                    if "users_db" not in st.session_state:
-                                        st.session_state["users_db"] = {}
-                                    if new_user in st.session_state["users_db"]:
-                                        st.error("Tài khoản đã tồn tại!" if lang=="Tiếng Việt" else "Account already exists!")
-                                    else:
-                                        st.session_state["users_db"][new_user] = {
-                                            "password": new_pass, "role": role_sel, "wallet_balance": 100000.0
-                                        }
-                                        st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
-                                        st.rerun()
+                                    st.session_state["users_db"][new_user] = {
+                                        "password": new_pass, "role": role_sel, "wallet_balance": 100000.0
+                                    }
+                                    st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
+                                    st.rerun()
+        # Đóng div auth-glow-box
+        st.markdown("</div>", unsafe_allow_html=True)
 
     with col_info:
-        # Khối 1: Thành tựu nền tảng
-        with st.container(border=True):
-            st.markdown(f'<div class="section-title">{t["achieve"]}</div>', unsafe_allow_html=True)
-            c_st1, c_st2 = st.columns(2)
-            with c_st1:
-                st.markdown(f'<div style="text-align:center;"><div class="stat-value">{t["ach_1_val"]}</div><div class="stat-label">{t["ach_1_lbl"]}</div></div>', unsafe_allow_html=True)
-            with c_st2:
-                st.markdown(f'<div style="text-align:center;"><div class="stat-value" style="color:#48bb78;">{t["ach_2_val"]}</div><div class="stat-label">{t["ach_2_lbl"]}</div></div>', unsafe_allow_html=True)
+        # Bọc Khối Thành tựu
+        st.markdown("<div class='auth-glow-box'>", unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title">{t["achieve"]}</div>', unsafe_allow_html=True)
+        c_st1, c_st2 = st.columns(2)
+        with c_st1:
+            st.markdown(f'<div style="text-align:center;"><div class="stat-value">{t["ach_1_val"]}</div><div class="stat-label">{t["ach_1_lbl"]}</div></div>', unsafe_allow_html=True)
+        with c_st2:
+            st.markdown(f'<div style="text-align:center;"><div class="stat-value" style="color:#48bb78;">{t["ach_2_val"]}</div><div class="stat-label">{t["ach_2_lbl"]}</div></div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        # Bọc Khối Dự án tiêu biểu
+        st.markdown("<div class='auth-glow-box'>", unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title">{t["projects"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="project-title">{t["proj_name"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="project-desc">{t["proj_desc"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="text-align:right;"><span class="verified-badge">{t["proj_badge"]}</span></div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Khối 2: Dự án tiêu biểu
-        with st.container(border=True):
-            st.markdown(f'<div class="section-title">{t["projects"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="project-title">{t["proj_name"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="project-desc">{t["proj_desc"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div style="text-align:right;"><span class="verified-badge">{t["proj_badge"]}</span></div>', unsafe_allow_html=True)
-
-    # Tin tức chân trang
     st.markdown(f"""
     <div class="news-ticker-container">
         <div class="news-label">{t['news_lbl']}</div>
