@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 import ee
 import geemap.foliumap as geemap
 from streamlit_folium import folium_static 
@@ -110,6 +110,17 @@ def inject_custom_css():
             animation: titleWave 4s linear infinite; margin-bottom: 0px !important; padding-bottom: 0px !important; letter-spacing: 1px;
         }
         
+        /* Gạch chân và chữ Tab đổi thành màu xanh lá */
+        button[data-baseweb="tab"] { font-weight: 700 !important; }
+        button[data-baseweb="tab"][aria-selected="true"] { 
+            color: #48bb78 !important; 
+            text-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important; 
+        }
+        div[data-baseweb="tab-highlight"] { 
+            background-color: #48bb78 !important; 
+            box-shadow: 0 0 12px rgba(72, 187, 120, 0.8) !important; 
+        }
+
         button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }
         button[kind="primary"]:hover { background-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
         
@@ -169,10 +180,6 @@ def inject_custom_css():
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block):hover::after {
             display: none !important;
         }
-
-        [data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 900 !important; color: #E2E8F0 !important; text-align: center !important; width: 100% !important; display: block !important;}
-        [data-testid="stMetricLabel"] { text-align: center !important; width: 100% !important; justify-content: center !important; font-weight: 600 !important; letter-spacing: 0.5px;}
-        [data-testid="stMetricDelta"] { justify-content: center !important; font-weight: 700 !important;}
 
         .sidebar-badge { 
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important; padding: 16px; border-radius: 10px; margin-bottom: 12px; 
@@ -241,7 +248,7 @@ def hop_thoai_dang_xuat():
         if st.button("Tiếp tục chặng đường", use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
-# ================= HÀM HIỂN THỊ KẾT QUẢ MRV HOÀN THIỆN =================
+# ================= HÀM HIỂN THỊ KẾT QUẢ MRV =================
 def render_mrv_results(l, nam_co_so, nam_so_sanh):
     seed = st.session_state["mrv_polygon_seed"]
     dien_tich_hecta = 8000.0 + (seed % 12000) 
@@ -271,7 +278,6 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 border-color: #48bb78;
             }
         }
-        /* Viền rõ nét, nền pha xanh dương nhẹ, nổi khối màu xanh lá khi hover */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.93)) !important;
             border: 2px solid #38a169 !important;
@@ -289,34 +295,13 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             border-color: #48bb78 !important;
         }
 
-        /* TIÊU ĐỀ XANH DƯƠNG SÓNG ÁNH SÁNG 10 GIÂY */
         @keyframes blueCharWaveGlow {
-            0%, 75% {
-                color: #38bdf8;
-                text-shadow: none;
-                transform: translateY(0);
-            }
-            82% {
-                color: #bae6fd;
-                text-shadow: 0 0 20px rgba(56, 189, 248, 1), 0 0 8px rgba(186, 230, 253, 0.9);
-                transform: translateY(-4px);
-            }
-            90% {
-                color: #60a5fa;
-                text-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
-                transform: translateY(0);
-            }
-            100% {
-                color: #38bdf8;
-                text-shadow: none;
-                transform: translateY(0);
-            }
+            0%, 75% { color: #38bdf8; text-shadow: none; transform: translateY(0); }
+            82% { color: #bae6fd; text-shadow: 0 0 20px rgba(56, 189, 248, 1), 0 0 8px rgba(186, 230, 253, 0.9); transform: translateY(-4px); }
+            90% { color: #60a5fa; text-shadow: 0 0 10px rgba(96, 165, 250, 0.6); transform: translateY(0); }
+            100% { color: #38bdf8; text-shadow: none; transform: translateY(0); }
         }
-        .mrv-blue-title-container {
-            text-align: center;
-            margin-bottom: 25px;
-            white-space: nowrap;
-        }
+        .mrv-blue-title-container { text-align: center; margin-bottom: 25px; white-space: nowrap; }
         .mrv-blue-char {
             display: inline-block;
             font-size: clamp(20px, 2.3vw, 30px);
@@ -335,20 +320,14 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             align-items: center;
             justify-content: center;
         }
-        .mrv-stat-title { 
-            color: #cbd5e1; 
-            font-size: 0.95rem; 
-            font-weight: 600; 
-            margin-bottom: 6px; 
-            letter-spacing: 0.5px; 
-        }
+        .mrv-stat-title { color: #cbd5e1; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
         .mrv-stat-num { 
             font-size: clamp(1.35rem, 1.9vw, 2rem); 
             font-weight: 900; 
             line-height: 1.2; 
             letter-spacing: 0.5px; 
             white-space: nowrap;
-            color: #48bb78 !important; /* TẤT CẢ SỐ LÀ MÀU XANH LÁ */
+            color: #48bb78 !important; 
         }
         .mrv-sub-credit {
             color: #38bdf8;
@@ -361,27 +340,10 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             padding: 2px 12px;
         }
 
-        /* BADGE TĂNG (XANH) VÀ GIẢM (ĐỎ) */
-        .mrv-delta-badge { 
-            display: inline-block; 
-            padding: 3px 14px; 
-            border-radius: 20px; 
-            font-size: 0.82rem; 
-            font-weight: 700; 
-            margin-top: 6px; 
-        }
-        .mrv-delta-pos { 
-            background: rgba(72, 187, 120, 0.2) !important; 
-            color: #48bb78 !important; 
-            border: 1px solid rgba(72, 187, 120, 0.6) !important; 
-        }
-        .mrv-delta-neg { 
-            background: rgba(239, 68, 68, 0.2) !important; 
-            color: #f87171 !important; 
-            border: 1px solid rgba(239, 68, 68, 0.6) !important; 
-        }
+        .mrv-delta-badge { display: inline-block; padding: 3px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; margin-top: 6px; }
+        .mrv-delta-pos { background: rgba(72, 187, 120, 0.2) !important; color: #48bb78 !important; border: 1px solid rgba(72, 187, 120, 0.6) !important; }
+        .mrv-delta-neg { background: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; }
 
-        /* NÚT BẤM ĐỔI TIỀN TỆ: MÀU XANH LÁ NEON BẮT BUỘC + NỔI KHỐI 3D */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
             border: 1.5px solid #34d399 !important;
@@ -401,16 +363,9 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             border-color: #6ee7b7 !important;
         }
 
-        /* KHUNG CHỮ DƯỚI: NẰM TRÊN 1 DÒNG DUY NHẤT & PHÁT QUANG VỪA ĐỦ */
         @keyframes pulseBanner {
-            0%, 100% {
-                border-color: rgba(72, 187, 120, 0.45);
-                box-shadow: 0 0 10px rgba(72, 187, 120, 0.2);
-            }
-            50% {
-                border-color: rgba(72, 187, 120, 0.9);
-                box-shadow: 0 0 24px rgba(72, 187, 120, 0.5);
-            }
+            0%, 100% { border-color: rgba(72, 187, 120, 0.45); box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); }
+            50% { border-color: rgba(72, 187, 120, 0.9); box-shadow: 0 0 24px rgba(72, 187, 120, 0.5); }
         }
         .mrv-highlight-banner {
             background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.3), rgba(16, 185, 129, 0.12));
@@ -429,16 +384,13 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             overflow-x: auto;
             scrollbar-width: none;
         }
-        .mrv-highlight-banner::-webkit-scrollbar {
-            display: none;
-        }
+        .mrv-highlight-banner::-webkit-scrollbar { display: none; }
         </style>
     """, unsafe_allow_html=True)
 
     with st.container(border=True):
         st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
         
-        # Tiêu đề xanh dương sóng ánh sáng 10s
         title_text = l['mrv_result_title']
         title_html = '<div class="mrv-blue-title-container">'
         delay = 0.0
@@ -450,8 +402,6 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
         st.markdown(title_html, unsafe_allow_html=True)
         
         col_r1, col_r2, col_r3 = st.columns(3)
-        
-        # Cột 1: Năm cơ sở (Số màu xanh lá, không icon)
         with col_r1:
             st.markdown(f"""
                 <div class="mrv-stat-box">
@@ -461,7 +411,6 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 </div>
             """, unsafe_allow_html=True)
 
-        # Cột 2: Năm so sánh (Số màu xanh lá, Badge tăng xanh / giảm đỏ, không icon)
         with col_r2:
             badge_cls = "mrv-delta-pos" if diff >= 0 else "mrv-delta-neg"
             sign = "+" if diff >= 0 else ""
@@ -474,10 +423,8 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 </div>
             """, unsafe_allow_html=True)
 
-        # Cột 3: Tổng Giá Trị Quy Đổi & Badge Chênh Lệch Thực Tế (Số màu xanh lá, Nút màu xanh lá, không icon)
         with col_r3:
             is_vnd = (st.session_state["currency_mode"] == "VND")
-            
             if is_vnd:
                 tien_hien_thi = f"{tong_vnd:,.0f}&nbsp;VND"
                 diff_money_str = f"{'+' if diff_vnd >= 0 else ''}{diff_vnd:,.0f} VND"
@@ -502,7 +449,6 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                     st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
 
-        # DÒNG THÔNG BÁO DƯỚI: Nằm trên 1 dòng duy nhất & không icon
         diff_text = f"{diff:,.0f} {l['mrv_unit']}"
         if diff >= 0:
             msg = l['mrv_success_msg'].format(diff=diff_text)
@@ -580,7 +526,6 @@ def main_app():
             if btn_calc:
                 st.session_state["mrv_calc_state"] = True
 
-            # Hiển thị kết quả kiểm kê
             if st.session_state["mrv_calc_state"]:
                 render_mrv_results(l, nam_co_so, nam_so_sanh)
 
