@@ -455,7 +455,7 @@ def hien_thi_gioi_thieu_va_goi_von():
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="about-section-title">CÔNG NGHỆ LÕI (CORE TECHNOLOGY)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="about-section-title">CÔNG NGHỆ LÕI </div>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""
