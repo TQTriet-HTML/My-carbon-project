@@ -331,7 +331,7 @@ def main_app():
             if btn_calc:
                 st.session_state["mrv_calc_state"] = True
 
-            if st.session_state["mrv_calc_state"]:
+           if st.session_state["mrv_calc_state"]:
                 seed = st.session_state["mrv_polygon_seed"]
                 dien_tich_hecta = 8000.0 + (seed % 12000) 
                 
@@ -339,23 +339,130 @@ def main_app():
                 comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
                 diff = comp_val - base_val
                 tong_usd = abs(diff) * 10.5 
-                
-                tong_tien_str = f"{tong_usd * 26000:,.0f} VND" if st.session_state["current_lang"] == "Tiếng Việt" else f"${tong_usd:,.2f} USD"
-                
+                tong_vnd = tong_usd * 26000
+
+                if "currency_mode" not in st.session_state:
+                    st.session_state["currency_mode"] = "VND"
+
+                st.markdown("""
+                    <style>
+                    @keyframes greenBreathGlow {
+                        0%, 100% {
+                            box-shadow: 0 0 15px rgba(72, 187, 120, 0.25), inset 0 0 10px rgba(72, 187, 120, 0.05);
+                            border-color: rgba(72, 187, 120, 0.45);
+                        }
+                        50% {
+                            box-shadow: 0 0 35px rgba(72, 187, 120, 0.65), inset 0 0 20px rgba(72, 187, 120, 0.2);
+                            border-color: #48bb78;
+                        }
+                    }
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) {
+                        background: linear-gradient(135deg, rgba(20, 27, 45, 0.95), rgba(10, 15, 29, 0.98)) !important;
+                        border: 2px solid rgba(72, 187, 120, 0.45) !important;
+                        border-radius: 16px !important;
+                        padding: 24px 28px !important;
+                        animation: greenBreathGlow 4s infinite ease-in-out !important;
+                        transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease !important;
+                        position: relative;
+                        overflow: hidden !important;
+                        margin-bottom: 20px !important;
+                    }
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker):hover {
+                        transform: translateY(-7px) scale(1.015) !important;
+                        box-shadow: 0 20px 45px rgba(72, 187, 120, 0.85), inset 0 0 25px rgba(72, 187, 120, 0.35) !important;
+                        border-color: #48bb78 !important;
+                    }
+                    .mrv-stat-box {
+                        text-align: center;
+                        padding: 10px;
+                    }
+                    .mrv-stat-title {
+                        color: #94a3b8;
+                        font-size: 0.92rem;
+                        font-weight: 600;
+                        margin-bottom: 6px;
+                        letter-spacing: 0.5px;
+                    }
+                    .mrv-stat-num {
+                        font-size: 2.1rem;
+                        font-weight: 900;
+                        line-height: 1.2;
+                        letter-spacing: 0.5px;
+                    }
+                    .mrv-delta-badge {
+                        display: inline-block;
+                        padding: 3px 12px;
+                        border-radius: 20px;
+                        font-size: 0.82rem;
+                        font-weight: 700;
+                        margin-top: 6px;
+                    }
+                    .mrv-delta-pos {
+                        background: rgba(72, 187, 120, 0.18);
+                        color: #48bb78;
+                        border: 1px solid rgba(72, 187, 120, 0.5);
+                    }
+                    .mrv-delta-neg {
+                        background: rgba(239, 68, 68, 0.18);
+                        color: #f87171;
+                        border: 1px solid rgba(239, 68, 68, 0.5);
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
+
                 with st.container(border=True):
-                    st.markdown(f"<h3 style='color:#ffffff; text-align:center; font-weight:800; letter-spacing:1px; margin-bottom:25px;'>{l['mrv_result_title']}</h3>", unsafe_allow_html=True)
+                    st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
+                    
+                    st.markdown(f"""
+                        <h2 style='color: #ffffff; text-align: center; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 25px; text-transform: uppercase;'>
+                            {l['mrv_result_title']}
+                        </h2>
+                    """, unsafe_allow_html=True)
                     
                     col_r1, col_r2, col_r3 = st.columns(3)
-                    col_r1.metric(f"{l['mrv_base_val']} {nam_co_so}", f"{base_val:,.0f} {l['mrv_unit']}")
-                    delta_str = f"+{diff:,.0f} {l['mrv_unit']}" if diff >= 0 else f"{diff:,.0f} {l['mrv_unit']}"
-                    col_r2.metric(f"{l['mrv_comp_val']} {nam_so_sanh}", f"{comp_val:,.0f} {l['mrv_unit']}", delta=delta_str, delta_color="normal" if diff >= 0 else "inverse")
+                    
+                    with col_r1:
+                        st.markdown(f"""
+                            <div class="mrv-stat-box">
+                                <div class="mrv-stat-title">{l['mrv_base_val']} {nam_co_so}</div>
+                                <div class="mrv-stat-num" style="color: #63b3ed;">{base_val:,.0f} <span style="font-size: 1.2rem; font-weight:700;">{l['mrv_unit']}</span></div>
+                            </div>
+                        """, unsafe_allow_html=True)
+
+                    with col_r2:
+                        badge_cls = "mrv-delta-pos" if diff >= 0 else "mrv-delta-neg"
+                        sign = "+" if diff >= 0 else ""
+                        st.markdown(f"""
+                            <div class="mrv-stat-box">
+                                <div class="mrv-stat-title">{l['mrv_comp_val']} {nam_so_sanh}</div>
+                                <div class="mrv-stat-num" style="color: #48bb78;">{comp_val:,.0f} <span style="font-size: 1.2rem; font-weight:700;">{l['mrv_unit']}</span></div>
+                                <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {l['mrv_unit']}</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+
+                    with col_r3:
+                        tien_hien_thi = f"{tong_vnd:,.0f} VND" if st.session_state["currency_mode"] == "VND" else f"${tong_usd:,.2f} USD"
+                        st.markdown(f"""
+                            <div class="mrv-stat-box">
+                                <div class="mrv-stat-title">{l['mrv_total_val']}</div>
+                                <div class="mrv-stat-num" style="color: #f6e05e;">{tien_hien_thi}</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+                        
+                        _, c_btn, _ = st.columns([0.15, 0.7, 0.15])
+                        with c_btn:
+                            btn_label = "Đổi sang USD 💵" if st.session_state["currency_mode"] == "VND" else "Đổi sang VND 🇻🇳"
+                            if st.button(btn_label, use_container_width=True, key="btn_toggle_curr"):
+                                st.session_state["currency_mode"] = "USD" if st.session_state["currency_mode"] == "VND" else "VND"
+                                st.rerun()
+
+                    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
                     diff_text = f"{diff:,.0f} {l['mrv_unit']}"
                     if diff >= 0:
                         msg = l['mrv_success_msg'].format(diff=diff_text)
-                        st.markdown(f"<div style='color:#48bb78; text-align:center; font-weight:600;'>{msg}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='color: #48bb78; text-align: center; font-weight: 700; font-size: 1.05rem;'>🌱 {msg}</div>", unsafe_allow_html=True)
                     else:
-                        st.markdown(f"<div style='color:#fc8181; text-align:center; font-weight:600;'>{l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
-            try:
+                        st.markdown(f"<div style='color: #fc8181; text-align: center; font-weight: 700; font-size: 1.05rem;'>⚠️ {l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
                 with st.spinner(l["mrv_loading"]):
                     map_base = tao_ban_do_carbon(nam_co_so)
                     map_comp = tao_ban_do_carbon(nam_so_sanh)
