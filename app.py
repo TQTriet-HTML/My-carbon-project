@@ -253,13 +253,14 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
     base_credits = base_val
     comp_credits = comp_val
     
+    # 10.5 USD/tấn
+    tong_usd = comp_val * 10.5 
+    tong_vnd = tong_usd * 26000
+    
+    # Giá trị chênh lệch thực tế tương ứng với số tín chỉ tăng hoặc giảm
     diff_usd = diff * 10.5
     diff_vnd = diff_usd * 26000
-    
-    tong_usd = abs(diff) * 10.5 
-    tong_vnd = tong_usd * 26000
 
-    # CSS độc quyền cho Tiêu đề sóng xanh dương 10s + Banner 1 hàng + Nút xanh 3D
     st.markdown("""
         <style>
         @keyframes greenBreathGlow {
@@ -272,16 +273,17 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 border-color: #48bb78;
             }
         }
+        /* Mở rộng padding bottom để chừa khoảng hở rộng rãi dưới banner */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) {
             background: linear-gradient(135deg, rgba(20, 27, 45, 0.95), rgba(10, 15, 29, 0.98)) !important;
             border: 2px solid rgba(72, 187, 120, 0.45) !important;
             border-radius: 16px !important;
-            padding: 24px 28px !important;
+            padding: 26px 28px 36px 28px !important;
             animation: greenBreathGlow 4s infinite ease-in-out !important;
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease !important;
             position: relative;
             overflow: hidden !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 25px !important;
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker):hover {
             transform: translateY(-7px) scale(1.015) !important;
@@ -343,7 +345,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             letter-spacing: 0.5px; 
         }
         .mrv-stat-num { 
-            font-size: clamp(1.4rem, 2vw, 2.05rem); 
+            font-size: clamp(1.35rem, 1.9vw, 2rem); 
             font-weight: 900; 
             line-height: 1.2; 
             letter-spacing: 0.5px; 
@@ -383,25 +385,25 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
 
         /* NÚT BẤM ĐỔI TIỀN TỆ MÀU XANH LÁ NEON GRADIENT + 3D LIFT */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) div[data-testid="stButton"] button {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-            border: 1px solid #4ade80 !important;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            border: 1px solid #34d399 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             font-size: 0.88rem !important;
             letter-spacing: 0.5px;
             border-radius: 10px !important;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35) !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35) !important;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             margin-top: 8px !important;
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) div[data-testid="stButton"] button:hover {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
             transform: translateY(-4px) scale(1.04) !important;
-            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
-            border-color: #86efac !important;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+            border-color: #6ee7b7 !important;
         }
 
-        /* KHUNG CHỮ DƯỚI: NẰM TRÊN 1 DÒNG DUY NHẤT & PHÁT QUANG VỪA ĐỦ */
+        /* KHUNG CHỮ DƯỚI: NẰM TRÊN 1 DÒNG DUY NHẤT & CHỪA KHOẢNG HỞ ĐÁY HỢP LÝ */
         @keyframes pulseBanner {
             0%, 100% {
                 border-color: rgba(72, 187, 120, 0.4);
@@ -416,14 +418,15 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.25), rgba(16, 185, 129, 0.1));
             border: 1.5px solid rgba(72, 187, 120, 0.6);
             border-radius: 12px;
-            padding: 12px 18px;
+            padding: 14px 20px;
             text-align: center;
-            font-size: clamp(13px, 1.1vw, 16px);
+            font-size: clamp(12.5px, 1.05vw, 15.5px);
             font-weight: 700;
             color: #68d391;
             letter-spacing: 0.5px;
             animation: pulseBanner 4s infinite ease-in-out;
-            margin-top: 15px;
+            margin-top: 18px;
+            margin-bottom: 8px; /* Khoảng thở với cạnh đáy */
             white-space: nowrap !important;
             overflow-x: auto;
             scrollbar-width: none;
@@ -437,7 +440,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
     with st.container(border=True):
         st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
         
-        # Tiêu đề chữ xanh dương nhẹ có ánh sáng lướt qua từng chữ 10s
+        # Tiêu đề xanh dương sóng ánh sáng 10s
         title_text = l['mrv_result_title']
         title_html = '<div class="mrv-blue-title-container">'
         delay = 0.0
@@ -460,7 +463,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 </div>
             """, unsafe_allow_html=True)
 
-        # Cột 2: Năm so sánh (Số màu xanh lá, Badge xanh nếu tăng / đỏ nếu giảm)
+        # Cột 2: Năm so sánh (Số màu xanh lá, Badge tăng xanh / giảm đỏ)
         with col_r2:
             badge_cls = "mrv-delta-pos" if diff >= 0 else "mrv-delta-neg"
             sign = "+" if diff >= 0 else ""
@@ -473,7 +476,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 </div>
             """, unsafe_allow_html=True)
 
-        # Cột 3: Tổng Giá Trị Quy Đổi (Số màu xanh lá, Badge xanh/đỏ)
+        # Cột 3: Tổng Giá Trị Quy Đổi & Badge Chênh Lệch Thực Tế (+/- tiền tăng giảm)
         with col_r3:
             is_vnd = (st.session_state["currency_mode"] == "VND")
             
@@ -501,7 +504,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                     st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
 
-        # DÒNG CHỮ DƯỚI: NẰM TRÊN 1 DÒNG DUY NHẤT VÀ NỔI BẬT VỪA ĐỦ
+        # DÒNG THÔNG BÁO DƯỚI: Nằm trên 1 dòng & có khoảng đệm thở so với mép container
         diff_text = f"{diff:,.0f} {l['mrv_unit']}"
         if diff >= 0:
             msg = l['mrv_success_msg'].format(diff=diff_text)
