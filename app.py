@@ -68,6 +68,7 @@ LANG_DICT = {
         "mrv_comp_val": "Sinh khối Năm",
         "mrv_total_val": "Tổng Giá Trị Quy Đổi",
         "mrv_unit": "Tấn",
+        "mrv_credit_sub": "Tương đương quy đổi:",
         "mrv_success_msg": "Khu vực phân tích ghi nhận sự tăng trưởng sinh khối. Bạn có thể niêm yết thêm {diff} tín chỉ carbon.",
         "mrv_warning_msg": "Mật độ sinh khối trong khu vực sụt giảm. Cần rà soát biến động rừng."
     },
@@ -91,6 +92,7 @@ LANG_DICT = {
         "mrv_comp_val": "Biomass Year",
         "mrv_total_val": "Total Converted Value",
         "mrv_unit": "Tons",
+        "mrv_credit_sub": "Equivalent Credits:",
         "mrv_success_msg": "Biomass growth detected. You can list {diff} additional carbon credits.",
         "mrv_warning_msg": "Biomass density decreased. Forest inspection required."
     }
@@ -241,7 +243,7 @@ def hop_thoai_dang_xuat():
         if st.button("Tiếp tục chặng đường", use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
-# ================= HÀM HIỂN THỊ KẾT QUẢ MRV (TÁCH RIÊNG TRÁNH LỆCH LỀ) =================
+# ================= HÀM HIỂN THỊ KẾT QUẢ MRV HOÀN THIỆN =================
 def render_mrv_results(l, nam_co_so, nam_so_sanh):
     seed = st.session_state["mrv_polygon_seed"]
     dien_tich_hecta = 8000.0 + (seed % 12000) 
@@ -249,6 +251,15 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
     base_val = int(dien_tich_hecta * 95.0 + (nam_co_so - 2020) * 27000 + (seed % 5000))
     comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
     diff = comp_val - base_val
+    
+    # 1 tấn sinh khối = 1 tín chỉ carbon (ước lượng MRV quy đổi)
+    base_credits = base_val
+    comp_credits = comp_val
+    
+    # Giá giả định 10.5 USD / tín chỉ
+    diff_usd = diff * 10.5
+    diff_vnd = diff_usd * 26000
+    
     tong_usd = abs(diff) * 10.5 
     tong_vnd = tong_usd * 26000
 
@@ -280,12 +291,101 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             box-shadow: 0 20px 45px rgba(72, 187, 120, 0.85), inset 0 0 25px rgba(72, 187, 120, 0.35) !important;
             border-color: #48bb78 !important;
         }
-        .mrv-stat-box { text-align: center; padding: 10px; }
-        .mrv-stat-title { color: #94a3b8; font-size: 0.92rem; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .mrv-stat-num { font-size: 2.1rem; font-weight: 900; line-height: 1.2; letter-spacing: 0.5px; }
-        .mrv-delta-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; margin-top: 6px; }
-        .mrv-delta-pos { background: rgba(72, 187, 120, 0.18); color: #48bb78; border: 1px solid rgba(72, 187, 120, 0.5); }
-        .mrv-delta-neg { background: rgba(239, 68, 68, 0.18); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); }
+        .mrv-stat-box { 
+            text-align: center; 
+            padding: 8px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .mrv-stat-title { 
+            color: #94a3b8; 
+            font-size: 0.92rem; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            letter-spacing: 0.5px; 
+        }
+        .mrv-stat-num { 
+            font-size: clamp(1.4rem, 2vw, 2.05rem); 
+            font-weight: 900; 
+            line-height: 1.2; 
+            letter-spacing: 0.5px; 
+            white-space: nowrap;
+        }
+        .mrv-sub-credit {
+            color: #38bdf8;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 6px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            padding: 2px 10px;
+        }
+        .mrv-delta-badge { 
+            display: inline-block; 
+            padding: 3px 12px; 
+            border-radius: 20px; 
+            font-size: 0.82rem; 
+            font-weight: 700; 
+            margin-top: 6px; 
+        }
+        .mrv-delta-pos { 
+            background: rgba(72, 187, 120, 0.18); 
+            color: #48bb78; 
+            border: 1px solid rgba(72, 187, 120, 0.5); 
+        }
+        .mrv-delta-neg { 
+            background: rgba(239, 68, 68, 0.18); 
+            color: #f87171; 
+            border: 1px solid rgba(239, 68, 68, 0.5); 
+        }
+
+        /* Nút chuyển đổi tiền tệ màu xanh lá neon + 3D Hover */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button[key="btn_toggle_curr"] {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            border: 1px solid #34d399 !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            font-size: 0.88rem !important;
+            letter-spacing: 0.5px;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35) !important;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            margin-top: 8px !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button[key="btn_toggle_curr"]:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+            transform: translateY(-3px) scale(1.03) !important;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
+            border-color: #6ee7b7 !important;
+        }
+
+        /* Hiệu ứng nổi bật dòng chữ kết quả bên dưới (Không icon cây) */
+        @keyframes pulseBanner {
+            0%, 100% {
+                border-color: rgba(72, 187, 120, 0.4);
+                box-shadow: 0 0 12px rgba(72, 187, 120, 0.2);
+            }
+            50% {
+                border-color: rgba(72, 187, 120, 0.85);
+                box-shadow: 0 0 24px rgba(72, 187, 120, 0.45);
+            }
+        }
+        .mrv-highlight-banner {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.25), rgba(16, 185, 129, 0.1));
+            border: 1.5px solid rgba(72, 187, 120, 0.6);
+            border-radius: 12px;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #68d391;
+            letter-spacing: 0.5px;
+            animation: pulseBanner 4s infinite ease-in-out;
+            margin-top: 15px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -294,48 +394,66 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
         st.markdown(f"<h2 style='color: #ffffff; text-align: center; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 25px; text-transform: uppercase;'>{l['mrv_result_title']}</h2>", unsafe_allow_html=True)
         
         col_r1, col_r2, col_r3 = st.columns(3)
+        
+        # Cột 1: Năm cơ sở
         with col_r1:
             st.markdown(f"""
                 <div class="mrv-stat-box">
                     <div class="mrv-stat-title">{l['mrv_base_val']} {nam_co_so}</div>
-                    <div class="mrv-stat-num" style="color: #63b3ed;">{base_val:,.0f} <span style="font-size: 1.2rem; font-weight:700;">{l['mrv_unit']}</span></div>
+                    <div class="mrv-stat-num" style="color: #63b3ed;">{base_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{l['mrv_unit']}</span></div>
+                    <div class="mrv-sub-credit">💳 {base_credits:,.0f} Tín chỉ</div>
                 </div>
             """, unsafe_allow_html=True)
 
+        # Cột 2: Năm so sánh + Badge chênh lệch
         with col_r2:
             badge_cls = "mrv-delta-pos" if diff >= 0 else "mrv-delta-neg"
             sign = "+" if diff >= 0 else ""
             st.markdown(f"""
                 <div class="mrv-stat-box">
                     <div class="mrv-stat-title">{l['mrv_comp_val']} {nam_so_sanh}</div>
-                    <div class="mrv-stat-num" style="color: #48bb78;">{comp_val:,.0f} <span style="font-size: 1.2rem; font-weight:700;">{l['mrv_unit']}</span></div>
+                    <div class="mrv-stat-num" style="color: #38bdf8;">{comp_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{l['mrv_unit']}</span></div>
+                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.3); background: rgba(72,187,120,0.1);">💳 {comp_credits:,.0f} Tín chỉ</div>
                     <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {l['mrv_unit']}</div>
                 </div>
             """, unsafe_allow_html=True)
 
+        # Cột 3: Tổng Giá Trị Quy Đổi (Màu xanh lá, cùng 1 dòng, có badge tăng/giảm)
         with col_r3:
-            tien_hien_thi = f"{tong_vnd:,.0f} VND" if st.session_state["currency_mode"] == "VND" else f"${tong_usd:,.2f} USD"
+            is_vnd = (st.session_state["currency_mode"] == "VND")
+            
+            # Chuỗi tiền tệ nằm chung 1 dòng với đơn vị
+            if is_vnd:
+                tien_hien_thi = f"{tong_vnd:,.0f}&nbsp;VND"
+                diff_money_str = f"{'+' if diff_vnd >= 0 else ''}{diff_vnd:,.0f} VND"
+            else:
+                tien_hien_thi = f"${tong_usd:,.2f}&nbsp;USD"
+                diff_money_str = f"{'+' if diff_usd >= 0 else ''}${diff_usd:,.2f} USD"
+                
+            money_badge_cls = "mrv-delta-pos" if diff >= 0 else "mrv-delta-neg"
+
             st.markdown(f"""
                 <div class="mrv-stat-box">
                     <div class="mrv-stat-title">{l['mrv_total_val']}</div>
-                    <div class="mrv-stat-num" style="color: #f6e05e;">{tien_hien_thi}</div>
+                    <div class="mrv-stat-num" style="color: #48bb78;">{tien_hien_thi}</div>
+                    <div class="mrv-delta-badge {money_badge_cls}">{diff_money_str}</div>
                 </div>
             """, unsafe_allow_html=True)
             
-            _, c_btn, _ = st.columns([0.15, 0.7, 0.15])
+            _, c_btn, _ = st.columns([0.1, 0.8, 0.1])
             with c_btn:
-                btn_label = "Đổi sang USD 💵" if st.session_state["currency_mode"] == "VND" else "Đổi sang VND 🇻🇳"
+                btn_label = "Đổi sang USD 💵" if is_vnd else "Đổi sang VND 🇻🇳"
                 if st.button(btn_label, use_container_width=True, key="btn_toggle_curr"):
-                    st.session_state["currency_mode"] = "USD" if st.session_state["currency_mode"] == "VND" else "VND"
+                    st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
 
-        st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+        # Dòng thông báo nổi bật bên dưới (ĐÃ BỎ ICON CÁI CÂY)
         diff_text = f"{diff:,.0f} {l['mrv_unit']}"
         if diff >= 0:
             msg = l['mrv_success_msg'].format(diff=diff_text)
-            st.markdown(f"<div style='color: #48bb78; text-align: center; font-weight: 700; font-size: 1.05rem;'>🌱 {msg}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='mrv-highlight-banner'>{msg}</div>", unsafe_allow_html=True)
         else:
-            st.markdown(f"<div style='color: #fc8181; text-align: center; font-weight: 700; font-size: 1.05rem;'>⚠️ {l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='mrv-highlight-banner' style='color:#fca5a5; border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.15);'>{l['mrv_warning_msg']}</div>", unsafe_allow_html=True)
 
 def main_app():
     l = LANG_DICT[st.session_state["current_lang"]]
