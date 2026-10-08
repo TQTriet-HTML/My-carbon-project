@@ -35,7 +35,9 @@ def hien_thi_san_giao_dich():
         elif vai_tro == "Doanh nghiệp mua tín chỉ":
             with st.container(border=True):
                 col1, col2, col3 = st.columns(3)
-                user_holdings = st.session_state["user_portfolios"].get(st.session_state['current_user'], [])
+                user_portfolios = st.session_state.get("user_portfolios", {})
+                current_user = st.session_state.get("current_user", "")
+                user_holdings = user_portfolios.get(current_user, [])
                 tong_tin_chi = sum(item.get("Số lượng", item.get("Amount", 0)) for item in user_holdings) if user_holdings else 0
                 
                 col1.metric(t["wallet"], f"${st.session_state['wallet_balance']:,.2f}", "+ 50,000.00")
