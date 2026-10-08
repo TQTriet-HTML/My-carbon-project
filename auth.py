@@ -43,6 +43,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     
     text_sub = "#cbd5e1"
     bg_auth_block = "linear-gradient(135deg, rgba(13, 31, 60, 0.95), rgba(18, 42, 77, 0.92))"
+    # Nền màu xanh lá sang trọng cho 2 khối bên phải
+    bg_right_block = "linear-gradient(135deg, rgba(6, 44, 25, 0.95), rgba(12, 58, 34, 0.92))"
 
     st.markdown(f"""
         <style>
@@ -69,26 +71,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }}
         .hero-subtitle {{ text-align: center; color: {text_sub}; font-size: 1.05rem; font-weight: 400; margin-bottom: 40px; padding: 0 20px; }}
 
-        /* THÔNG BÁO ĐĂNG KÝ THÀNH CÔNG NỔI 5 GIÂY (2 DÒNG) */
-        @keyframes successWaveUp {{
-            0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
-            10% {{ transform: translateY(-10px); text-shadow: 0 0 15px rgba(72,187,120,0.8); }}
-        }}
-        .success-wave-char {{
-            display: inline-block; color: #48bb78; font-size: 1.4rem; font-weight: 800;
-            animation: successWaveUp 5s infinite ease-in-out;
-        }}
-
-        /* ============================================================
-           HIỆU ỨNG LÓA SÁNG & NỔI LÊN CHO TẤT CẢ CÁC KHỐI BORDER CỦA AUTH
-           ============================================================ */
+        /* HIỆU ỨNG THỞ VÀ QUÉT SÁNG */
         @keyframes greenNeonBreath {{
             0%, 100% {{ 
-                box-shadow: 0 0 16px rgba(72, 187, 120, 0.28), inset 0 0 15px rgba(56, 189, 248, 0.08); 
+                box-shadow: 0 0 16px rgba(72, 187, 120, 0.28), inset 0 0 15px rgba(72, 187, 120, 0.08); 
                 border-color: rgba(72, 187, 120, 0.5) !important; 
             }}
             50% {{ 
-                box-shadow: 0 0 38px rgba(72, 187, 120, 0.8), inset 0 0 25px rgba(56, 189, 248, 0.18); 
+                box-shadow: 0 0 38px rgba(72, 187, 120, 0.8), inset 0 0 25px rgba(72, 187, 120, 0.2); 
                 border-color: #48bb78 !important; 
             }}
         }}
@@ -100,8 +90,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             100%      {{ left: 200%; opacity: 0; }} 
         }}
 
-        /* Áp dụng cưỡng bức lên MỌI container có viền (cả form và 2 khối phải) */
-        div[data-testid="stVerticalBlockBorderWrapper"],
+        /* ÁP DỤNG CHO KHỐI FORM BÊN TRÁI */
         div[data-testid="stForm"] {{
             background: {bg_auth_block} !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
@@ -113,9 +102,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
             margin-bottom: 20px !important;
         }}
-
-        /* Tia sáng quét 10s tự động */
-        div[data-testid="stVerticalBlockBorderWrapper"]::after,
         div[data-testid="stForm"]::after {{
             content: ''; 
             position: absolute; 
@@ -129,9 +115,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 10; 
             pointer-events: none;
         }}
-
-        /* Hiệu ứng nổi lên khi rê chuột vào */
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover,
         div[data-testid="stForm"]:hover {{
             transform: translateY(-8px) scale(1.02) !important;
             box-shadow: 0 22px 50px rgba(72, 187, 120, 0.92), inset 0 0 25px rgba(72, 187, 120, 0.4) !important;
@@ -140,13 +123,44 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }}
 
         /* ============================================================
-           TAB ĐĂNG NHẬP / TẠO TÀI KHOẢN (ĐỔI TỪ ĐỎ SANG XANH LÁ NEON)
+           HIỆU ỨNG VÀ NỀN MÀU XANH LÁ CHO 2 KHỐI KẾ BÊN PHẢI
            ============================================================ */
+        .auth-info-card {{
+            background: {bg_right_block} !important;
+            border: 2px solid rgba(72, 187, 120, 0.6) !important;
+            border-radius: 18px !important;
+            padding: 24px !important;
+            margin-bottom: 22px !important;
+            animation: greenNeonBreath 4s infinite ease-in-out !important;
+            position: relative;
+            overflow: hidden !important;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
+        }}
+        .auth-info-card::after {{
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: -100%; 
+            width: 55%; 
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.65), transparent);
+            transform: skewX(-25deg); 
+            animation: autoSweepRight10s 10s infinite linear; 
+            z-index: 10; 
+            pointer-events: none;
+        }}
+        .auth-info-card:hover {{
+            transform: translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 22px 50px rgba(72, 187, 120, 0.92), inset 0 0 25px rgba(72, 187, 120, 0.4) !important;
+            border-color: #48bb78 !important;
+            z-index: 5 !important;
+        }}
+
+        /* TAB VÀ NÚT BẤM */
         button[data-baseweb="tab"] {{
             color: #94a3b8 !important;
             font-weight: 700 !important;
             font-size: 0.95rem !important;
-            letter-spacing: 0.5px !important;
         }}
         button[data-baseweb="tab"][aria-selected="true"] {{
             color: #48bb78 !important;
@@ -158,9 +172,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 0 15px rgba(72, 187, 120, 0.9) !important;
         }}
 
-        /* ============================================================
-           NÚT XÁC THỰC TRUY CẬP (ĐỔI TỪ ĐỎ SANG XANH LÁ NEON GRADIENT)
-           ============================================================ */
         button[kind="primary"],
         div[data-testid="stFormSubmitButton"] button {{
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -171,8 +182,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-radius: 10px !important;
             box-shadow: 0 4px 18px rgba(34, 197, 94, 0.45) !important;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            position: relative; 
-            overflow: hidden !important; 
             margin-top: 15px !important;
         }}
         button[kind="primary"]:hover,
@@ -248,112 +257,107 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     _, col_form, col_space, col_info, _ = st.columns([0.15, 1.25, 0.1, 1.25, 0.15])
     
-    # ================= CỘT TRÁI: ĐĂNG NHẬP / ĐĂNG KÝ =================
+    # ================= CỘT TRÁI =================
     with col_form:
-        with st.container(border=True):
-            welcome_text = t["welcome_msg"]
-            welcome_html = '<div class="welcome-container">'
-            delay_wc = 0.0
-            for char in welcome_text:
-                char_display = "&nbsp;" if char == " " else char
-                welcome_html += f'<span class="welcome-char" style="animation-delay: {delay_wc}s;">{char_display}</span>'
-                delay_wc += 0.06
-            welcome_html += '</div>'
-            st.markdown(welcome_html, unsafe_allow_html=True)
+        welcome_text = t["welcome_msg"]
+        welcome_html = '<div class="welcome-container">'
+        delay_wc = 0.0
+        for char in welcome_text:
+            char_display = "&nbsp;" if char == " " else char
+            welcome_html += f'<span class="welcome-char" style="animation-delay: {delay_wc}s;">{char_display}</span>'
+            delay_wc += 0.06
+        welcome_html += '</div>'
+        st.markdown(welcome_html, unsafe_allow_html=True)
 
-            tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
-            
-            with tab_dang_nhap:
-                with st.form("form_login"):
-                    u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
-                    u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
-                    submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
-                    if submitted:
-                        users = st.session_state.get("users_db", {})
-                        if u_name in users and users[u_name]["password"] == u_pass:
-                            st.session_state["logged_in"] = True
-                            st.session_state["current_user"] = u_name
-                            st.session_state["current_role"] = users[u_name]["role"]
-                            st.rerun()
-                        else:
-                            st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
-                            
-            with tab_dang_ky:
-                if st.session_state["reg_success_data"]:
-                    success_html = ""
-                    success_delay = 0.0
-                    
-                    success_html += "<div>"
-                    for char in t["reg_success_line1"]:
-                        c = "&nbsp;" if char == " " else char
-                        success_html += f'<span class="success-wave-char" style="animation-delay: {success_delay}s;">{c}</span>'
-                        success_delay += 0.05
-                    success_html += "</div><div style='margin-top: 5px;'>"
-                    
-                    for char in t["reg_success_line2"]:
-                        c = "&nbsp;" if char == " " else char
-                        success_html += f'<span class="success-wave-char" style="animation-delay: {success_delay}s;">{c}</span>'
-                        success_delay += 0.05
-                    success_html += "</div>"
-
-                    st.markdown(f"""
-                        <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:12px; margin-top: 15px;">
-                            <div style="margin-bottom: 15px; line-height: 1.5;">{success_html}</div>
-                            <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    st.write("")
-                    
-                    if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
-                        data = st.session_state["reg_success_data"]
+        tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
+        
+        with tab_dang_nhap:
+            with st.form("form_login"):
+                u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
+                u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
+                submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
+                if submitted:
+                    users = st.session_state.get("users_db", {})
+                    if u_name in users and users[u_name]["password"] == u_pass:
                         st.session_state["logged_in"] = True
-                        st.session_state["current_user"] = data["user"]
-                        st.session_state["current_role"] = data["role"]
-                        st.session_state["reg_success_data"] = None
+                        st.session_state["current_user"] = u_name
+                        st.session_state["current_role"] = users[u_name]["role"]
                         st.rerun()
-                else:
-                    with st.form("form_register", clear_on_submit=True):
-                        new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
-                        new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
-                        role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
-                        reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                    else:
+                        st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
                         
-                        if reg_submitted:
-                            if not new_user or not new_pass:
-                                st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+        with tab_dang_ky:
+            if st.session_state["reg_success_data"]:
+                st.markdown(f"""
+                    <div style="background: rgba(72,187,120,0.1); border: 1px solid #48bb78; text-align:center; padding: 25px; border-radius:12px; margin-top: 15px;">
+                        <h4 style="color:#48bb78; font-weight:800; margin-bottom: 10px;">{t['reg_success_line1']} {t['reg_success_line2']}</h4>
+                        <p style="color:{text_sub}; margin-bottom: 5px;">Tài khoản: <b style="color:#63b3ed;">{st.session_state['reg_success_data']['user']}</b></p>
+                    </div>
+                """, unsafe_allow_html=True)
+                st.write("")
+                if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
+                    data = st.session_state["reg_success_data"]
+                    st.session_state["logged_in"] = True
+                    st.session_state["current_user"] = data["user"]
+                    st.session_state["current_role"] = data["role"]
+                    st.session_state["reg_success_data"] = None
+                    st.rerun()
+            else:
+                with st.form("form_register", clear_on_submit=True):
+                    new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
+                    new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
+                    role_sel = st.selectbox("Phân loại" if lang=="Tiếng Việt" else "Role", ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"])
+                    reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                    
+                    if reg_submitted:
+                        if not new_user or not new_pass:
+                            st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
+                        else:
+                            pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
+                            if not re.match(pwd_pattern, new_pass):
+                                st.error(t["pwd_error"])
                             else:
-                                pwd_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,20}$'
-                                if not re.match(pwd_pattern, new_pass):
-                                    st.error(t["pwd_error"])
+                                if "users_db" not in st.session_state:
+                                    st.session_state["users_db"] = {}
+                                if new_user in st.session_state["users_db"]:
+                                    st.error("Tài khoản đã tồn tại!" if lang=="Tiếng Việt" else "Account already exists!")
                                 else:
-                                    if "users_db" not in st.session_state:
-                                        st.session_state["users_db"] = {}
-                                    if new_user in st.session_state["users_db"]:
-                                        st.error("Tài khoản đã tồn tại!" if lang=="Tiếng Việt" else "Account already exists!")
-                                    else:
-                                        st.session_state["users_db"][new_user] = {
-                                            "password": new_pass, "role": role_sel, "wallet_balance": 100000.0
-                                        }
-                                        st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
-                                        st.rerun()
+                                    st.session_state["users_db"][new_user] = {
+                                        "password": new_pass, "role": role_sel, "wallet_balance": 100000.0
+                                    }
+                                    st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
+                                    st.rerun()
 
-    # ================= CỘT PHẢI: 2 KHỐI THÀNH TỰU & DỰ ÁN TIÊU BIỂU =================
+    # ================= CỘT PHẢI: 2 KHỐI CÓ HIỆU ỨNG VÀ NỀN MÀU XANH LÁ =================
     with col_info:
         # Khối 1: Thành tựu nền tảng
-        with st.container(border=True):
-            st.markdown(f'<div class="section-title">{t["achieve"]}</div>', unsafe_allow_html=True)
-            c_st1, c_st2 = st.columns(2)
-            with c_st1:
-                st.markdown(f'<div style="text-align:center;"><div class="stat-value">{t["ach_1_val"]}</div><div class="stat-label">{t["ach_1_lbl"]}</div></div>', unsafe_allow_html=True)
-            with c_st2:
-                st.markdown(f'<div style="text-align:center;"><div class="stat-value" style="color:#48bb78;">{t["ach_2_val"]}</div><div class="stat-label">{t["ach_2_lbl"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="auth-info-card">
+                <div class="section-title">{t["achieve"]}</div>
+                <div style="display:flex; justify-content:space-around; align-items:center; margin-top:15px;">
+                    <div style="text-align:center;">
+                        <div class="stat-value">{t["ach_1_val"]}</div>
+                        <div class="stat-label">{t["ach_1_lbl"]}</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div class="stat-value" style="color:#48bb78;">{t["ach_2_val"]}</div>
+                        <div class="stat-label">{t["ach_2_lbl"]}</div>
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
         # Khối 2: Dự án tiêu biểu
-        with st.container(border=True):
-            st.markdown(f'<div class="section-title">{t["projects"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="project-title">{t["proj_name"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="project-desc">{t["proj_desc"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div style="text-align:right;"><span class="verified-badge">{t["proj_badge"]}</span></div>', unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="auth-info-card">
+                <div class="section-title">{t["projects"]}</div>
+                <div class="project-title">{t["proj_name"]}</div>
+                <div class="project-desc">{t["proj_desc"]}</div>
+                <div style="text-align:right;">
+                    <span class="verified-badge">{t["proj_badge"]}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
     # Thanh tin tức chạy marquee
     st.markdown(f"""
