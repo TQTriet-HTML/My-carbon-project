@@ -253,11 +253,9 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
     base_credits = base_val
     comp_credits = comp_val
     
-    # 10.5 USD/tấn
     tong_usd = comp_val * 10.5 
     tong_vnd = tong_usd * 26000
     
-    # Giá trị chênh lệch thực tế tương ứng với số tín chỉ tăng hoặc giảm
     diff_usd = diff * 10.5
     diff_vnd = diff_usd * 26000
 
@@ -265,29 +263,29 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
         <style>
         @keyframes greenBreathGlow {
             0%, 100% {
-                box-shadow: 0 0 15px rgba(72, 187, 120, 0.25), inset 0 0 10px rgba(72, 187, 120, 0.05);
-                border-color: rgba(72, 187, 120, 0.45);
+                box-shadow: 0 0 18px rgba(72, 187, 120, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.08);
+                border-color: rgba(72, 187, 120, 0.6);
             }
             50% {
-                box-shadow: 0 0 35px rgba(72, 187, 120, 0.65), inset 0 0 20px rgba(72, 187, 120, 0.2);
+                box-shadow: 0 0 40px rgba(72, 187, 120, 0.75), inset 0 0 25px rgba(56, 189, 248, 0.18);
                 border-color: #48bb78;
             }
         }
-        /* Mở rộng padding bottom để chừa khoảng hở rộng rãi dưới banner */
+        /* Viền rõ nét, nền pha xanh dương nhẹ, nổi khối màu xanh lá khi hover */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) {
-            background: linear-gradient(135deg, rgba(20, 27, 45, 0.95), rgba(10, 15, 29, 0.98)) !important;
-            border: 2px solid rgba(72, 187, 120, 0.45) !important;
-            border-radius: 16px !important;
-            padding: 26px 28px 36px 28px !important;
+            background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.93)) !important;
+            border: 2px solid #38a169 !important;
+            border-radius: 18px !important;
+            padding: 26px 28px 38px 28px !important;
             animation: greenBreathGlow 4s infinite ease-in-out !important;
-            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease !important;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
             position: relative;
             overflow: hidden !important;
             margin-bottom: 25px !important;
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker):hover {
-            transform: translateY(-7px) scale(1.015) !important;
-            box-shadow: 0 20px 45px rgba(72, 187, 120, 0.85), inset 0 0 25px rgba(72, 187, 120, 0.35) !important;
+            transform: translateY(-8px) scale(1.015) !important;
+            box-shadow: 0 22px 50px rgba(72, 187, 120, 0.9), inset 0 0 30px rgba(72, 187, 120, 0.4) !important;
             border-color: #48bb78 !important;
         }
 
@@ -338,8 +336,8 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             justify-content: center;
         }
         .mrv-stat-title { 
-            color: #94a3b8; 
-            font-size: 0.92rem; 
+            color: #cbd5e1; 
+            font-size: 0.95rem; 
             font-weight: 600; 
             margin-bottom: 6px; 
             letter-spacing: 0.5px; 
@@ -357,66 +355,66 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             font-size: 0.85rem;
             font-weight: 700;
             margin-top: 6px;
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.4);
             border-radius: 8px;
-            padding: 2px 10px;
+            padding: 2px 12px;
         }
 
         /* BADGE TĂNG (XANH) VÀ GIẢM (ĐỎ) */
         .mrv-delta-badge { 
             display: inline-block; 
-            padding: 3px 12px; 
+            padding: 3px 14px; 
             border-radius: 20px; 
             font-size: 0.82rem; 
             font-weight: 700; 
             margin-top: 6px; 
         }
         .mrv-delta-pos { 
-            background: rgba(72, 187, 120, 0.18) !important; 
+            background: rgba(72, 187, 120, 0.2) !important; 
             color: #48bb78 !important; 
-            border: 1px solid rgba(72, 187, 120, 0.5) !important; 
+            border: 1px solid rgba(72, 187, 120, 0.6) !important; 
         }
         .mrv-delta-neg { 
-            background: rgba(239, 68, 68, 0.18) !important; 
+            background: rgba(239, 68, 68, 0.2) !important; 
             color: #f87171 !important; 
-            border: 1px solid rgba(239, 68, 68, 0.5) !important; 
+            border: 1px solid rgba(239, 68, 68, 0.6) !important; 
         }
 
-        /* NÚT BẤM ĐỔI TIỀN TỆ MÀU XANH LÁ NEON GRADIENT + 3D LIFT */
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) div[data-testid="stButton"] button {
+        /* NÚT BẤM ĐỔI TIỀN TỆ: MÀU XANH LÁ NEON BẮT BUỘC + NỔI KHỐI 3D */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            border: 1px solid #34d399 !important;
+            border: 1.5px solid #34d399 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             font-size: 0.88rem !important;
             letter-spacing: 0.5px;
             border-radius: 10px !important;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35) !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             margin-top: 8px !important;
         }
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) div[data-testid="stButton"] button:hover {
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button:hover {
             background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
             transform: translateY(-4px) scale(1.04) !important;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
             border-color: #6ee7b7 !important;
         }
 
-        /* KHUNG CHỮ DƯỚI: NẰM TRÊN 1 DÒNG DUY NHẤT & CHỪA KHOẢNG HỞ ĐÁY HỢP LÝ */
+        /* KHUNG CHỮ DƯỚI: NẰM TRÊN 1 DÒNG DUY NHẤT & PHÁT QUANG VỪA ĐỦ */
         @keyframes pulseBanner {
             0%, 100% {
-                border-color: rgba(72, 187, 120, 0.4);
+                border-color: rgba(72, 187, 120, 0.45);
                 box-shadow: 0 0 10px rgba(72, 187, 120, 0.2);
             }
             50% {
-                border-color: rgba(72, 187, 120, 0.85);
-                box-shadow: 0 0 22px rgba(72, 187, 120, 0.45);
+                border-color: rgba(72, 187, 120, 0.9);
+                box-shadow: 0 0 24px rgba(72, 187, 120, 0.5);
             }
         }
         .mrv-highlight-banner {
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.25), rgba(16, 185, 129, 0.1));
-            border: 1.5px solid rgba(72, 187, 120, 0.6);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.3), rgba(16, 185, 129, 0.12));
+            border: 1.5px solid rgba(72, 187, 120, 0.7);
             border-radius: 12px;
             padding: 14px 20px;
             text-align: center;
@@ -426,7 +424,7 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             letter-spacing: 0.5px;
             animation: pulseBanner 4s infinite ease-in-out;
             margin-top: 18px;
-            margin-bottom: 8px; /* Khoảng thở với cạnh đáy */
+            margin-bottom: 8px;
             white-space: nowrap !important;
             overflow-x: auto;
             scrollbar-width: none;
@@ -453,17 +451,17 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
         
         col_r1, col_r2, col_r3 = st.columns(3)
         
-        # Cột 1: Năm cơ sở (Số màu xanh lá)
+        # Cột 1: Năm cơ sở (Số màu xanh lá, không icon)
         with col_r1:
             st.markdown(f"""
                 <div class="mrv-stat-box">
                     <div class="mrv-stat-title">{l['mrv_base_val']} {nam_co_so}</div>
                     <div class="mrv-stat-num">{base_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{l['mrv_unit']}</span></div>
-                    <div class="mrv-sub-credit">💳 {base_credits:,.0f} Tín chỉ</div>
+                    <div class="mrv-sub-credit">{base_credits:,.0f} Tín chỉ</div>
                 </div>
             """, unsafe_allow_html=True)
 
-        # Cột 2: Năm so sánh (Số màu xanh lá, Badge tăng xanh / giảm đỏ)
+        # Cột 2: Năm so sánh (Số màu xanh lá, Badge tăng xanh / giảm đỏ, không icon)
         with col_r2:
             badge_cls = "mrv-delta-pos" if diff >= 0 else "mrv-delta-neg"
             sign = "+" if diff >= 0 else ""
@@ -471,12 +469,12 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
                 <div class="mrv-stat-box">
                     <div class="mrv-stat-title">{l['mrv_comp_val']} {nam_so_sanh}</div>
                     <div class="mrv-stat-num">{comp_val:,.0f} <span style="font-size: 1.15rem; font-weight: 700;">{l['mrv_unit']}</span></div>
-                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.3); background: rgba(72,187,120,0.1);">💳 {comp_credits:,.0f} Tín chỉ</div>
+                    <div class="mrv-sub-credit" style="color: #48bb78; border-color: rgba(72,187,120,0.4); background: rgba(72,187,120,0.12);">{comp_credits:,.0f} Tín chỉ</div>
                     <div class="mrv-delta-badge {badge_cls}">{sign}{diff:,.0f} {l['mrv_unit']}</div>
                 </div>
             """, unsafe_allow_html=True)
 
-        # Cột 3: Tổng Giá Trị Quy Đổi & Badge Chênh Lệch Thực Tế (+/- tiền tăng giảm)
+        # Cột 3: Tổng Giá Trị Quy Đổi & Badge Chênh Lệch Thực Tế (Số màu xanh lá, Nút màu xanh lá, không icon)
         with col_r3:
             is_vnd = (st.session_state["currency_mode"] == "VND")
             
@@ -499,12 +497,12 @@ def render_mrv_results(l, nam_co_so, nam_so_sanh):
             
             _, c_btn, _ = st.columns([0.1, 0.8, 0.1])
             with c_btn:
-                btn_label = "Đổi sang USD 💵" if is_vnd else "Đổi sang VND 🇻🇳"
-                if st.button(btn_label, use_container_width=True, key="btn_toggle_curr"):
+                btn_label = "Đổi sang USD" if is_vnd else "Đổi sang VND"
+                if st.button(btn_label, type="primary", use_container_width=True, key="btn_toggle_curr"):
                     st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
 
-        # DÒNG THÔNG BÁO DƯỚI: Nằm trên 1 dòng & có khoảng đệm thở so với mép container
+        # DÒNG THÔNG BÁO DƯỚI: Nằm trên 1 dòng duy nhất & không icon
         diff_text = f"{diff:,.0f} {l['mrv_unit']}"
         if diff >= 0:
             msg = l['mrv_success_msg'].format(diff=diff_text)
