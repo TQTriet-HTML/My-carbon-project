@@ -1,5 +1,6 @@
 import streamlit as st
 import re
+from mission_animation import hien_thi_hop_thoai_su_menh
 
 def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     if "reg_success_data" not in st.session_state:
@@ -15,6 +16,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "welcome_msg": "XIN CHÀO QUÝ ĐỒNG HÀNH!",
             "user": "Tên đăng nhập", "pass": "Mật khẩu",
             "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
+            "btn_mission": "SỨ MỆNH NỀN TẢNG",
             "pwd_error": "Mật khẩu phải từ 8-20 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.",
             "reg_success_line1": "Bạn đã đặt bước chân đầu tiên",
             "reg_success_line2": "trên chặng đường xanh!",
@@ -31,6 +33,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "welcome_msg": "WELCOME PARTNER!",
             "user": "Username", "pass": "Password",
             "btn_login": "AUTHENTICATE", "btn_reg": "CREATE ACCOUNT",
+            "btn_mission": "PLATFORM MISSION",
             "pwd_error": "Password must be 8-20 characters with uppercase, lowercase, number, and special character.",
             "reg_success_line1": "You have taken your first step",
             "reg_success_line2": "towards sustainability!",
@@ -46,7 +49,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown(f"""
         <style>
-        /* Hiệu ứng thở phát sáng xanh neon */
         @keyframes greenBreathePulse {{
             0%, 100% {{
                 box-shadow: 0 0 16px rgba(72, 187, 120, 0.35), inset 0 0 15px rgba(72, 187, 120, 0.15);
@@ -58,14 +60,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }}
         }}
 
-        /* Tia sáng quét qua mỗi 10 giây */
         @keyframes sweepLight10s {{
             0%, 85% {{ left: -120%; opacity: 0; }}
             86% {{ opacity: 1; left: -120%; }}
             95%, 100% {{ left: 220%; opacity: 0; }}
         }}
 
-        /* KHỐI BÊN TRÁI (FORM) */
         div[data-testid="stForm"] {{
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.94)) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
@@ -75,7 +75,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             position: relative;
             overflow: hidden !important;
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 12px !important;
         }}
         div[data-testid="stForm"]::after {{
             content: '';
@@ -96,7 +96,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }}
 
-        /* KHỐI BÊN PHẢI (2 KHỐI NỀN XANH LÁ) */
         .hardcore-green-card {{
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.96) 0%, rgba(10, 61, 35, 0.94) 100%) !important;
             border: 2px solid #22c55e !important;
@@ -128,7 +127,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 5 !important;
         }}
 
-        /* HIỆU ỨNG CHỮ LƯỚT SÓNG CHO THÔNG BÁO THÀNH CÔNG */
         @keyframes successWaveGlow {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; color: #48bb78; }}
             10% {{ transform: translateY(-8px); text-shadow: 0 0 16px rgba(72,187,120,1), 0 0 8px rgba(104,211,145,0.9); color: #86efac; }}
@@ -140,7 +138,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: successWaveGlow 5s infinite ease-in-out;
         }}
 
-        /* Nút xác thực & đăng nhập ngay màu xanh lá neon */
         button[kind="primary"],
         div[data-testid="stFormSubmitButton"] button {{
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -161,7 +158,26 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #86efac !important;
         }}
 
-        /* Slogan sóng nhấp nhô */
+        /* Nút Sứ mệnh Nền tảng với viền Neon Blue/Green */
+        button[key="btn_open_mission"] {{
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(34, 197, 94, 0.25) 100%) !important;
+            border: 1.5px solid #38bdf8 !important;
+            color: #38bdf8 !important;
+            font-weight: 800 !important;
+            border-radius: 10px !important;
+            letter-spacing: 1px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3) !important;
+            margin-top: 5px !important;
+        }}
+        button[key="btn_open_mission"]:hover {{
+            background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.75) !important;
+            border-color: #7dd3fc !important;
+        }}
+
         @keyframes waveUp {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
             10% {{ transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1); }}
@@ -215,7 +231,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # Hiển thị slogan sóng
     wave_html = '<div style="text-align: center; padding: 20px 0; white-space: nowrap;">'
     delay = 0.0
     for char in t["slogan"]:
@@ -228,7 +243,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     _, col_form, col_space, col_info, _ = st.columns([0.15, 1.25, 0.1, 1.25, 0.15])
     
-    # CỘT TRÁI: FORM ĐĂNG NHẬP / ĐĂNG KÝ
     with col_form:
         st.markdown(f"""
             <div style="text-align:center; margin-bottom:20px; font-size:1.3rem; font-weight:900; color:#48bb78; letter-spacing:1px; text-shadow:0 0 15px rgba(72,187,120,0.5);">
@@ -254,7 +268,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
-                # TẠO HIỆU ỨNG LƯỚT SÓNG TỪNG CHỮ CÁI CHO CẢ 2 DÒNG
                 success_html = ""
                 d_char = 0.0
                 
@@ -314,7 +327,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-    # CỘT PHẢI: 2 KHỐI NỀN XANH LÁ + HIỆU ỨNG THỞ & NỔI LÊN
+        # NÚT SỨ MỆNH NỀN TẢNG NẰM NGAY BÊN DƯỚI FORM ĐĂNG NHẬP
+        if st.button(t["btn_mission"], key="btn_open_mission", use_container_width=True):
+            hien_thi_hop_thoai_su_menh()
+
     with col_info:
         st.markdown(f"""
             <div class="hardcore-green-card">
@@ -343,7 +359,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-    # Thanh tin tức chạy chân trang
     st.markdown(f"""
     <div class="news-ticker-container">
         <div style="font-weight:900; color:#fc8181; margin-right:20px; white-space:nowrap; text-transform:uppercase;">{t['news_lbl']}</div>
