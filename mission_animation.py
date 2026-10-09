@@ -66,7 +66,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             z-index: 10;
         }}
 
-        /* PHÓNG TO SLOGAN VÀ ĐẶT BỐ CỤC GẮN KẾT */
         .slogan-box {{
             position: absolute;
             bottom: 18px;
@@ -84,13 +83,13 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         }}
         .wave-slogan-char {{
             display: inline-block;
-            font-size: 26px; /* Phóng to tiêu đề Slogan */
+            font-size: 26px;
             font-weight: 900;
             letter-spacing: 2px;
             animation: waveChar4s 4s infinite ease-in-out;
         }}
         .mission-2050-text {{
-            font-size: 14px; /* Phóng to dòng sứ mệnh 2050 */
+            font-size: 14px;
             font-weight: 600;
             color: #cbd5e1;
             margin-top: 6px;
@@ -138,7 +137,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    const TOTAL_DURATION = 25000; // 25 giây tổng hành trình
+    const TOTAL_DURATION = 25000;
 
     let smokeParticles = [];
     let carbonParticles = [];
@@ -213,10 +212,9 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         ctx.fillStyle = "#070c16";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // THU PHÓNG ZOOM-OUT CINEMATIC
         ctx.save();
         let targetX = canvas.width / 2;
-        let targetY = 215; // Vị trí tâm trung tâm cân đối
+        let targetY = 215;
         let scale = 1.0 - zoomProgress * 0.85;
         let transY = (1.0 - zoomProgress) * 0 + zoomProgress * (targetY - 370 * scale);
 
@@ -227,7 +225,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.save();
             ctx.globalAlpha = 1.0 - zoomProgress * 0.85;
 
-            // Bầu trời
             let skyGrad = ctx.createLinearGradient(0, 0, 0, 370);
             if (industrialLevel > 0.5 && carbonLevel < 0.5) {{
                 skyGrad.addColorStop(0, "#1c1917");
@@ -239,7 +236,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, canvas.width, 370);
 
-            // Mặt trời
             ctx.beginPath();
             ctx.arc(140, 110, 38, 0, Math.PI * 2);
             let sunGrad = ctx.createRadialGradient(140, 110, 10, 140, 110, 38);
@@ -248,7 +244,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.fillStyle = sunGrad;
             ctx.fill();
 
-            // Mặt đất
             ctx.fillStyle = "#111c24";
             ctx.fillRect(0, 370, canvas.width, 130);
             ctx.strokeStyle = forestHealth > 0.5 ? "#22c55e" : "#854d0e";
@@ -258,14 +253,12 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.lineTo(canvas.width, 370);
             ctx.stroke();
 
-            // Rừng cây (Bên trái)
             drawTree(70, 370, 0.9 * forestHealth, "#15803d", "#22c55e");
             drawTree(130, 370, 1.2 * forestHealth, "#166534", "#48bb78");
             drawTree(200, 370, 1.0 * forestHealth, "#14532d", "#16a34a");
             drawTree(270, 370, 1.15 * forestHealth, "#15803d", "#34d399");
             drawTree(340, 370, 0.85 * forestHealth, "#166534", "#22c55e");
 
-            // Nhà máy (Bên phải)
             if (industrialLevel > 0.05) {{
                 ctx.fillStyle = "#334155";
                 ctx.fillRect(480, 300, 140, 70);
@@ -282,6 +275,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
                 ctx.fillStyle = "#facc15";
                 ctx.fillRect(495, 315, 16, 20);
                 ctx.fillRect(525, 315, 16, 20);
+                ctx.fillRect(555, 315, 16, 20);
 
                 if (carbonLevel < 0.8) {{
                     smokeParticles.forEach(p => {{
@@ -296,7 +290,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
                 }}
             }}
 
-            // Tín chỉ Carbon
             if (carbonLevel > 0.1) {{
                 ctx.strokeStyle = "rgba(72, 187, 120, 0.6)";
                 ctx.lineWidth = 2;
@@ -322,25 +315,22 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         }}
         ctx.restore();
 
-        // ĐOẠN KẾT: TRÁI ĐẤT PHÓNG TO, VIỀN XÁM MỎNG BO GÓC & MẦM CÂY DÀY RÕ
         if (zoomProgress > 0.1) {{
             ctx.save();
             ctx.globalAlpha = Math.min(1.0, (zoomProgress - 0.1) / 0.7);
             ctx.translate(canvas.width / 2, 215);
 
-            // BÁN KÍNH TRÁI ĐẤT PHÓNG TO LÊN 95px
             const R = 95;
 
             // VIỀN MÀU XÁM MỎNG BO THEO TỪNG GÓC CỦA LOGO
             ctx.save();
-            ctx.strokeStyle = "rgba(148, 163, 184, 0.45)"; // Màu xám mỏng tinh tế
+            ctx.strokeStyle = "rgba(148, 163, 184, 0.45)";
             ctx.lineWidth = 1.5;
-            // Vẽ khung viền bo cong bao trọn quanh toàn bộ cụm logo
-            drawRoundedRect(ctx, -145, -R - 35, 290, R * 2 + 75, 28);
+            drawRoundedRect(ctx, -145, -R - 38, 290, R * 2 + 78, 28);
             ctx.stroke();
             ctx.restore();
 
-            // 1. QUẢ ĐỊA CẦU HOẠT HÌNH PHÓNG TO
+            // 1. QUẢ ĐỊA CẦU THEO HÌNH MẪU
             ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, R, 0, Math.PI * 2);
@@ -351,19 +341,16 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.stroke();
             ctx.clip();
 
-            // Mảng lục địa
             ctx.fillStyle = "#4ade80";
             ctx.strokeStyle = "#0f172a";
             ctx.lineWidth = 3.5;
 
-            // Lục địa phía Bắc
             ctx.beginPath();
             ctx.moveTo(-18, -R);
             ctx.bezierCurveTo(-12, -65, 18, -60, 25, -R);
             ctx.closePath();
             ctx.fill(); ctx.stroke();
 
-            // Lục địa góc trên trái
             ctx.beginPath();
             ctx.moveTo(-R, -55);
             ctx.bezierCurveTo(-55, -70, -45, -25, -70, 0);
@@ -371,7 +358,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.closePath();
             ctx.fill(); ctx.stroke();
 
-            // Lục địa góc dưới trái
             ctx.beginPath();
             ctx.moveTo(-65, 25);
             ctx.bezierCurveTo(-25, 30, -32, 82, -58, 95);
@@ -379,7 +365,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.closePath();
             ctx.fill(); ctx.stroke();
 
-            // Lục địa bên phải
             ctx.beginPath();
             ctx.moveTo(50, -65);
             ctx.bezierCurveTo(38, -25, 75, -12, 50, 20);
@@ -388,13 +373,11 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.closePath();
             ctx.fill(); ctx.stroke();
 
-            // Mảng nước trang trí đáy
             ctx.fillStyle = "#38bdf8";
             ctx.beginPath();
             ctx.ellipse(25, 70, 32, 15, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Mắt & Miệng hoạt hình phóng to tương ứng
             ctx.fillStyle = "#0f172a";
             ctx.beginPath();
             ctx.arc(-28, 0, 5.5, 0, Math.PI * 2);
@@ -408,65 +391,55 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.lineCap = "round";
             ctx.stroke();
 
-            // Má hồng
             ctx.fillStyle = "#f87171";
             ctx.beginPath();
             ctx.arc(-46, 18, 8, 0, Math.PI * 2);
             ctx.arc(46, 18, 8, 0, Math.PI * 2);
             ctx.fill();
 
-            // Vệt phản quang trắng
-            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-            ctx.beginPath();
-            ctx.ellipse(-65, -45, 18, 6.5, -Math.PI / 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(-76, -28, 4.5, 0, Math.PI * 2);
-            ctx.fill();
-
             ctx.restore();
 
-            // Viền ngoài quả địa cầu
             ctx.beginPath();
             ctx.arc(0, 0, R, 0, Math.PI * 2);
             ctx.lineWidth = 4.5;
             ctx.strokeStyle = "#0f172a";
             ctx.stroke();
 
-            // 2. MẦM CÂY TRÊN ĐẦU: NHÁNH DÀY DẶN, RÕ NÉT, KHÔNG LÓA SÁNG
+            // 2. MẦM CÂY TRÊN ĐẦU: THÂN MÀU NÂU DÀY DẶN, LÁ MẦM MÀU XANH ĐẬM HƠN 2 LÁ BỰ, KHÔNG HIỆU ỨNG ĐÁNH BÓNG/CHÓI SÁNG
             ctx.save();
             ctx.translate(0, -R);
 
-            // Nhánh mầm cây dày dặn (tăng độ dày để nhìn rõ trên nền đen)
+            // Viền đen hoạt hình cho thân mầm
             ctx.strokeStyle = "#0f172a";
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 14;
             ctx.lineCap = "round";
             ctx.beginPath();
-            ctx.moveTo(0, 2);
-            ctx.lineTo(0, -18);
+            ctx.moveTo(0, 3);
+            ctx.lineTo(0, -20);
             ctx.stroke();
 
-            // Thân trong màu xanh của nhánh mầm
-            ctx.strokeStyle = "#4ade80";
-            ctx.lineWidth = 3;
+            // Thân mầm chính màu NÂU đậm, dày dặn
+            ctx.strokeStyle = "#78350f";
+            ctx.lineWidth = 9;
             ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(0, -16);
+            ctx.moveTo(0, 1);
+            ctx.lineTo(0, -19);
             ctx.stroke();
 
-            // Lá mầm bên trái (to rõ, viền nét rõ rệt, màu xanh non tươi sáng)
+            // 2 Lá mầm: Màu xanh lục rừng già (#14532d), đậm hơn 2 chiếc lá bự, KHÔNG đánh bóng / KHÔNG chói sáng
+            // Lá mầm trái
             ctx.beginPath();
-            ctx.ellipse(-15, -24, 14, 9, -Math.PI / 5, 0, Math.PI * 2);
-            ctx.fillStyle = "#86efac";
+            ctx.ellipse(-16, -26, 16, 10.5, -Math.PI / 5, 0, Math.PI * 2);
+            ctx.fillStyle = "#14532d";
             ctx.fill();
             ctx.lineWidth = 3.5;
             ctx.strokeStyle = "#0f172a";
             ctx.stroke();
 
-            // Lá mầm bên phải (to rõ, viền nét rõ rệt)
+            // Lá mầm phải
             ctx.beginPath();
-            ctx.ellipse(15, -24, 14, 9, Math.PI / 5, 0, Math.PI * 2);
-            ctx.fillStyle = "#86efac";
+            ctx.ellipse(16, -26, 16, 10.5, Math.PI / 5, 0, Math.PI * 2);
+            ctx.fillStyle = "#14532d";
             ctx.fill();
             ctx.lineWidth = 3.5;
             ctx.strokeStyle = "#0f172a";
@@ -474,11 +447,11 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
             ctx.restore();
 
-            // 3. HAI CHIẾC LÁ PHÓNG TO NÂNG ĐỠ DƯỚI ĐÁY XÒE GÓC 45 ĐỘ (GÂN LÁ SẮC NÉT)
+            // 3. HAI CHIẾC LÁ LỚN PHÓNG TO NÂNG ĐỠ DƯỚI ĐÁY XÒE GÓC 45 ĐỘ
             ctx.save();
             ctx.translate(-32, 94);
             ctx.rotate(-Math.PI / 4);
-            drawDetailedLeaf(1.25); // Phóng to tỷ lệ lá tương ứng
+            drawDetailedLeaf(1.25);
             ctx.restore();
 
             ctx.save();
@@ -492,7 +465,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         }}
     }}
 
-    // Hàm vẽ hình chữ nhật bo tròn góc
     function drawRoundedRect(c, x, y, width, height, radius) {{
         c.beginPath();
         c.moveTo(x + radius, y);
