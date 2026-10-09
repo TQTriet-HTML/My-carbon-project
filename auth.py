@@ -47,28 +47,28 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     t = T.get(lang, T["Tiếng Việt"])
     text_sub = "#cbd5e1"
 
-    st.markdown(f"""
+    st.markdown("""
         <style>
         /* Hiệu ứng thở phát sáng xanh neon */
-        @keyframes greenBreathePulse {{
-            0%, 100% {{
+        @keyframes greenBreathePulse {
+            0%, 100% {
                 box-shadow: 0 0 16px rgba(72, 187, 120, 0.35), inset 0 0 15px rgba(72, 187, 120, 0.15);
                 border-color: rgba(72, 187, 120, 0.55) !important;
-            }}
-            50% {{
+            }
+            50% {
                 box-shadow: 0 0 40px rgba(72, 187, 120, 0.9), inset 0 0 25px rgba(72, 187, 120, 0.35);
                 border-color: #48bb78 !important;
-            }}
-        }}
+            }
+        }
 
-        @keyframes sweepLight10s {{
-            0%, 85% {{ left: -120%; opacity: 0; }}
-            86% {{ opacity: 1; left: -120%; }}
-            95%, 100% {{ left: 220%; opacity: 0; }}
-        }}
+        @keyframes sweepLight10s {
+            0%, 85% { left: -120%; opacity: 0; }
+            86% { opacity: 1; left: -120%; }
+            95%, 100% { left: 220%; opacity: 0; }
+        }
 
         /* KHỐI BÊN TRÁI (FORM) */
-        div[data-testid="stForm"] {{
+        div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.94)) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
             border-radius: 18px !important;
@@ -78,8 +78,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             overflow: hidden !important;
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease !important;
             margin-bottom: 12px !important;
-        }}
-        div[data-testid="stForm"]::after {{
+        }
+        div[data-testid="stForm"]::after {
             content: '';
             position: absolute;
             top: 0;
@@ -91,15 +91,15 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepLight10s 10s infinite linear;
             z-index: 10;
             pointer-events: none;
-        }}
-        div[data-testid="stForm"]:hover {{
+        }
+        div[data-testid="stForm"]:hover {
             transform: translateY(-8px) scale(1.02) !important;
             box-shadow: 0 22px 50px rgba(72, 187, 120, 0.95), inset 0 0 25px rgba(72, 187, 120, 0.45) !important;
             border-color: #48bb78 !important;
-        }}
+        }
 
         /* KHỐI BÊN PHẢI (2 KHỐI NỀN XANH LÁ) */
-        .hardcore-green-card {{
+        .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.96) 0%, rgba(10, 61, 35, 0.94) 100%) !important;
             border: 2px solid #22c55e !important;
             border-radius: 18px !important;
@@ -109,8 +109,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             overflow: hidden !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
-        }}
-        .hardcore-green-card::after {{
+        }
+        .hardcore-green-card::after {
             content: '';
             position: absolute;
             top: 0;
@@ -122,29 +122,29 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepLight10s 10s infinite linear;
             z-index: 10;
             pointer-events: none;
-        }}
-        .hardcore-green-card:hover {{
+        }
+        .hardcore-green-card:hover {
             transform: translateY(-8px) scale(1.025) !important;
             box-shadow: 0 22px 50px rgba(72, 187, 120, 0.95), inset 0 0 30px rgba(72, 187, 120, 0.5) !important;
             border-color: #48bb78 !important;
             z-index: 5 !important;
-        }}
+        }
 
         /* HIỆU ỨNG SÓNG CHỮ ĐĂNG KÝ THÀNH CÔNG */
-        @keyframes successWaveGlow {{
-            0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; color: #48bb78; }}
-            10% {{ transform: translateY(-8px); text-shadow: 0 0 16px rgba(72,187,120,1), 0 0 8px rgba(104,211,145,0.9); color: #86efac; }}
-        }}
-        .success-wave-char {{
+        @keyframes successWaveGlow {
+            0%, 20%, 100% { transform: translateY(0); text-shadow: none; color: #48bb78; }
+            10% { transform: translateY(-8px); text-shadow: 0 0 16px rgba(72,187,120,1), 0 0 8px rgba(104,211,145,0.9); color: #86efac; }
+        }
+        .success-wave-char {
             display: inline-block;
             font-size: 1.35rem;
             font-weight: 800;
             animation: successWaveGlow 5s infinite ease-in-out;
-        }}
+        }
 
         /* Nút xác thực & đăng nhập ngay màu xanh lá neon */
         button[kind="primary"],
-        div[data-testid="stFormSubmitButton"] button {{
+        div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
             color: white !important;
@@ -154,14 +154,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 4px 18px rgba(34, 197, 94, 0.45) !important;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             margin-top: 15px !important;
-        }}
+        }
         button[kind="primary"]:hover,
-        div[data-testid="stFormSubmitButton"] button:hover {{
+        div[data-testid="stFormSubmitButton"] button:hover {
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
             transform: translateY(-4px) scale(1.03) !important;
             box-shadow: 0 12px 30px rgba(34, 197, 94, 0.85) !important;
             border-color: #86efac !important;
-        }}
+        }
 
         /* ============================================================
            NÚT SỨ MỆNH NỀN TẢNG: MÀU XANH LÁ, LÓA/LÓE SÁNG XANH & HOVER NỔI
@@ -216,17 +216,17 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             color: #ffffff !important;
         }
 
-        @keyframes waveUp {{
-            0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
-            10% {{ transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1); }}
-        }}
-        .wave-char {{
+        @keyframes waveUp {
+            0%, 20%, 100% { transform: translateY(0); text-shadow: none; }
+            10% { transform: translateY(-15px); text-shadow: 0 0 25px rgba(72,187,120,1); }
+        }
+        .wave-char {
             display: inline-block; position: relative; margin-right: 2px; font-size: clamp(24px, 3.5vw, 42px) !important; font-weight: 900 !important;
             letter-spacing: 2px !important; background: linear-gradient(90deg, #48bb78, #68d391, #319795); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: waveUp 10s infinite ease-in-out; animation-delay: var(--delay);
-        }}
+        }
 
-        .section-title-custom {{
+        .section-title-custom {
             color: #ffffff;
             font-size: 1.15rem;
             font-weight: 800;
@@ -235,19 +235,19 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-left: 5px solid #48bb78;
             padding-left: 12px;
             text-transform: uppercase;
-        }}
-        .stat-value-custom {{
+        }
+        .stat-value-custom {
             font-size: 2.3rem;
             font-weight: 900;
             color: #63b3ed;
             margin-bottom: 5px;
             line-height: 1.1;
             letter-spacing: 0.5px;
-        }}
-        .stat-label-custom {{ color: #cbd5e1; font-size: 0.92rem; font-weight: 500; }}
-        .project-title-custom {{ color: #48bb78; font-weight: 700; font-size: 1.25rem; margin-bottom: 10px; }}
-        .project-desc-custom {{ color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.5; }}
-        .verified-badge-custom {{
+        }
+        .stat-label-custom { color: #cbd5e1; font-size: 0.92rem; font-weight: 500; }
+        .project-title-custom { color: #48bb78; font-weight: 700; font-size: 1.25rem; margin-bottom: 10px; }
+        .project-desc-custom { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.5; }
+        .verified-badge-custom {
             display: inline-block;
             background: rgba(72, 187, 120, 0.2);
             border: 1px solid #48bb78;
@@ -256,16 +256,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-radius: 8px;
             font-size: 0.82rem;
             font-weight: 700;
-        }}
+        }
 
-        .news-ticker-container {{
+        .news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 12px 25px;
             display: flex; align-items: center; z-index: 1000;
-        }}
-        .news-marquee {{ overflow: hidden; white-space: nowrap; width: 100%; }}
-        .news-marquee span {{ display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }}
-        @keyframes marquee {{ 0% {{ transform: translate(0, 0); }} 100% {{ transform: translate(-100%, 0); }} }}
+        }
+        .news-marquee { overflow: hidden; white-space: nowrap; width: 100%; }
+        .news-marquee span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
         </style>
     """, unsafe_allow_html=True)
 
