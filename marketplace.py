@@ -147,10 +147,11 @@ def hien_thi_san_giao_dich():
                 </div>
             """, unsafe_allow_html=True)
         with c3:
+            rating_text = "Tier A+" if st.session_state.get("current_lang") == "English" else "Hạng A+"
             st.markdown(f"""
                 <div class="dash-card">
                     <div class="dash-label">{t("Hạng Tín Nhiệm (ESG)")}</div>
-                    <div class="dash-value">{"Tier A+" if st.session_state.get("current_lang") == "English" else "Hạng A+"}</div>
+                    <div class="dash-value">{rating_text}</div>
                     <div class="dash-badge">{t("Đạt chuẩn")}</div>
                 </div>
             """, unsafe_allow_html=True)
@@ -448,3 +449,46 @@ def hien_thi_gioi_thieu_va_goi_von():
             z-index: 5 !important;
         }
         </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f'<div class="about-title-green">{t("VỀ CHÚNG TÔI & LỘ TRÌNH PHÁT TRIỂN")}</div>', unsafe_allow_html=True)
+
+    st.markdown(f'<div class="about-section-title">{t("SỨ MỆNH & TẦM NHÌN")}</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="about-card-glow">
+            {t("Nền tảng được xây dựng với mục tiêu thương mại hóa và minh bạch hóa thị trường tín chỉ carbon tại Việt Nam. Bằng cách kết hợp dữ liệu viễn thám vệ tinh đa quang phổ (Copernicus Sentinel-2) cùng mô hình trí tuệ nhân tạo (AI), chúng tôi số hóa quy trình kiểm kê MRV (Measurement, Reporting, and Verification), xóa bỏ rào cản chi phí cao và thời gian thẩm định kéo dài của các phương pháp thủ công truyền thống.")}
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f'<div class="about-section-title">{t("CÔNG NGHỆ LÕI")}</div>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(f"""
+            <div class="about-card-glow" style="text-align:center; min-height:190px;">
+                <div style="color:#38bdf8; font-size:1.15rem; font-weight:800; margin-bottom:8px;">Google Earth Engine</div>
+                {t("Xử lý dữ liệu không gian thời gian thực trên quy mô cấp tỉnh và toàn quốc với độ trễ cực thấp.")}
+            </div>
+        """, unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"""
+            <div class="about-card-glow" style="text-align:center; min-height:190px;">
+                <div style="color:#48bb78; font-size:1.15rem; font-weight:800; margin-bottom:8px;">AI Biomass Estimation</div>
+                {t("Thuật toán máy học tự động bóc tách chỉ số thực vật NDVI và tính toán độ che phủ sinh khối rừng.")}
+            </div>
+        """, unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"""
+            <div class="about-card-glow" style="text-align:center; min-height:190px;">
+                <div style="color:#f6e05e; font-size:1.15rem; font-weight:800; margin-bottom:8px;">Escrow Smart Matching</div>
+                {t("Cơ chế giao dịch ký quỹ tự động bảo đảm quyền lợi tài chính an toàn tuyệt đối cho người mua và chủ rừng.")}
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown(f'<div class="about-section-title">{t("LỘ TRÌNH PHÁT TRIỂN (ROADMAP 2026 - 2030)")}</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="about-card-glow">
+            <div style="margin-bottom:6px;"><b style="color:#48bb78;">{t("Giai đoạn 1 (2026):")}</b> {t("Hoàn thiện hệ sinh thái kiểm kê tự động MRV, kết nối dữ liệu thí điểm các vùng rừng ngập mặn Cà Mau và rừng phòng hộ Bắc Trung Bộ.")}</div>
+            <div style="margin-bottom:6px;"><b style="color:#48bb78;">{t("Giai đoạn 2 (2027 - 2028):")}</b> {t("Tích hợp sàn giao dịch thứ cấp cho các doanh nghiệp FDI, niêm yết chứng chỉ tiêu chuẩn Verra/Gold Standard.")}</div>
+            <div><b style="color:#48bb78;">{t("Giai đoạn 3 (2029 - 2030):")}</b> {t("Mở rộng quy mô ra toàn khu vực Đông Nam Á, trở thành trung tâm giao dịch hạn ngạch phát thải hàng đầu.")}</div>
+        </div>
+    """, unsafe_allow_html=True)
