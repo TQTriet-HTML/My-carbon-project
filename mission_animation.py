@@ -4,10 +4,10 @@ import streamlit.components.v1 as components
 def get_mission_animation_html(lang="Tiếng Việt"):
     is_en = (lang == "English")
     
-    cap_1 = "1. SƠ KHAI: Những cánh rừng nguyên sinh bạt ngàn nuôi dưỡng hành tinh xanh..." if not is_en else "1. PRIMORDIAL: Ancient primeval forests breathing life into the green planet..."
-    cap_2 = "2. CÔNG NGHIỆP HÓA: Nhà máy mọc lên, xả khói khí nhà kính gây ô nhiễm môi trường..." if not is_en else "2. INDUSTRIALIZATION: Factories emerge, emitting greenhouse gases and polluting the atmosphere..."
-    cap_3 = "3. TÍN CHỈ CARBON: Cầu nối cân bằng giúp bảo vệ môi trường mà không cản trở công nghiệp..." if not is_en else "3. CARBON CREDITS: The balancing bridge ensuring conservation without halting industrial growth..."
-    cap_4 = "4. PHÁT TRIỂN BỀN VỮNG: Thu phóng hành tinh xanh – Nơi thiên nhiên & con người hòa hợp trọn vẹn..." if not is_en else "4. SUSTAINABILITY: Zooming out to our Green Earth – Where humanity & nature coexist in harmony..."
+    cap_1 = "1. KHỞI NGUYÊN: Những cánh rừng nguyên sinh bạt ngàn nuôi dưỡng hành tinh xanh" if not is_en else "1. PRIMORDIAL: Ancient primeval forests breathing life into our green planet"
+    cap_2 = "2. CÔNG NGHIỆP HÓA: Nhà máy mọc lên, xả khói khí nhà kính gây ô nhiễm môi trường" if not is_en else "2. INDUSTRIALIZATION: Factories emerge, emitting greenhouse gases and polluting nature"
+    cap_3 = "3. TÍN CHỈ CARBON: Cầu nối cân bằng kinh tế và tái tạo rừng mà không kìm hãm công nghiệp" if not is_en else "3. CARBON CREDITS: Balancing economic growth and forest restoration sustainably"
+    cap_4 = "4. PHÁT TRIỂN BỀN VỮNG: Con người và Trái Đất xanh cùng chung sống hòa hợp trọn vẹn" if not is_en else "4. SUSTAINABILITY: Humanity and our Living Earth coexisting in joyful harmony"
     slogan = "MỘT CÚ CHẠM - VẠN ĐIỀU XANH" if not is_en else "ONE TOUCH - ONE GREEN WORLD"
     sub_slogan = "NỀN TẢNG KIỂM KÊ MRV & SÀN TÍN CHỈ CARBON" if not is_en else "MRV SPATIAL PLATFORM & CARBON CREDIT EXCHANGE"
 
@@ -44,30 +44,33 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             width: 100%;
             height: 100%;
         }}
+        /* DÒNG DIỄN GIẢI GỌN GÀNG TRÊN ĐÚNG 1 DÒNG DUY NHẤT */
         .story-badge {{
             position: absolute;
-            top: 20px;
-            left: 25px;
-            right: 25px;
+            top: 18px;
+            left: 20px;
+            right: 20px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 700;
             color: #48bb78;
-            background: rgba(10, 16, 29, 0.88);
+            background: rgba(10, 16, 29, 0.9);
             border: 1px solid rgba(72, 187, 120, 0.4);
             border-radius: 10px;
-            padding: 10px 18px;
+            padding: 9px 15px;
             backdrop-filter: blur(8px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            letter-spacing: 0.5px;
-            transition: all 0.5s ease;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             z-index: 10;
         }}
 
-        /* HIỆU ỨNG SÓNG CHỮ NHẤP NHÔ VÀ TỎA SÁNG XANH LÁ MỖI 4 GIÂY */
+        /* SLOGAN LƯỚT SÓNG TỪNG CHỮ MỖI 4 GIÂY */
         .slogan-box {{
             position: absolute;
-            bottom: 45px;
+            bottom: 30px;
             left: 0;
             width: 100%;
             text-align: center;
@@ -76,22 +79,22 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             pointer-events: none;
             z-index: 15;
         }}
-        @keyframes charWave4s {{
+        @keyframes waveChar4s {{
             0%, 25%, 100% {{ transform: translateY(0); color: #48bb78; text-shadow: 0 0 10px rgba(72,187,120,0.4); }}
-            12% {{ transform: translateY(-10px); color: #86efac; text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 8px rgba(255,255,255,0.9); }}
+            12% {{ transform: translateY(-8px); color: #86efac; text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 8px rgba(255,255,255,0.9); }}
         }}
         .wave-slogan-char {{
             display: inline-block;
-            font-size: 23px;
+            font-size: 22px;
             font-weight: 900;
             letter-spacing: 2px;
-            animation: charWave4s 4s infinite ease-in-out;
+            animation: waveChar4s 4s infinite ease-in-out;
         }}
         .sub-slogan-text {{
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 600;
             color: #94a3b8;
-            margin-top: 6px;
+            margin-top: 5px;
             letter-spacing: 1px;
         }}
     </style>
@@ -122,7 +125,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     ];
     const slogan = "{slogan}";
 
-    // Tạo các phần tử chữ cho hiệu ứng sóng 4s
     let waveHtml = "";
     let delay = 0.0;
     for(let char of slogan) {{
@@ -133,11 +135,11 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    const TOTAL_DURATION = 23000; // 23 giây tổng hành trình rồi thoát
+    const TOTAL_DURATION = 25000; // ĐÚNG 25 GIÂY TỔNG HÀNH TRÌNH
 
     let smokeParticles = [];
     let carbonParticles = [];
-    for(let i=0; i<40; i++) {{
+    for(let i=0; i<35; i++) {{
         smokeParticles.push({{
             x: 645,
             y: 215,
@@ -162,10 +164,9 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         const now = performance.now();
         let elapsed = now - startTime;
 
-        // KHI KẾT THÚC ĐOẠN SỨ MỆNH: ĐÓNG DIALOG QUAY VỀ ĐĂNG NHẬP
+        // TỰ ĐỘNG ĐÓNG DIALOG KHI HẾT 25 GIÂY
         if (elapsed >= TOTAL_DURATION && !closedTriggered) {{
             closedTriggered = true;
-            // Gửi sự kiện đóng dialog ra cửa sổ cha
             try {{
                 window.parent.postMessage({{ type: "streamlit:setComponentValue", value: "CLOSE_MISSION" }}, "*");
                 const closeBtn = window.parent.document.querySelector('button[aria-label="Close"]');
@@ -176,29 +177,30 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (elapsed < 5500) {{
+        // PHÂN BỔ THỜI LƯỢNG 25S CHO 4 HỒI
+        if (elapsed < 6000) {{
             badge.innerText = captions[0];
             badge.style.color = "#48bb78";
             badge.style.borderColor = "rgba(72, 187, 120, 0.4)";
             sloganBox.style.opacity = "0";
             renderScene(elapsed, 1.0, 0.0, 0.0, 0.0);
-        }} else if (elapsed < 11000) {{
+        }} else if (elapsed < 12000) {{
             badge.innerText = captions[1];
             badge.style.color = "#f87171";
             badge.style.borderColor = "rgba(248, 113, 113, 0.4)";
-            let p = (elapsed - 5500) / 5500;
+            let p = (elapsed - 6000) / 6000;
             renderScene(elapsed, 1.0 - p * 0.4, p, 0.0, 0.0);
-        }} else if (elapsed < 16500) {{
+        }} else if (elapsed < 17500) {{
             badge.innerText = captions[2];
             badge.style.color = "#38bdf8";
             badge.style.borderColor = "rgba(56, 189, 248, 0.4)";
-            let p = (elapsed - 11000) / 5500;
+            let p = (elapsed - 12000) / 5500;
             renderScene(elapsed, 0.6 + p * 0.4, 1.0 - p * 0.3, p, 0.0);
         }} else {{
             badge.innerText = captions[3];
             badge.style.color = "#4ade80";
             badge.style.borderColor = "rgba(74, 222, 128, 0.5)";
-            let zoomP = Math.min(1.0, (elapsed - 16500) / 3000);
+            let zoomP = Math.min(1.0, (elapsed - 17500) / 3500);
             sloganBox.style.opacity = zoomP > 0.6 ? "1" : "0";
             renderScene(elapsed, 1.0, 0.7, 1.0, zoomP);
         }}
@@ -210,24 +212,11 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         ctx.fillStyle = "#070c16";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Sao trời nền
-        if (zoomProgress > 0.05) {{
-            ctx.save();
-            ctx.globalAlpha = Math.min(1.0, zoomProgress * 1.5);
-            for(let s=0; s<40; s++) {{
-                let sx = (s * 41) % canvas.width;
-                let sy = (s * 67) % canvas.height;
-                ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-                ctx.fillRect(sx, sy, 2, 2);
-            }}
-            ctx.restore();
-        }}
-
-        // CAMERA ZOOM-OUT THU PHÓNG ĐIỆN ẢNH
+        // THU PHÓNG ZOOM-OUT CINEMATIC: Bắt đầu từ góc nhìn cận cảnh, lùi xa dần
         ctx.save();
         let targetX = canvas.width / 2;
-        let targetY = 195;
-        let scale = 1.0 - zoomProgress * 0.82;
+        let targetY = 190;
+        let scale = 1.0 - zoomProgress * 0.85;
         let transY = (1.0 - zoomProgress) * 0 + zoomProgress * (targetY - 370 * scale);
 
         ctx.translate(targetX * (1 - scale), transY);
@@ -249,6 +238,15 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, canvas.width, 370);
 
+            // Mặt trời
+            ctx.beginPath();
+            ctx.arc(140, 110, 38, 0, Math.PI * 2);
+            let sunGrad = ctx.createRadialGradient(140, 110, 10, 140, 110, 38);
+            sunGrad.addColorStop(0, "rgba(74, 222, 128, 0.8)");
+            sunGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
+            ctx.fillStyle = sunGrad;
+            ctx.fill();
+
             // Mặt đất
             ctx.fillStyle = "#111c24";
             ctx.fillRect(0, 370, canvas.width, 130);
@@ -259,14 +257,14 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.lineTo(canvas.width, 370);
             ctx.stroke();
 
-            // Rừng cây
+            // Rừng cây (Bên trái)
             drawTree(70, 370, 0.9 * forestHealth, "#15803d", "#22c55e");
             drawTree(130, 370, 1.2 * forestHealth, "#166534", "#48bb78");
             drawTree(200, 370, 1.0 * forestHealth, "#14532d", "#16a34a");
             drawTree(270, 370, 1.15 * forestHealth, "#15803d", "#34d399");
             drawTree(340, 370, 0.85 * forestHealth, "#166534", "#22c55e");
 
-            // Nhà máy
+            // Nhà máy (Bên phải)
             if (industrialLevel > 0.05) {{
                 ctx.fillStyle = "#334155";
                 ctx.fillRect(480, 300, 140, 70);
@@ -297,7 +295,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
                 }}
             }}
 
-            // Tín chỉ Carbon
+            // Hạt tín chỉ carbon
             if (carbonLevel > 0.1) {{
                 ctx.strokeStyle = "rgba(72, 187, 120, 0.6)";
                 ctx.lineWidth = 2;
@@ -323,85 +321,140 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         }}
         ctx.restore();
 
-        // ĐOẠN CUỐI: TRÁI ĐẤT ĐẠI DƯƠNG XANH TỰ NHIÊN (KHÔNG PHÁT SÁNG CHÓI) + 2 LÁ 45 ĐỘ
+        // ĐOẠN KẾT: TRÁI ĐẤT HOẠT HÌNH THEO MẪU ẢNH + 2 CHIẾC LÁ NÂNG ĐỠ (GÂN LÁ RÕ NÉT)
         if (zoomProgress > 0.1) {{
             ctx.save();
             ctx.globalAlpha = Math.min(1.0, (zoomProgress - 0.1) / 0.7);
-            ctx.translate(canvas.width / 2, 200);
+            ctx.translate(canvas.width / 2, 195);
 
-            const R = 72;
+            const R = 78;
 
-            // 1. ĐẠI DƯƠNG XANH BIỂN CHÂN THẬT (KHÔNG DÙNG HÀO QUANG SHADOW CHÓI LÒA)
+            // 1. TẠO HÌNH TRÁI ĐẤT THEO ĐÚNG MẪU ẢNH
             ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, R, 0, Math.PI * 2);
-            let oceanGrad = ctx.createRadialGradient(-20, -25, 10, 0, 0, R);
-            oceanGrad.addColorStop(0, "#0284c7");   // Xanh biển tươi sáng
-            oceanGrad.addColorStop(0.5, "#0369a1"); // Xanh biển sâu
-            oceanGrad.addColorStop(0.85, "#075985");
-            oceanGrad.addColorStop(1, "#0c4a6e");   // Viền biển tối
-            ctx.fillStyle = oceanGrad;
+            ctx.fillStyle = "#7dd3fc"; // Nền đại dương xanh dương nhạt hoạt họa
             ctx.fill();
-            ctx.clip();
-
-            // 2. CÁC MẢNG LỤC ĐỊA NGẢ XANH LÁ TỰ NHIÊN
-            let rot = (time * 0.0003) % (Math.PI * 2);
-            ctx.save();
-            ctx.rotate(rot * 0.12);
-
-            // Lục địa 1: Á - Âu (Màu xanh ngọc pha chút đất)
-            ctx.fillStyle = "#15803d";
-            ctx.beginPath();
-            ctx.ellipse(10, -18, 36, 26, 0.3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = "#16a34a";
-            ctx.beginPath();
-            ctx.ellipse(20, 8, 22, 28, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Lục địa 2: Châu Mỹ (Rừng Amazon ngả xanh lá)
-            ctx.fillStyle = "#15803d";
-            ctx.beginPath();
-            ctx.ellipse(-36, -14, 26, 18, -0.3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = "#22c55e";
-            ctx.beginPath();
-            ctx.ellipse(-24, 22, 15, 30, 0.25, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Dải mây trắng mỏng tự nhiên
-            ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-            ctx.beginPath();
-            ctx.ellipse(-8, -28, 42, 7, -0.1, 0, Math.PI * 2);
-            ctx.ellipse(8, 30, 46, 8, 0.15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-
-            // Bóng 3D tự nhiên (Tạo độ cong của quả địa cầu)
-            let sphereShade = ctx.createRadialGradient(-25, -25, 10, 0, 0, R);
-            sphereShade.addColorStop(0, "rgba(255, 255, 255, 0.2)");
-            sphereShade.addColorStop(0.7, "rgba(0, 0, 0, 0)");
-            sphereShade.addColorStop(1, "rgba(0, 0, 0, 0.6)");
-            ctx.fillStyle = sphereShade;
-            ctx.fill();
-
-            // Đường viền địa cầu mảnh, tinh tế
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#0f172a"; // Viền đen hoạt hình dày dặn
             ctx.stroke();
+            ctx.clip(); // Cắt gọn các chi tiết lục địa trong vòng tròn
+
+            // MẢNG LỤC ĐỊA XANH LÁ VIỀN ĐEN
+            ctx.fillStyle = "#4ade80";
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 3;
+
+            // Lục địa phía Bắc (đầu)
+            ctx.beginPath();
+            ctx.moveTo(-15, -R);
+            ctx.bezierCurveTo(-10, -50, 15, -45, 20, -R);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+
+            // Lục địa góc trên trái
+            ctx.beginPath();
+            ctx.moveTo(-R, -45);
+            ctx.bezierCurveTo(-45, -55, -35, -20, -55, 0);
+            ctx.bezierCurveTo(-75, 10, -R, 15, -R, -45);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+
+            // Lục địa góc dưới trái (Nam Mỹ)
+            ctx.beginPath();
+            ctx.moveTo(-50, 20);
+            ctx.bezierCurveTo(-20, 25, -25, 65, -45, 75);
+            ctx.bezierCurveTo(-65, 75, -60, 45, -50, 20);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+
+            // Lục địa bên phải (Châu Phi / Á)
+            ctx.beginPath();
+            ctx.moveTo(40, -50);
+            ctx.bezierCurveTo(30, -20, 60, -10, 40, 15);
+            ctx.bezierCurveTo(30, 35, 60, 45, R, 20);
+            ctx.bezierCurveTo(R, -40, 65, -55, 40, -50);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+
+            // Mảng nước xanh sẫm trang trí đáy
+            ctx.fillStyle = "#38bdf8";
+            ctx.beginPath();
+            ctx.ellipse(20, 55, 25, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // KHUÔN MẶT ĐÁNG YÊU THEO MẪU
+            // 2 mắt đen tròn
+            ctx.fillStyle = "#0f172a";
+            ctx.beginPath();
+            ctx.arc(-22, 0, 4.5, 0, Math.PI * 2);
+            ctx.arc(22, 0, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Miệng cười nhỏ xinh
+            ctx.beginPath();
+            ctx.arc(0, 8, 7, 0.15 * Math.PI, 0.85 * Math.PI);
+            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineCap = "round";
+            ctx.stroke();
+
+            // 2 má hồng cam xinh xắn
+            ctx.fillStyle = "#f87171";
+            ctx.beginPath();
+            ctx.arc(-36, 15, 6.5, 0, Math.PI * 2);
+            ctx.arc(36, 15, 6.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Điểm sáng phản quang trắng hình cong góc trên trái
+            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+            ctx.beginPath();
+            ctx.ellipse(-52, -35, 14, 5, -Math.PI / 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(-62, -22, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
             ctx.restore();
 
-            // 3. HAI CHIẾC LÁ XÒE 45 ĐỘ NÂNG ĐỠ (CÓ GÂN LÁ RÕ NÉT)
-            // Lá trái (-45 độ)
+            // Viền ngoài quả địa cầu
+            ctx.beginPath();
+            ctx.arc(0, 0, R, 0, Math.PI * 2);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#0f172a";
+            ctx.stroke();
+
+            // 2. MẦM CÂY TRÊN ĐẦU QUẢ ĐỊA CẦU THEO HÌNH MẪU
             ctx.save();
-            ctx.translate(-24, 70);
+            ctx.translate(0, -R);
+            ctx.fillStyle = "#4ade80";
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 3;
+            // Thân mầm
+            ctx.beginPath();
+            ctx.moveTo(0, 0); ctx.lineTo(0, -14);
+            ctx.stroke();
+            // Lá mầm trái
+            ctx.beginPath();
+            ctx.ellipse(-10, -18, 9, 6, -Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill(); ctx.stroke();
+            // Lá mầm phải
+            ctx.beginPath();
+            ctx.ellipse(10, -18, 9, 6, Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill(); ctx.stroke();
+            ctx.restore();
+
+            // 3. HAI CHIẾC LÁ LỚN NÂNG ĐỠ DƯỚI ĐÁY XÒE GÓC 45 ĐỘ (CÓ GÂN LÁ RÕ NÉT)
+            // Lá bên trái (-45 độ)
+            ctx.save();
+            ctx.translate(-26, 76);
             ctx.rotate(-Math.PI / 4);
             drawDetailedLeaf();
             ctx.restore();
 
-            // Lá phải (+45 độ)
+            // Lá bên phải (+45 độ)
             ctx.save();
-            ctx.translate(24, 70);
+            ctx.translate(26, 76);
             ctx.rotate(Math.PI / 4);
             ctx.scale(-1, 1);
             drawDetailedLeaf();
@@ -437,39 +490,41 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         ctx.restore();
     }}
 
+    // CHI TIẾT 2 LÁ NÂNG ĐỠ (GÂN LÁ SẮC NÉT)
     function drawDetailedLeaf() {{
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.bezierCurveTo(40, -30, 48, -85, 15, -108);
-        ctx.bezierCurveTo(-15, -85, -24, -30, 0, 0);
+        ctx.bezierCurveTo(42, -30, 50, -90, 16, -112);
+        ctx.bezierCurveTo(-16, -90, -25, -30, 0, 0);
 
-        let leafGrad = ctx.createLinearGradient(0, 0, 20, -105);
+        let leafGrad = ctx.createLinearGradient(0, 0, 20, -110);
         leafGrad.addColorStop(0, "#15803d");
         leafGrad.addColorStop(0.5, "#22c55e");
         leafGrad.addColorStop(1, "#4ade80");
         ctx.fillStyle = leafGrad;
-        ctx.shadowColor = "rgba(34, 197, 94, 0.4)";
-        ctx.shadowBlur = 12;
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 3.5;
         ctx.fill();
-
-        // Sống lá chính
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-        ctx.lineWidth = 2.2;
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.quadraticCurveTo(8, -50, 15, -104);
         ctx.stroke();
 
-        // Gân lá nhánh
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
-        ctx.lineWidth = 1.3;
+        // Sống lá chính
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2.4;
         ctx.beginPath();
-        ctx.moveTo(3, -25); ctx.lineTo(18, -36);
-        ctx.moveTo(6, -48); ctx.lineTo(24, -60);
-        ctx.moveTo(10, -72); ctx.lineTo(23, -82);
-        ctx.moveTo(3, -25); ctx.lineTo(-10, -32);
-        ctx.moveTo(6, -48); ctx.lineTo(-8, -56);
-        ctx.moveTo(10, -72); ctx.lineTo(0, -78);
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(8, -55, 16, -108);
+        ctx.stroke();
+
+        // Gân nhánh
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(3, -25); ctx.lineTo(19, -38);
+        ctx.moveTo(6, -50); ctx.lineTo(25, -63);
+        ctx.moveTo(10, -75); ctx.lineTo(24, -86);
+        ctx.moveTo(3, -25); ctx.lineTo(-11, -33);
+        ctx.moveTo(6, -50); ctx.lineTo(-9, -58);
+        ctx.moveTo(10, -75); ctx.lineTo(1, -81);
         ctx.stroke();
     }}
 
@@ -485,7 +540,7 @@ def hien_thi_hop_thoai_su_menh():
     html_code = get_mission_animation_html(current_lang)
     components.html(html_code, height=520, scrolling=False)
     
-    col_l, col_r = st.columns([0.7, 0.3])
+    col_l, col_r = st.columns([0.65, 0.35])
     with col_r:
         btn_close_lbl = "ĐÓNG & TIẾP TỤC ĐĂNG NHẬP" if current_lang == "Tiếng Việt" else "CLOSE & CONTINUE TO LOGIN"
         if st.button(btn_close_lbl, use_container_width=True, type="secondary"):
