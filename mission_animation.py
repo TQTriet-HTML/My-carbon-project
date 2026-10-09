@@ -36,7 +36,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             background: #080e1a;
             border-radius: 16px;
             border: 2px solid rgba(72, 187, 120, 0.45);
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(72, 187, 120, 0.12);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
             overflow: hidden;
         }}
         canvas {{
@@ -63,13 +63,35 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             transition: all 0.5s ease;
             z-index: 10;
         }}
-        .replay-tag {{
+
+        /* HIỆU ỨNG SÓNG CHỮ NHẤP NHÔ VÀ TỎA SÁNG XANH LÁ MỖI 4 GIÂY */
+        .slogan-box {{
             position: absolute;
-            bottom: 15px;
-            right: 20px;
-            font-size: 11px;
-            color: #64748b;
+            bottom: 45px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+            z-index: 15;
+        }}
+        @keyframes charWave4s {{
+            0%, 25%, 100% {{ transform: translateY(0); color: #48bb78; text-shadow: 0 0 10px rgba(72,187,120,0.4); }}
+            12% {{ transform: translateY(-10px); color: #86efac; text-shadow: 0 0 25px rgba(72,187,120,1), 0 0 8px rgba(255,255,255,0.9); }}
+        }}
+        .wave-slogan-char {{
+            display: inline-block;
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            animation: charWave4s 4s infinite ease-in-out;
+        }}
+        .sub-slogan-text {{
+            font-size: 12.5px;
             font-weight: 600;
+            color: #94a3b8;
+            margin-top: 6px;
             letter-spacing: 1px;
         }}
     </style>
@@ -79,13 +101,18 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     <div class="player-wrapper">
         <div class="story-badge" id="storyBadge">{cap_1}</div>
         <canvas id="animCanvas" width="760" height="500"></canvas>
-        <div class="replay-tag">AUTO LOOPING (60 FPS)</div>
+        <div class="slogan-box" id="sloganBox">
+            <div id="waveContainer"></div>
+            <div class="sub-slogan-text">{sub_slogan}</div>
+        </div>
     </div>
 
     <script>
     const canvas = document.getElementById('animCanvas');
     const ctx = canvas.getContext('2d');
     const badge = document.getElementById('storyBadge');
+    const sloganBox = document.getElementById('sloganBox');
+    const waveContainer = document.getElementById('waveContainer');
 
     const captions = [
         "{cap_1}",
@@ -93,26 +120,33 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         "{cap_3}",
         "{cap_4}"
     ];
-    const sloganText = "{slogan}";
-    const subSloganText = "{sub_slogan}";
+    const slogan = "{slogan}";
+
+    // Tạo các phần tử chữ cho hiệu ứng sóng 4s
+    let waveHtml = "";
+    let delay = 0.0;
+    for(let char of slogan) {{
+        let c = char === " " ? "&nbsp;" : char;
+        waveHtml += `<span class="wave-slogan-char" style="animation-delay: ${{delay.toFixed(2)}}s;">${{c}}</span>`;
+        delay += 0.08;
+    }}
+    waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    const CYCLE_DURATION = 28000; // 28s mỗi chu kỳ
+    const TOTAL_DURATION = 23000; // 23 giây tổng hành trình rồi thoát
 
-    // Hạt khói và hạt carbon
     let smokeParticles = [];
     let carbonParticles = [];
-    for(let i=0; i<45; i++) {{
+    for(let i=0; i<40; i++) {{
         smokeParticles.push({{
             x: 645,
             y: 215,
             r: 7 + Math.random() * 10,
             vx: (Math.random() - 0.5) * 0.9,
-            vy: -1.2 - Math.random() * 1.6,
-            alpha: 0.5
+            vy: -1.2 - Math.random() * 1.6
         }});
     }}
-    for(let i=0; i<60; i++) {{
+    for(let i=0; i<50; i++) {{
         carbonParticles.push({{
             x: 100 + Math.random() * 560,
             y: 150 + Math.random() * 200,
@@ -122,49 +156,65 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         }});
     }}
 
+    let closedTriggered = false;
+
     function draw() {{
         const now = performance.now();
-        let elapsed = (now - startTime) % CYCLE_DURATION;
+        let elapsed = now - startTime;
+
+        // KHI KẾT THÚC ĐOẠN SỨ MỆNH: ĐÓNG DIALOG QUAY VỀ ĐĂNG NHẬP
+        if (elapsed >= TOTAL_DURATION && !closedTriggered) {{
+            closedTriggered = true;
+            // Gửi sự kiện đóng dialog ra cửa sổ cha
+            try {{
+                window.parent.postMessage({{ type: "streamlit:setComponentValue", value: "CLOSE_MISSION" }}, "*");
+                const closeBtn = window.parent.document.querySelector('button[aria-label="Close"]');
+                if (closeBtn) closeBtn.click();
+            }} catch(e) {{}}
+            return;
+        }}
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (elapsed < 6000) {{
+        if (elapsed < 5500) {{
             badge.innerText = captions[0];
             badge.style.color = "#48bb78";
             badge.style.borderColor = "rgba(72, 187, 120, 0.4)";
-            renderFullWorld(elapsed, 1.0, 0.0, 0.0, 0.0);
-        }} else if (elapsed < 12000) {{
+            sloganBox.style.opacity = "0";
+            renderScene(elapsed, 1.0, 0.0, 0.0, 0.0);
+        }} else if (elapsed < 11000) {{
             badge.innerText = captions[1];
             badge.style.color = "#f87171";
             badge.style.borderColor = "rgba(248, 113, 113, 0.4)";
-            let p = (elapsed - 6000) / 6000;
-            renderFullWorld(elapsed, 1.0 - p * 0.4, p, 0.0, 0.0);
-        }} else if (elapsed < 18000) {{
+            let p = (elapsed - 5500) / 5500;
+            renderScene(elapsed, 1.0 - p * 0.4, p, 0.0, 0.0);
+        }} else if (elapsed < 16500) {{
             badge.innerText = captions[2];
             badge.style.color = "#38bdf8";
             badge.style.borderColor = "rgba(56, 189, 248, 0.4)";
-            let p = (elapsed - 12000) / 6000;
-            renderFullWorld(elapsed, 0.6 + p * 0.4, 1.0 - p * 0.3, p, 0.0);
+            let p = (elapsed - 11000) / 5500;
+            renderScene(elapsed, 0.6 + p * 0.4, 1.0 - p * 0.3, p, 0.0);
         }} else {{
             badge.innerText = captions[3];
             badge.style.color = "#4ade80";
             badge.style.borderColor = "rgba(74, 222, 128, 0.5)";
-            let zoomP = Math.min(1.0, (elapsed - 18000) / 4000);
-            renderFullWorld(elapsed, 1.0, 0.7, 1.0, zoomP);
+            let zoomP = Math.min(1.0, (elapsed - 16500) / 3000);
+            sloganBox.style.opacity = zoomP > 0.6 ? "1" : "0";
+            renderScene(elapsed, 1.0, 0.7, 1.0, zoomP);
         }}
 
         requestAnimationFrame(draw);
     }}
 
-    function renderFullWorld(time, forestHealth, industrialLevel, carbonLevel, zoomProgress) {{
-        // Bầu trời sâu thẳm vũ trụ
+    function renderScene(time, forestHealth, industrialLevel, carbonLevel, zoomProgress) {{
         ctx.fillStyle = "#070c16";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Sao lấp lánh khi zoom xa
+        // Sao trời nền
         if (zoomProgress > 0.05) {{
             ctx.save();
             ctx.globalAlpha = Math.min(1.0, zoomProgress * 1.5);
-            for(let s=0; s<45; s++) {{
+            for(let s=0; s<40; s++) {{
                 let sx = (s * 41) % canvas.width;
                 let sy = (s * 67) % canvas.height;
                 ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
@@ -173,22 +223,21 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.restore();
         }}
 
-        // ĐỘNG TÁC THU NHỎ CINEMATIC: Camera lùi xa dần thành một quả cầu Trái Đất
+        // CAMERA ZOOM-OUT THU PHÓNG ĐIỆN ẢNH
         ctx.save();
         let targetX = canvas.width / 2;
         let targetY = 195;
-        let scale = 1.0 - zoomProgress * 0.82; // Thu nhỏ dần về tỉ lệ quả cầu
+        let scale = 1.0 - zoomProgress * 0.82;
         let transY = (1.0 - zoomProgress) * 0 + zoomProgress * (targetY - 370 * scale);
 
         ctx.translate(targetX * (1 - scale), transY);
         ctx.scale(scale, scale);
 
-        // VÙNG KHÔNG GIAN BỀ MẶT ĐỊA CẦU
         if (zoomProgress < 0.98) {{
             ctx.save();
             ctx.globalAlpha = 1.0 - zoomProgress * 0.85;
 
-            // Bầu khí quyển & Đường chân trời
+            // Bầu trời
             let skyGrad = ctx.createLinearGradient(0, 0, 0, 370);
             if (industrialLevel > 0.5 && carbonLevel < 0.5) {{
                 skyGrad.addColorStop(0, "#1c1917");
@@ -200,15 +249,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, canvas.width, 370);
 
-            // Mặt trời
-            ctx.beginPath();
-            ctx.arc(140, 110, 40, 0, Math.PI * 2);
-            let sunGrad = ctx.createRadialGradient(140, 110, 10, 140, 110, 40);
-            sunGrad.addColorStop(0, "rgba(74, 222, 128, 0.8)");
-            sunGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
-            ctx.fillStyle = sunGrad;
-            ctx.fill();
-
             // Mặt đất
             ctx.fillStyle = "#111c24";
             ctx.fillRect(0, 370, canvas.width, 130);
@@ -219,14 +259,14 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.lineTo(canvas.width, 370);
             ctx.stroke();
 
-            // RỪNG NGUYÊN SINH
+            // Rừng cây
             drawTree(70, 370, 0.9 * forestHealth, "#15803d", "#22c55e");
             drawTree(130, 370, 1.2 * forestHealth, "#166534", "#48bb78");
             drawTree(200, 370, 1.0 * forestHealth, "#14532d", "#16a34a");
             drawTree(270, 370, 1.15 * forestHealth, "#15803d", "#34d399");
             drawTree(340, 370, 0.85 * forestHealth, "#166534", "#22c55e");
 
-            // NHÀ MÁY CÔNG NGHIỆP
+            // Nhà máy
             if (industrialLevel > 0.05) {{
                 ctx.fillStyle = "#334155";
                 ctx.fillRect(480, 300, 140, 70);
@@ -240,13 +280,10 @@ def get_mission_animation_html(lang="Tiếng Việt"):
                 ctx.fillRect(635, 220, 22, 150);
                 ctx.fillRect(670, 245, 18, 125);
 
-                // Cửa sổ
                 ctx.fillStyle = "#facc15";
                 ctx.fillRect(495, 315, 16, 20);
                 ctx.fillRect(525, 315, 16, 20);
-                ctx.fillRect(555, 315, 16, 20);
 
-                // Khói xả
                 if (carbonLevel < 0.8) {{
                     smokeParticles.forEach(p => {{
                         p.y += p.vy;
@@ -260,7 +297,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
                 }}
             }}
 
-            // Tín chỉ Carbon liên kết
+            // Tín chỉ Carbon
             if (carbonLevel > 0.1) {{
                 ctx.strokeStyle = "rgba(72, 187, 120, 0.6)";
                 ctx.lineWidth = 2;
@@ -277,8 +314,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                     ctx.fillStyle = "rgba(74, 222, 128, 0.85)";
-                    ctx.shadowColor = "#48bb78";
-                    ctx.shadowBlur = 8;
                     ctx.fill();
                 }});
                 drawTree(430, 370, 0.8 * carbonLevel, "#15803d", "#48bb78");
@@ -288,104 +323,89 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         }}
         ctx.restore();
 
-        // KHI THU PHÓNG ĐẾN ĐOẠN KẾT: QUẢ CẦU TRÁI ĐẤT XANH CHÂN THẬT & 2 LÁ CÂY 45 ĐỘ
+        // ĐOẠN CUỐI: TRÁI ĐẤT ĐẠI DƯƠNG XANH TỰ NHIÊN (KHÔNG PHÁT SÁNG CHÓI) + 2 LÁ 45 ĐỘ
         if (zoomProgress > 0.1) {{
             ctx.save();
             ctx.globalAlpha = Math.min(1.0, (zoomProgress - 0.1) / 0.7);
-            ctx.translate(canvas.width / 2, 205);
+            ctx.translate(canvas.width / 2, 200);
 
-            const R = 75; // Bán kính Trái Đất
+            const R = 72;
 
-            // 1. ĐẠI DƯƠNG XANH NGỌC SÂU THẲM
+            // 1. ĐẠI DƯƠNG XANH BIỂN CHÂN THẬT (KHÔNG DÙNG HÀO QUANG SHADOW CHÓI LÒA)
             ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, R, 0, Math.PI * 2);
-            let oceanGrad = ctx.createRadialGradient(-25, -25, 10, 0, 0, R);
-            oceanGrad.addColorStop(0, "#059669");
-            oceanGrad.addColorStop(0.5, "#047857");
-            oceanGrad.addColorStop(0.85, "#064e3b");
-            oceanGrad.addColorStop(1, "#022c22");
+            let oceanGrad = ctx.createRadialGradient(-20, -25, 10, 0, 0, R);
+            oceanGrad.addColorStop(0, "#0284c7");   // Xanh biển tươi sáng
+            oceanGrad.addColorStop(0.5, "#0369a1"); // Xanh biển sâu
+            oceanGrad.addColorStop(0.85, "#075985");
+            oceanGrad.addColorStop(1, "#0c4a6e");   // Viền biển tối
             ctx.fillStyle = oceanGrad;
-            ctx.shadowColor = "#34d399";
-            ctx.shadowBlur = 32;
             ctx.fill();
-            ctx.clip(); // Cắt mọi lục địa gọn trong hình cầu
+            ctx.clip();
 
-            // 2. CÁC MẢNG LỤC ĐỊA & RỪNG XANH TƯƠI MÁT (Xoay nhẹ theo thời gian)
+            // 2. CÁC MẢNG LỤC ĐỊA NGẢ XANH LÁ TỰ NHIÊN
             let rot = (time * 0.0003) % (Math.PI * 2);
             ctx.save();
-            ctx.rotate(rot * 0.15);
+            ctx.rotate(rot * 0.12);
 
-            // Mảng lục địa 1 (Á - Âu - Phi phủ rừng)
-            ctx.fillStyle = "#22c55e";
-            ctx.beginPath();
-            ctx.ellipse(12, -18, 38, 28, 0.3, 0, Math.PI * 2);
-            ctx.fill();
+            // Lục địa 1: Á - Âu (Màu xanh ngọc pha chút đất)
             ctx.fillStyle = "#15803d";
             ctx.beginPath();
-            ctx.ellipse(22, 10, 24, 30, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Mảng lục địa 2 (Châu Mỹ & Rừng nhiệt đới)
-            ctx.fillStyle = "#4ade80";
-            ctx.beginPath();
-            ctx.ellipse(-38, -12, 28, 20, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(10, -18, 36, 26, 0.3, 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = "#16a34a";
             ctx.beginPath();
-            ctx.ellipse(-26, 25, 16, 32, 0.25, 0, Math.PI * 2);
+            ctx.ellipse(20, 8, 22, 28, -0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            // Các dải mây trắng mỏng bồng bềnh
-            ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+            // Lục địa 2: Châu Mỹ (Rừng Amazon ngả xanh lá)
+            ctx.fillStyle = "#15803d";
             ctx.beginPath();
-            ctx.ellipse(-5, -30, 45, 8, -0.1, 0, Math.PI * 2);
-            ctx.ellipse(10, 32, 50, 9, 0.15, 0, Math.PI * 2);
+            ctx.ellipse(-36, -14, 26, 18, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#22c55e";
+            ctx.beginPath();
+            ctx.ellipse(-24, 22, 15, 30, 0.25, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Dải mây trắng mỏng tự nhiên
+            ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.beginPath();
+            ctx.ellipse(-8, -28, 42, 7, -0.1, 0, Math.PI * 2);
+            ctx.ellipse(8, 30, 46, 8, 0.15, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
 
-            // Hiệu ứng khối cầu 3D (Bóng đổ viền để quả cầu tròn trịa như mắt nhìn từ vũ trụ)
-            let sphereShade = ctx.createRadialGradient(-30, -30, 10, 0, 0, R);
-            sphereShade.addColorStop(0, "rgba(255, 255, 255, 0.25)");
+            // Bóng 3D tự nhiên (Tạo độ cong của quả địa cầu)
+            let sphereShade = ctx.createRadialGradient(-25, -25, 10, 0, 0, R);
+            sphereShade.addColorStop(0, "rgba(255, 255, 255, 0.2)");
             sphereShade.addColorStop(0.7, "rgba(0, 0, 0, 0)");
-            sphereShade.addColorStop(1, "rgba(0, 0, 0, 0.65)");
+            sphereShade.addColorStop(1, "rgba(0, 0, 0, 0.6)");
             ctx.fillStyle = sphereShade;
             ctx.fill();
 
-            // Vầng hào quang khí quyển mỏng (Atmosphere Halo)
-            ctx.strokeStyle = "rgba(167, 243, 208, 0.55)";
-            ctx.lineWidth = 3.5;
+            // Đường viền địa cầu mảnh, tinh tế
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.lineWidth = 1.5;
             ctx.stroke();
             ctx.restore();
 
-            // 3. HAI CHIẾC LÁ XÒE GÓC 45 ĐỘ NÂNG ĐỠ TRÁI ĐẤT (CÓ GÂN LÁ RÕ NÉT)
-            // Lá bên trái (-45 độ)
+            // 3. HAI CHIẾC LÁ XÒE 45 ĐỘ NÂNG ĐỠ (CÓ GÂN LÁ RÕ NÉT)
+            // Lá trái (-45 độ)
             ctx.save();
-            ctx.translate(-24, 72);
-            ctx.rotate(-Math.PI / 4); // -45 độ
+            ctx.translate(-24, 70);
+            ctx.rotate(-Math.PI / 4);
             drawDetailedLeaf();
             ctx.restore();
 
-            // Lá bên phải (+45 độ)
+            // Lá phải (+45 độ)
             ctx.save();
-            ctx.translate(24, 72);
-            ctx.rotate(Math.PI / 4); // +45 độ
-            ctx.scale(-1, 1); // Đối xứng hoàn hảo
+            ctx.translate(24, 70);
+            ctx.rotate(Math.PI / 4);
+            ctx.scale(-1, 1);
             drawDetailedLeaf();
             ctx.restore();
-
-            // 4. TIÊU ĐỀ SLOGAN BỀN VỮNG
-            ctx.textAlign = "center";
-            ctx.font = "900 22px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillStyle = "#48bb78";
-            ctx.shadowColor = "rgba(72, 187, 120, 0.9)";
-            ctx.shadowBlur = 16;
-            ctx.fillText(sloganText, 0, 185);
-
-            ctx.font = "600 12px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillStyle = "#94a3b8";
-            ctx.shadowBlur = 0;
-            ctx.fillText(subSloganText, 0, 212);
 
             ctx.restore();
         }}
@@ -417,7 +437,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         ctx.restore();
     }}
 
-    // VẼ CHI TIẾT LÁ CÂY CÓ SỐNG LÁ VÀ CÁC GÂN LÁ NHÁNH
     function drawDetailedLeaf() {{
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -429,27 +448,25 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         leafGrad.addColorStop(0.5, "#22c55e");
         leafGrad.addColorStop(1, "#4ade80");
         ctx.fillStyle = leafGrad;
-        ctx.shadowColor = "#22c55e";
-        ctx.shadowBlur = 20;
+        ctx.shadowColor = "rgba(34, 197, 94, 0.4)";
+        ctx.shadowBlur = 12;
         ctx.fill();
 
-        // Sống lá chính giữa
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
-        ctx.lineWidth = 2.5;
+        // Sống lá chính
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.lineWidth = 2.2;
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.quadraticCurveTo(8, -50, 15, -104);
         ctx.stroke();
 
-        // Các gân lá nhánh tỏa sang hai bên
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
-        ctx.lineWidth = 1.4;
+        // Gân lá nhánh
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.lineWidth = 1.3;
         ctx.beginPath();
-        // Nhánh bên phải
         ctx.moveTo(3, -25); ctx.lineTo(18, -36);
         ctx.moveTo(6, -48); ctx.lineTo(24, -60);
         ctx.moveTo(10, -72); ctx.lineTo(23, -82);
-        // Nhánh bên trái
         ctx.moveTo(3, -25); ctx.lineTo(-10, -32);
         ctx.moveTo(6, -48); ctx.lineTo(-8, -56);
         ctx.moveTo(10, -72); ctx.lineTo(0, -78);
@@ -467,3 +484,9 @@ def hien_thi_hop_thoai_su_menh():
     current_lang = st.session_state.get("current_lang", "Tiếng Việt")
     html_code = get_mission_animation_html(current_lang)
     components.html(html_code, height=520, scrolling=False)
+    
+    col_l, col_r = st.columns([0.7, 0.3])
+    with col_r:
+        btn_close_lbl = "ĐÓNG & TIẾP TỤC ĐĂNG NHẬP" if current_lang == "Tiếng Việt" else "CLOSE & CONTINUE TO LOGIN"
+        if st.button(btn_close_lbl, use_container_width=True, type="secondary"):
+            st.rerun()
