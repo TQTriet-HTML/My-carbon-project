@@ -49,6 +49,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown(f"""
         <style>
+        /* Hiệu ứng thở phát sáng xanh neon */
         @keyframes greenBreathePulse {{
             0%, 100% {{
                 box-shadow: 0 0 16px rgba(72, 187, 120, 0.35), inset 0 0 15px rgba(72, 187, 120, 0.15);
@@ -66,6 +67,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             95%, 100% {{ left: 220%; opacity: 0; }}
         }}
 
+        /* KHỐI BÊN TRÁI (FORM) */
         div[data-testid="stForm"] {{
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.94)) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
@@ -96,6 +98,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }}
 
+        /* KHỐI BÊN PHẢI (2 KHỐI NỀN XANH LÁ) */
         .hardcore-green-card {{
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.96) 0%, rgba(10, 61, 35, 0.94) 100%) !important;
             border: 2px solid #22c55e !important;
@@ -127,6 +130,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 5 !important;
         }}
 
+        /* HIỆU ỨNG SÓNG CHỮ ĐĂNG KÝ THÀNH CÔNG */
         @keyframes successWaveGlow {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; color: #48bb78; }}
             10% {{ transform: translateY(-8px); text-shadow: 0 0 16px rgba(72,187,120,1), 0 0 8px rgba(104,211,145,0.9); color: #86efac; }}
@@ -138,6 +142,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: successWaveGlow 5s infinite ease-in-out;
         }}
 
+        /* Nút xác thực & đăng nhập ngay màu xanh lá neon */
         button[kind="primary"],
         div[data-testid="stFormSubmitButton"] button {{
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -158,25 +163,58 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #86efac !important;
         }}
 
-        /* Nút Sứ mệnh Nền tảng với viền Neon Blue/Green */
-        button[key="btn_open_mission"] {{
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(34, 197, 94, 0.25) 100%) !important;
-            border: 1.5px solid #38bdf8 !important;
-            color: #38bdf8 !important;
-            font-weight: 800 !important;
-            border-radius: 10px !important;
-            letter-spacing: 1px !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3) !important;
-            margin-top: 5px !important;
-        }}
-        button[key="btn_open_mission"]:hover {{
-            background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
+        /* ============================================================
+           NÚT SỨ MỆNH NỀN TẢNG: MÀU XANH LÁ, LÓA/LÓE SÁNG XANH & HOVER NỔI
+           ============================================================ */
+        @keyframes missionPulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 14px rgba(72, 187, 120, 0.4), inset 0 0 10px rgba(72, 187, 120, 0.2);
+                border-color: rgba(74, 222, 128, 0.6) !important;
+            }
+            50% {
+                box-shadow: 0 0 35px rgba(72, 187, 120, 0.9), inset 0 0 18px rgba(72, 187, 120, 0.45);
+                border-color: #4ade80 !important;
+            }
+        }
+
+        button[key="btn_open_mission"] {
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 50%, #22c55e 100%) !important;
+            border: 2px solid #4ade80 !important;
             color: #ffffff !important;
-            transform: translateY(-3px) scale(1.02) !important;
-            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.75) !important;
-            border-color: #7dd3fc !important;
-        }}
+            font-weight: 900 !important;
+            font-size: 1rem !important;
+            border-radius: 12px !important;
+            letter-spacing: 1.5px !important;
+            text-transform: uppercase !important;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+            animation: missionPulseGlow 3.5s infinite ease-in-out !important;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            margin-top: 8px !important;
+            padding: 12px 20px !important;
+        }
+
+        button[key="btn_open_mission"]::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transform: skewX(-25deg);
+            animation: sweepLight10s 8s infinite linear;
+            pointer-events: none;
+        }
+
+        button[key="btn_open_mission"]:hover {
+            transform: translateY(-5px) scale(1.025) !important;
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%) !important;
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.95), inset 0 0 15px rgba(255, 255, 255, 0.5) !important;
+            border-color: #86efac !important;
+            color: #ffffff !important;
+        }
 
         @keyframes waveUp {{
             0%, 20%, 100% {{ transform: translateY(0); text-shadow: none; }}
@@ -327,7 +365,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-        # NÚT SỨ MỆNH NỀN TẢNG NẰM NGAY BÊN DƯỚI FORM ĐĂNG NHẬP
+        # NÚT SỨ MỆNH NỀN TẢNG MÀU XANH LÁ + LÓA/LÓE SÁNG XANH + NỔI LÊN KHI HOVER
         if st.button(t["btn_mission"], key="btn_open_mission", use_container_width=True):
             hien_thi_hop_thoai_su_menh()
 
