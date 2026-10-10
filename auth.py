@@ -55,6 +55,27 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
+        /* ==========================================================================
+           HIỆU ỨNG MÀN HÌNH CHỜ TV AMBIENT: SẮC MÀU XANH DƯƠNG & XANH LÁ CHUYỂN DỊCH ÊM DỊU
+           ========================================================================== */
+        @keyframes tvAmbientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .stApp, [data-testid="stAppViewContainer"] {
+            background: linear-gradient(125deg, #05131e 0%, #06261a 22%, #081d33 45%, #052a1e 68%, #091a29 85%, #072e21 100%) !important;
+            background-size: 350% 350% !important;
+            animation: tvAmbientFlow 22s ease-in-out infinite !important;
+        }
+
         html, body, [data-testid="stAppViewContainer"], .main {
             overflow: hidden !important;
             height: 100vh !important;
@@ -81,16 +102,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
-        /* ĐIỀU CHỈNH CHU KỲ 7 GIÂY: ÁNH SÁNG XANH DƯƠNG LƯỚT ĐỒNG NHỊP TRÊN BỀ MẶT CÁC KHỐI */
         @keyframes sweepBlueLight7s {
             0%, 75% { left: -120%; opacity: 0; }
             78% { opacity: 0.95; left: -120%; }
             92%, 100% { left: 220%; opacity: 0; }
         }
 
-        /* KHỐI FORM BÊN TRÁI */
+        /* KHỐI FORM BÊN TRÁI PHỦ KÍNH MỜ */
         div[data-testid="stForm"] {
-            background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.94)) !important;
+            background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
+            backdrop-filter: blur(14px) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
             border-radius: 16px !important;
             padding: 14px 18px !important;
@@ -119,9 +140,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* 3 KHỐI BÊN PHẢI (CHẠY ĐỒNG BỘ 7 GIÂY) */
+        /* 3 KHỐI BÊN PHẢI PHỦ KÍNH MỜ */
         .hardcore-green-card {
-            background: linear-gradient(135deg, rgba(6, 44, 25, 0.96) 0%, rgba(10, 61, 35, 0.94) 100%) !important;
+            background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
+            backdrop-filter: blur(14px) !important;
             border: 2px solid #22c55e !important;
             border-radius: 14px !important;
             padding: 10px 16px !important;
@@ -150,7 +172,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* Nút xác thực chính */
         button[kind="primary"],
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -171,7 +192,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
-        /* Nút Sứ mệnh */
         button[key="btn_inline_mission"] {
             background: linear-gradient(135deg, #0d5a30 0%, #15803d 50%, #22c55e 100%) !important;
             border: 1.5px solid #4ade80 !important;
@@ -193,7 +213,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             color: #ffffff !important;
         }
 
-        /* KHUNG CHỨA SLOGAN LÀM CHUẨN CỐ ĐỊNH */
         .slogan-wrapper {
             text-align: center;
             padding-top: 15px;
@@ -255,7 +274,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
         /* Thanh tin tức chân trang */
         .news-ticker-container {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.98);
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 18, 30, 0.95);
             border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 6px 20px;
             display: flex; align-items: center; z-index: 1000;
         }
