@@ -286,6 +286,78 @@ def get_particle_logo_html(lang="Tiếng Việt"):
     const CYCLE = 18000;
     const startTime = performance.now();
 
+    // =========================================================================
+    // TIÊM STYLE CSS VĨNH VIỄN VÀO TRÌNH DUYỆT ĐỂ KHÔNG BAO GIỜ BỊ MẤT HOVER
+    // =========================================================================
+    function injectPermanentHoverStyles() {{
+      try {{
+        const doc = window.parent.document;
+        if (!doc.getElementById('custom-hover-styles')) {{
+          const style = doc.createElement('style');
+          style.id = 'custom-hover-styles';
+          style.innerHTML = `
+            /* NÚT XÁC THỰC TRUY CẬP VÀ NÚT ĐĂNG KÝ (XANH LÁ + KHỐI 3D + NỔI LÊN) */
+            .st-key-btn_login_submit button,
+            .st-key-btn_reg_submit button,
+            .st-key-btn_auto_login_key button {
+                background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+                border: 1.5px solid #4ade80 !important;
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                border-radius: 10px !important;
+                box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            }
+            .st-key-btn_login_submit button:hover,
+            .st-key-btn_reg_submit button:hover,
+            .st-key-btn_auto_login_key button:hover {
+                background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+                transform: translateY(-4px) !important;
+                box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
+                color: #ffffff !important;
+            }
+            .st-key-btn_login_submit button:active,
+            .st-key-btn_reg_submit button:active,
+            .st-key-btn_auto_login_key button:active {
+                transform: translateY(4px) !important;
+                box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
+            }
+            .st-key-btn_login_submit button p,
+            .st-key-btn_reg_submit button p,
+            .st-key-btn_auto_login_key button p {
+                color: #ffffff !important;
+            }
+
+            /* NÚT KHÁM PHÁ SỨ MỆNH (XANH DƯƠNG + NỔI LÊN) */
+            .st-key-btn_mission_submit button {
+                background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+                border: 1.8px solid #38bdf8 !important;
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                border-radius: 10px !important;
+                box-shadow: 0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65) !important;
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            }
+            .st-key-btn_mission_submit button:hover {
+                background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+                border-color: #7dd3fc !important;
+                transform: translateY(-4px) scale(1.02) !important;
+                box-shadow: 0 9px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95) !important;
+                color: #ffffff !important;
+            }
+            .st-key-btn_mission_submit button:active {
+                transform: translateY(4px) scale(0.98) !important;
+                box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
+            }
+            .st-key-btn_mission_submit button p {
+                color: #ffffff !important;
+            }
+          `;
+          doc.head.appendChild(style);
+        }
+      }} catch(e) {{}}
+    }}
+
     function enforceRealDOMStyles() {{
       try {{
         const doc = window.parent.document;
@@ -308,70 +380,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             el.dataset.wrapped = 'true';
           }}
         }});
-
-        // STYLE NÚT: XÁC THỰC TRUY CẬP & TẠO MỚI TÀI KHOẢN (MÀU XANH LÁ + KHỐI 3D + ĐỒNG BỘ NỔI BỔNG)
-        const greenBtns = [
-            doc.querySelector('.st-key-btn_login_submit button'), 
-            doc.querySelector('.st-key-btn_reg_submit button')
-        ];
-        
-        greenBtns.forEach(btn => {{
-          if (btn && !btn.dataset.customizedGreen) {{
-            btn.dataset.customizedGreen = 'true';
-            btn.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
-            btn.style.setProperty('border', '1.5px solid #4ade80', 'important');
-            btn.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
-            btn.style.setProperty('border-radius', '10px', 'important');
-            btn.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
-
-            const texts = btn.querySelectorAll('*');
-            texts.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
-            
-            btn.addEventListener('mouseenter', () => {{
-              btn.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
-              btn.style.setProperty('box-shadow', '0 8px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75)', 'important');
-              btn.style.setProperty('background', 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)', 'important');
-            }});
-            btn.addEventListener('mouseleave', () => {{
-              btn.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
-              btn.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
-              btn.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
-            }});
-            btn.addEventListener('mousedown', () => {{
-              btn.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-              btn.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
-            }});
-          }}
-        }});
-
-        // STYLE NÚT: KHÁM PHÁ SỨ MỆNH (MÀU XANH DƯƠNG CÔNG NGHỆ)
-        const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
-        if (btnMission && !btnMission.dataset.customizedBlue) {{
-          btnMission.dataset.customizedBlue = 'true';
-          btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
-          btnMission.style.setProperty('border', '1.8px solid #38bdf8', 'important');
-          btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
-          btnMission.style.setProperty('border-radius', '10px', 'important');
-          btnMission.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
-
-          const texts2 = btnMission.querySelectorAll('*');
-          texts2.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
-
-          btnMission.addEventListener('mouseenter', () => {{
-            btnMission.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 8px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95)', 'important');
-            btnMission.style.setProperty('background', 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)', 'important');
-          }});
-          btnMission.addEventListener('mouseleave', () => {{
-            btnMission.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
-            btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
-          }});
-          btnMission.addEventListener('mousedown', () => {{
-            btnMission.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 2px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4)', 'important');
-          }});
-        }}
       }} catch(e) {{}}
     }}
 
@@ -380,6 +388,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       const elapsed = (now - startTime) % CYCLE;
       ctx.clearRect(0, 0, logicalW, logicalH);
       
+      injectPermanentHoverStyles();
       enforceRealDOMStyles();
 
       if (elapsed < 4500) {{
@@ -792,7 +801,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         with tab_dang_nhap:
             with st.form("form_login"):
                 st.markdown(f"""
-                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px;">
+                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px; transition: color 0.3s ease;">
                         {t["welcome_msg"]}
                     </div>
                 """, unsafe_allow_html=True)
@@ -826,9 +835,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 registered_user = st.session_state['reg_success_data']['user']
                 account_txt = t["account_label"]
                 st.markdown(f"""
-                    <div style="background: rgba(72,187,120,0.12); border: 1.5px solid #48bb78; text-align:center; padding: 12px 10px; border-radius:12px; margin-top: 6px;">
-                        <p style="color:#48bb78; font-weight:700; margin-bottom:4px; font-size:0.92rem;">{t['reg_success_line1']} {t['reg_success_line2']}</p>
-                        <p style="color:#cbd5e1; margin-bottom: 0px; font-size:0.88rem;">{account_txt}: <b style="color:#63b3ed;">{registered_user}</b></p>
+                    <div class="hardcore-green-card" style="text-align:center; padding: 20px 14px; margin-top: 10px; margin-bottom: 24px !important;">
+                        <div style="color:#4ade80; font-weight:800; margin-bottom:8px; font-size:1.05rem; letter-spacing:0.5px;">{t['reg_success_line1']}<br/>{t['reg_success_line2']}</div>
+                        <div style="color:#cbd5e1; margin-bottom: 0px; font-size:0.95rem;">{account_txt}: <b style="color:#38bdf8; font-size:1.1rem;">{registered_user}</b></div>
                     </div>
                 """, unsafe_allow_html=True)
                 if st.button(t["btn_auto_login"], key="btn_auto_login_key", use_container_width=True):
