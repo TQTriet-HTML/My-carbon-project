@@ -26,7 +26,7 @@ def get_particle_logo_html():
     </style>
     </head>
     <body>
-    <canvas id="logoCanvas" width="400" height="155"></canvas>
+    <canvas id="logoCanvas" width="420" height="170"></canvas>
     <script>
     const canvas = document.getElementById('logoCanvas');
     const ctx = canvas.getContext('2d');
@@ -34,177 +34,165 @@ def get_particle_logo_html():
     const W = canvas.width;
     const H = canvas.height;
     const cx = W / 2;
-    const cy = 76;
-    const R = 36;
+    const cy = 84;
+    const R = 46; // PHÓNG TO LOGO TO HƠN KHUNG CŨ
 
-    // 1. HÀM VẼ LOGO VECTOR NÉT CĂNG CHUẨN XÁC 100% THEO HÌNH SỨ MỆNH
-    function drawExactLogo(c, alpha = 1.0) {
+    // HÀM VẼ LOGO VECTOR NÉT CĂNG NGUYÊN BẢN (KHÔNG CÒN KHUNG VIỀN XÁM BAO NGOÀI)
+    function drawVectorLogo(c, alpha = 1.0) {
       if (alpha <= 0) return;
       c.save();
       c.globalAlpha = alpha;
 
-      // KHUNG VIỀN XÁM BO GÓC ÔM SÁT LOGO
-      c.strokeStyle = "rgba(148, 163, 184, 0.42)";
-      c.lineWidth = 1.4;
-      const bx = cx - 64, by = cy - R - 24, bw = 128, bh = R * 2 + 48, rad = 16;
-      c.beginPath();
-      c.moveTo(bx + rad, by);
-      c.lineTo(bx + bw - rad, by);
-      c.quadraticCurveTo(bx + bw, by, bx + bw, by + rad);
-      c.lineTo(bx + bw, by + bh - rad);
-      c.quadraticCurveTo(bx + bw, by + bh, bx + bw - rad, by + bh);
-      c.lineTo(bx + rad, by + bh);
-      c.quadraticCurveTo(bx, by + bh, bx, by + bh - rad);
-      c.lineTo(bx, by + rad);
-      c.quadraticCurveTo(bx, by, bx + rad, by);
-      c.stroke();
-
-      // QUẢ CẦU TRÁI ĐẤT HOẠT HÌNH
+      // 1. QUẢ CẦU TRÁI ĐẤT HOẠT HÌNH
       c.save();
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
       c.fillStyle = '#7dd3fc';
       c.fill();
-      c.lineWidth = 3.6;
+      c.lineWidth = 4.2;
       c.strokeStyle = '#0f172a';
       c.stroke();
       c.clip();
 
-      // CÁC MẢNG LỤC ĐỊA XANH LÁ
+      // CÁC MẢNG LỤC ĐỊA
       c.fillStyle = '#4ade80';
       c.strokeStyle = '#0f172a';
-      c.lineWidth = 2.8;
+      c.lineWidth = 3.2;
 
       // Lục địa đỉnh
       c.beginPath();
-      c.moveTo(cx - 8, cy - R);
-      c.bezierCurveTo(cx - 5, cy - 25, cx + 8, cy - 23, cx + 11, cy - R);
+      c.moveTo(cx - 10, cy - R);
+      c.bezierCurveTo(cx - 7, cy - 32, cx + 10, cy - 30, cx + 14, cy - R);
       c.closePath();
       c.fill(); c.stroke();
 
       // Lục địa góc trên trái
       c.beginPath();
-      c.moveTo(cx - R, cy - 22);
-      c.bezierCurveTo(cx - 20, cy - 28, cx - 18, cy - 8, cx - 28, cy);
-      c.bezierCurveTo(cx - 36, cy + 5, cx - R, cy + 7, cx - R, cy - 22);
+      c.moveTo(cx - R, cy - 28);
+      c.bezierCurveTo(cx - 26, cy - 36, cx - 22, cy - 12, cx - 36, cy);
+      c.bezierCurveTo(cx - 46, cy + 6, cx - R, cy + 9, cx - R, cy - 28);
       c.closePath();
       c.fill(); c.stroke();
 
       // Lục địa góc dưới trái
       c.beginPath();
-      c.moveTo(cx - 25, cy + 10);
-      c.bezierCurveTo(cx - 10, cy + 12, cx - 12, cy + 32, cx - 22, cy + 36);
-      c.bezierCurveTo(cx - 32, cy + 36, cx - 30, cy + 22, cx - 25, cy + 10);
+      c.moveTo(cx - 32, cy + 12);
+      c.bezierCurveTo(cx - 12, cy + 15, cx - 15, cy + 40, cx - 28, cy + 45);
+      c.bezierCurveTo(cx - 40, cy + 45, cx - 38, cy + 28, cx - 32, cy + 12);
       c.closePath();
       c.fill(); c.stroke();
 
       // Lục địa góc phải
       c.beginPath();
-      c.moveTo(cx + 20, cy - 25);
-      c.bezierCurveTo(cx + 15, cy - 10, cx + 30, cy - 5, cx + 20, cy + 8);
-      c.bezierCurveTo(cx + 15, cy + 18, cx + 30, cy + 22, cx + R, cy + 10);
-      c.bezierCurveTo(cx + R, cy - 20, cx + 32, cy - 28, cx + 20, cy - 25);
+      c.moveTo(cx + 25, cy - 32);
+      c.bezierCurveTo(cx + 18, cy - 12, cx + 38, cy - 6, cx + 25, cy + 10);
+      c.bezierCurveTo(cx + 18, cy + 22, cx + 38, cy + 28, cx + R, cy + 12);
+      c.bezierCurveTo(cx + R, cy - 25, cx + 40, cy - 36, cx + 25, cy - 32);
       c.closePath();
       c.fill(); c.stroke();
 
       // Vùng nước xanh đáy
       c.fillStyle = '#38bdf8';
       c.beginPath();
-      c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
+      c.ellipse(cx + 12, cy + 35, 17, 8, 0, 0, Math.PI * 2);
       c.fill();
 
-      // KHUÔN MẶT ĐÁNG YÊU
+      // Mắt & Miệng hoạt hình đáng yêu
       c.fillStyle = '#0f172a';
       c.beginPath();
-      c.arc(cx - 11, cy + 2, 2.6, 0, Math.PI * 2);
-      c.arc(cx + 11, cy + 2, 2.6, 0, Math.PI * 2);
+      c.arc(cx - 14, cy + 2, 3.2, 0, Math.PI * 2);
+      c.arc(cx + 14, cy + 2, 3.2, 0, Math.PI * 2);
       c.fill();
 
       c.beginPath();
-      c.arc(cx, cy + 6, 3.8, 0.15 * Math.PI, 0.85 * Math.PI);
-      c.lineWidth = 2.2;
+      c.arc(cx, cy + 7, 4.8, 0.15 * Math.PI, 0.85 * Math.PI);
+      c.lineWidth = 2.6;
       c.lineCap = 'round';
       c.stroke();
 
+      // Má hồng
       c.fillStyle = '#f87171';
       c.beginPath();
-      c.arc(cx - 19, cy + 9, 3.3, 0, Math.PI * 2);
-      c.arc(cx + 19, cy + 9, 3.3, 0, Math.PI * 2);
+      c.arc(cx - 24, cy + 11, 4.2, 0, Math.PI * 2);
+      c.arc(cx + 24, cy + 11, 4.2, 0, Math.PI * 2);
       c.fill();
 
       c.restore();
 
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
-      c.lineWidth = 3.6;
+      c.lineWidth = 4.2;
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // MẦM CÂY TRÊN ĐẦU: THÂN NÂU DÀY + LÁ MẦM XANH ĐẬM (KHÔNG BÓNG CHÓI)
+      // 2. MẦM CÂY TRÊN ĐẦU: THÂN NÂU DÀY + LÁ MẦM XANH ĐẬM (KHÔNG BÓNG CHÓI)
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
-      c.lineWidth = 6.5;
+      c.lineWidth = 8;
       c.lineCap = 'round';
       c.beginPath();
-      c.moveTo(0, 2); c.lineTo(0, -11);
+      c.moveTo(0, 2); c.lineTo(0, -14);
       c.stroke();
 
       c.strokeStyle = '#78350f';
-      c.lineWidth = 4.2;
+      c.lineWidth = 5.2;
       c.beginPath();
-      c.moveTo(0, 1); c.lineTo(0, -10);
+      c.moveTo(0, 1); c.lineTo(0, -13);
       c.stroke();
 
+      // 2 Lá mầm xanh đậm rừng già (#14532d)
       c.beginPath();
-      c.ellipse(-8, -13, 7.5, 5, -Math.PI / 5, 0, Math.PI * 2);
+      c.ellipse(-10, -16, 9.5, 6.2, -Math.PI / 5, 0, Math.PI * 2);
       c.fillStyle = '#14532d';
       c.fill();
-      c.lineWidth = 2.2;
+      c.lineWidth = 2.6;
       c.strokeStyle = '#0f172a';
       c.stroke();
 
       c.beginPath();
-      c.ellipse(8, -13, 7.5, 5, Math.PI / 5, 0, Math.PI * 2);
+      c.ellipse(10, -16, 9.5, 6.2, Math.PI / 5, 0, Math.PI * 2);
       c.fillStyle = '#14532d';
       c.fill();
-      c.lineWidth = 2.2;
+      c.lineWidth = 2.6;
       c.strokeStyle = '#0f172a';
       c.stroke();
       c.restore();
 
-      // 2 CHIẾC LÁ LỚN PHÍA TRƯỚC XÒE 45 ĐỘ NÂNG ĐỠ (GÂN LÁ RÕ NÉT)
+      // 3. HAI CHIẾC LÁ LỚN PHÍA TRƯỚC XÒE 45 ĐỘ NÂNG ĐỠ (GÂN LÁ TRẮNG NỔI BẬT)
       function drawBigLeaf(angle, isFlipped) {
         c.save();
-        c.translate(cx + (isFlipped ? 13 : -13), cy + 28);
+        c.translate(cx + (isFlipped ? 16 : -16), cy + 35);
         c.rotate(angle);
         if (isFlipped) c.scale(-1, 1);
 
         c.beginPath();
         c.moveTo(0, 0);
-        c.bezierCurveTo(18, -13, 23, -40, 7, -50);
-        c.bezierCurveTo(-7, -40, -11, -13, 0, 0);
+        c.bezierCurveTo(23, -16, 29, -50, 9, -62);
+        c.bezierCurveTo(-9, -50, -14, -16, 0, 0);
         c.fillStyle = '#22c55e';
         c.fill();
         c.strokeStyle = '#0f172a';
-        c.lineWidth = 2.6;
+        c.lineWidth = 3.2;
         c.stroke();
 
+        // Sống lá chính màu trắng
         c.strokeStyle = '#ffffff';
-        c.lineWidth = 1.6;
+        c.lineWidth = 2.0;
         c.beginPath();
         c.moveTo(0, 0);
-        c.quadraticCurveTo(3, -25, 7, -48);
+        c.quadraticCurveTo(4, -30, 9, -59);
         c.stroke();
 
-        c.strokeStyle = 'rgba(255, 255, 255, 0.75)';
-        c.lineWidth = 1.1;
+        // Gân nhánh trắng
+        c.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        c.lineWidth = 1.3;
         c.beginPath();
-        c.moveTo(1, -12); c.lineTo(8, -18);
-        c.moveTo(3, -24); c.lineTo(11, -30);
-        c.moveTo(5, -36); c.lineTo(11, -41);
-        c.moveTo(1, -12); c.lineTo(-5, -16);
-        c.moveTo(3, -24); c.lineTo(-4, -28);
+        c.moveTo(1, -15); c.lineTo(10, -22);
+        c.moveTo(4, -30); c.lineTo(14, -38);
+        c.moveTo(6, -45); c.lineTo(14, -51);
+        c.moveTo(1, -15); c.lineTo(-6, -20);
+        c.moveTo(4, -30); c.lineTo(-5, -35);
         c.stroke();
 
         c.restore();
@@ -216,16 +204,16 @@ def get_particle_logo_html():
       c.restore();
     }
 
-    // 2. KHỞI TẠO CÁC PHÂN TỬ HẠT NHỎ
+    // LẤY MẪU HẠT SIÊU NHỎ (MICRO-PARTICLES: GIẢM ĐIỂM ẢNH ĐỂ ĐẠT ĐỘ MỊN NHUYỄN)
     const sampleCanvas = document.createElement('canvas');
     sampleCanvas.width = W;
     sampleCanvas.height = H;
     const sctx = sampleCanvas.getContext('2d');
-    drawExactLogo(sctx, 1.0);
+    drawVectorLogo(sctx, 1.0);
 
     const imgData = sctx.getImageData(0, 0, W, H).data;
     const particles = [];
-    const step = 3;
+    const step = 2; // Bước nhảy nhuyễn, tạo hàng nghìn hạt phân tử li ti
 
     for (let y = 0; y < H; y += step) {
       for (let x = 0; x < W; x += step) {
@@ -238,11 +226,11 @@ def get_particle_logo_html():
           particles.push({
             tx: x,
             ty: y,
-            x: x - 180 + (Math.random() - 0.5) * 80,
-            y: y + (Math.random() - 0.5) * 60,
+            x: x - 180 + (Math.random() - 0.5) * 60,
+            y: y + (Math.random() - 0.5) * 40,
             color: `rgba(${r},${g},${b},${a/255})`,
-            size: 1.8,
-            speed: 1.2 + Math.random() * 1.8,
+            radius: 0.9 + Math.random() * 0.4, // Phân tử siêu nhỏ tròn trịa
+            speed: 1.1 + Math.random() * 1.8,
             offset: Math.random() * 100,
             freq: 0.015 + Math.random() * 0.02
           });
@@ -250,7 +238,11 @@ def get_particle_logo_html():
       }
     }
 
-    // 3. VÒNG LẶP CHU KỲ 15 GIÂY (15000ms)
+    // CHU KỲ CHUYỂN ĐỘNG 15 GIÂY (15000ms):
+    // 0s - 3s: TỤ LẠI TỪ TỪ
+    // 3s - 8s (5 GIÂY): THÀNH HÌNH LOGO VECTOR NÉT CĂNG 100%
+    // 8s - 12.5s: TAN RÃ VÀ BAY TỪ TỪ QUA PHẢI THEO CHIỀU GIÓ
+    // 12.5s - 15s: CÁC PHÂN TỬ VÒNG VỀ BÊN TRÁI ĐỂ CHUẨN BỊ TỤ
     const CYCLE = 15000;
     const startTime = performance.now();
 
@@ -260,55 +252,61 @@ def get_particle_logo_html():
       ctx.clearRect(0, 0, W, H);
 
       if (elapsed >= 3000 && elapsed < 8000) {
-        // GIAI ĐOẠN 2 (3s - 8s): THÀNH HÌNH TRỌN VẸN - HIỆN LOGO VECTOR NÉT CĂNG NGUYÊN BẢN TRONG 5 GIÂY
-        drawExactLogo(ctx, 1.0);
+        // GIAI ĐOẠN 2 (3s - 8s - ĐÚNG 5 GIÂY): LOGO VECTOR NGUYÊN BẢN SẮC NÉT HOÀN TOÀN
+        drawVectorLogo(ctx, 1.0);
       } else if (elapsed < 3000) {
-        // GIAI ĐOẠN 1 (0s - 3s): CÁC PHÂN TỬ TỤ LẠI VÀ RÁP NỐI TÁI HIỆN CẤU TRÚC LOGO
+        // GIAI ĐOẠN 1 (0s - 3s): CÁC PHÂN TỬ NHỎ TỤ LẠI TỪ TỪ
         const prog = elapsed / 3000;
 
         for (let i = 0; i < particles.length; i++) {
           const p = particles[i];
-          p.x += (p.tx - p.x) * 0.085;
-          p.y += (p.ty - p.y) * 0.085;
+          p.x += (p.tx - p.x) * 0.09;
+          p.y += (p.ty - p.y) * 0.09;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.fill();
         }
 
-        if (prog > 0.45) {
-          drawExactLogo(ctx, (prog - 0.45) / 0.55);
+        if (prog > 0.4) {
+          drawVectorLogo(ctx, (prog - 0.4) / 0.6);
         }
       } else if (elapsed >= 8000 && elapsed < 12500) {
-        // GIAI ĐOẠN 3 (8s - 12.5s): TAN RÃ - CÁC PHÂN TỬ NHỎ BAY TỪ TỪ QUA PHẢI THEO CHIỀU GIÓ
-        const fadeOut = Math.max(0, 1 - (elapsed - 8000) / 1200);
+        // GIAI ĐOẠN 3 (8s - 12.5s): TAN RÃ THÀNH CÁC PHÂN TỬ NHỎ BAY TỪ TỪ QUA PHẢI
+        const fadeOut = Math.max(0, 1 - (elapsed - 8000) / 1000);
         if (fadeOut > 0) {
-          drawExactLogo(ctx, fadeOut);
+          drawVectorLogo(ctx, fadeOut);
         }
 
         for (let i = 0; i < particles.length; i++) {
           const p = particles[i];
-          p.x += p.speed * 2.8;
-          p.y += Math.sin((elapsed + p.offset) * p.freq) * 0.65;
+          p.x += p.speed * 2.5; // Bay từ từ qua phải
+          p.y += Math.sin((elapsed + p.offset) * p.freq) * 0.6;
 
-          const alpha = Math.max(0.12, 1 - ((elapsed - 8000) / 4500));
+          const alpha = Math.max(0.1, 1 - ((elapsed - 8000) / 4500));
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
           ctx.globalAlpha = alpha;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.fill();
         }
         ctx.globalAlpha = 1.0;
       } else {
-        // GIAI ĐOẠN 4 (12.5s - 15s): CÁC PHÂN TỬ TRÔI VÒNG LẠI TỪ BÊN TRÁI CHUẨN BỊ TỤ LẠI
+        // GIAI ĐOẠN 4 (12.5s - 15s): CÁC PHÂN TỬ VÒNG VỀ BÊN TRÁI CHUẨN BỊ TỤ
         const prepProg = (elapsed - 12500) / 2500;
         for (let i = 0; i < particles.length; i++) {
           const p = particles[i];
           if (p.x > W + 20) {
             p.x = -20 - Math.random() * 80;
-            p.y = p.ty + (Math.random() - 0.5) * 60;
+            p.y = p.ty + (Math.random() - 0.5) * 50;
           }
           p.x += (p.tx - p.x) * 0.06;
           p.y += (p.ty - p.y) * 0.06;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
           ctx.globalAlpha = 0.35 + prepProg * 0.65;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.fill();
         }
         ctx.globalAlpha = 1.0;
       }
@@ -375,7 +373,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
-        /* HIỆU ỨNG LUỒNG MÀU XANH LÁ & XANH DƯƠNG CHUYỂN DỊCH ÊM ÁI (28 GIÂY) */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -401,8 +398,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
 
         .block-container {
-            padding-top: 1.8rem !important;
-            padding-bottom: 1.5rem !important;
+            padding-top: 1.6rem !important;
+            padding-bottom: 1.2rem !important;
             padding-left: 2rem !important;
             padding-right: 2rem !important;
             max-height: 100vh !important;
@@ -512,7 +509,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
         .slogan-wrapper {
             text-align: center;
-            padding-top: 10px;
+            padding-top: 8px;
             padding-bottom: 2px;
             overflow: visible !important;
             white-space: nowrap;
@@ -569,7 +566,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             font-weight: 700;
         }
 
-        /* Thanh tin tức chân trang */
         .news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 18, 30, 0.95);
             border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 6px 20px;
@@ -581,7 +577,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # KHUNG SLOGAN CỐ ĐỊNH PHÍA TRÊN
     wave_html = '<div class="slogan-wrapper">'
     delay = 0.0
     for char in t["slogan"]:
@@ -594,7 +589,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     _, col_form, col_space, col_info, _ = st.columns([0.1, 1.25, 0.08, 1.25, 0.1])
     
-    # CỘT TRÁI: FORM ĐĂNG NHẬP + HOẠT ẢNH LOGO NÉT CĂNG TỤ LẠI & TAN RÃ THEO GIÓ
     with col_form:
         st.markdown(f"""
             <div style="text-align:center; margin-bottom:4px; font-size:1.1rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
@@ -627,8 +621,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
             
-            # HOẠT HỌA LOGO NÉT CĂNG TỤ LẠI, ĐỨNG YÊN 5S RỒI TAN RÃ BAY THEO GIÓ SANG PHẢI
-            components.html(get_particle_logo_html(), height=155, scrolling=False)
+            # HOẠT HỌA LOGO NÉT CĂNG NGUYÊN BẢN (KHÔNG KHUNG XÁM, HẠT SIÊU MỊN NHUYỄN)
+            components.html(get_particle_logo_html(), height=170, scrolling=False)
                         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
