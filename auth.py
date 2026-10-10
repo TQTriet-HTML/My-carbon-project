@@ -105,7 +105,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Khuôn mặt đáng yêu
+      // Khuôn mặt hoạt hình
       c.fillStyle = '#0f172a';
       c.beginPath();
       c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
@@ -131,7 +131,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // Mầm cây trên đầu
+      // Mầm cây trên đầu (Thân nâu dày dặn + 2 lá xanh đậm)
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ nâng đỡ
+      // 2 Lá bự 45 độ nâng đỡ (gân lá trắng)
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -407,6 +407,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
+        /* PHÔNG NỀN CHUYỂN DỊCH SẮC MÀU TV AMBIENT SÂU LẮNG */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -431,7 +432,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             max-height: 100vh !important;
         }
 
-        /* KHUNG CHÍNH CỐ ĐỊNH KHOẢNG CÁCH CHUẨN ĐỈNH */
         .block-container {
             padding-top: 1.8rem !important;
             padding-bottom: 1.2rem !important;
@@ -490,15 +490,17 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* HIỆU ỨNG CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG CHO 'XIN CHÀO QUÝ ĐỒNG HÀNH!' */
-        @keyframes greenToBlueGlow {
+        /* ==========================================================================
+           HIỆU ỨNG CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG CHO 'XIN CHÀO QUÝ ĐỒNG HÀNH!'
+           ========================================================================== */
+        @keyframes smoothGreenBlueShift {
             0%, 100% {
                 color: #4ade80 !important;
-                text-shadow: 0 0 14px rgba(74, 222, 128, 0.85);
+                text-shadow: 0 0 15px rgba(74, 222, 128, 0.9), 0 0 5px rgba(74, 222, 128, 0.6);
             }
             50% {
                 color: #38bdf8 !important;
-                text-shadow: 0 0 16px rgba(56, 189, 248, 0.85);
+                text-shadow: 0 0 18px rgba(56, 189, 248, 0.9), 0 0 6px rgba(56, 189, 248, 0.6);
             }
         }
         .welcome-title-animated {
@@ -507,10 +509,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             font-size: 1.18rem;
             font-weight: 900;
             letter-spacing: 1px;
-            animation: greenToBlueGlow 5s infinite ease-in-out;
+            animation: smoothGreenBlueShift 5.5s infinite ease-in-out !important;
         }
 
-        /* GIÃN CÁCH KHÔNG GIAN CÁC KHỐI BÊN PHẢI (MARGIN RỘNG RÃI HƠN) */
+        /* GIÃN CÁCH KHÔNG GIAN CÁC KHỐI BÊN PHẢI */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -542,7 +544,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* KHỐI LÁ CỜ VIỆT NAM MỞ RỘNG TO - PHÁT SÁNG ĐỎ & NGÔI SAO PHÁT SÁNG VÀNG - BỎ UỐN LƯỢN */
+        /* KHỐI LÁ CỜ VIỆT NAM MỞ RỘNG TO - PHÁT SÁNG ĐỎ & NGÔI SAO PHÁT SÁNG VÀNG */
         .vn-flag-card-expanded {
             background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -596,11 +598,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: starYellowGlow 2.5s infinite ease-in-out;
         }
 
-        /* NÚT XÁC THỰC TRUY CẬP (MÀU XANH LÁ) */
-        div[data-testid="column"]:nth-child(1) div[data-testid="stFormSubmitButton"] button {
+        /* NÚT 1: XÁC THỰC TRUY CẬP (CHUẨN MÀU XANH LÁ) */
+        div[data-testid="column"]:first-child div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
-            color: white !important;
+            color: #ffffff !important;
             font-weight: 800 !important;
             letter-spacing: 0.8px !important;
             border-radius: 9px !important;
@@ -609,30 +611,40 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             margin-top: 2px !important;
             padding: 8px 14px !important;
         }
-        div[data-testid="column"]:nth-child(1) div[data-testid="stFormSubmitButton"] button:hover {
+        div[data-testid="column"]:first-child div[data-testid="stFormSubmitButton"] button:hover {
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
             transform: translateY(-2px) scale(1.02) !important;
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
-        /* NÚT KHÁM PHÁ SỨ MỆNH: ĐỔI SANG MÀU XANH DƯƠNG CÔNG NGHỆ (ELECTRIC BLUE) */
-        div[data-testid="column"]:nth-child(2) div[data-testid="stFormSubmitButton"] button {
+        /* NÚT 2: KHÁM PHÁ SỨ MỆNH (ĐỔI SANG MÀU XANH DƯƠNG CÔNG NGHỆ CHUẨN) */
+        @keyframes blueMissionGlow {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(14, 165, 233, 0.5), inset 0 0 8px rgba(56, 189, 248, 0.2);
+                border-color: rgba(56, 189, 248, 0.7) !important;
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(14, 165, 233, 0.85), inset 0 0 14px rgba(56, 189, 248, 0.4);
+                border-color: #38bdf8 !important;
+            }
+        }
+        div[data-testid="column"]:last-child div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%) !important;
-            border: 1.5px solid #38bdf8 !important;
+            border: 1.8px solid #38bdf8 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             letter-spacing: 0.8px !important;
             border-radius: 9px !important;
-            box-shadow: 0 4px 18px rgba(14, 165, 233, 0.5) !important;
+            animation: blueMissionGlow 3.5s infinite ease-in-out !important;
             transition: all 0.3s ease !important;
             margin-top: 2px !important;
             padding: 8px 14px !important;
         }
-        div[data-testid="column"]:nth-child(2) div[data-testid="stFormSubmitButton"] button:hover {
+        div[data-testid="column"]:last-child div[data-testid="stFormSubmitButton"] button:hover {
             background: linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%) !important;
             border-color: #7dd3fc !important;
             transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.85) !important;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.9) !important;
             color: #ffffff !important;
         }
 
@@ -735,7 +747,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
         with tab_dang_nhap:
             with st.form("form_login"):
-                # DÒNG "XIN CHÀO QUÝ ĐỒNG HÀNH!" CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG
+                # DÒNG "XIN CHÀO QUÝ ĐỒNG HÀNH!" CHUYỂN MÀU MỀM MẠI XANH LÁ <-> XANH DƯƠNG
                 st.markdown(f"""
                     <div class="welcome-title-animated">
                         {t["welcome_msg"]}
@@ -749,7 +761,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 with col_btn_log:
                     submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
                 with col_btn_mis:
-                    # NÚT SỨ MỆNH MÀU XANH DƯƠNG CÔNG NGHỆ
+                    # NÚT KHÁM PHÁ SỨ MỆNH MÀU XANH DƯƠNG CÔNG NGHỆ
                     open_mission = st.form_submit_button(t["btn_mission"], use_container_width=True)
                 
                 if submitted:
