@@ -56,7 +56,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.scale(scale, scale);
       c.translate(-cx, -cy);
 
-      // Quả cầu Trái Đất
       c.save();
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
@@ -67,7 +66,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.clip();
 
-      // Mảng lục địa
       c.fillStyle = '#4ade80';
       c.strokeStyle = '#0f172a';
       c.lineWidth = 2.8;
@@ -105,7 +103,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Khuôn mặt hoạt hình
       c.fillStyle = '#0f172a';
       c.beginPath();
       c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
@@ -131,7 +128,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // Mầm cây trên đầu (Thân nâu dày dặn + 2 lá xanh đậm)
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
@@ -164,7 +160,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ nâng đỡ (gân lá trắng)
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,7 +201,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG XANH QUÉT
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -246,7 +240,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
 
         c.save();
         if (isSwept) {{
-          c.fillStyle = '#bbf7d0';
+          c.fillStyle = '#ffffff';
           c.shadowColor = '#22c55e';
           c.shadowBlur = 18 * sweepIntensity;
         }} else {{
@@ -284,18 +278,14 @@ def get_particle_logo_html(lang="Tiếng Việt"):
     const CYCLE = 18000;
     const startTime = performance.now();
 
-    // =========================================================================
-    // JAVASCRIPT GHI ĐÈ TRỰC TIẾP LÊN DOM CỦA STREAMLIT ĐẢM BẢO THÀNH CÔNG 100%
-    // =========================================================================
-    function enforceRealStyles() {{
+    function enforceRealDOMStyles() {{
       try {{
         const doc = window.parent.document;
         
-        // 1. Chuyển đổi màu mượt mà Xanh Lá <-> Xanh Dương cho tiêu đề
         const welcomeEl = doc.getElementById('welcomeHeading');
         if (welcomeEl) {{
-          const t = performance.now() * 0.0016; // Chuyển đổi từ từ, êm ái
-          const factor = (Math.sin(t) + 1) / 2; // Dao động mượt mà từ 0.0 đến 1.0
+          const t = performance.now() * 0.0016; 
+          const factor = (Math.sin(t) + 1) / 2; 
           const r = Math.round(74 + (56 - 74) * factor);
           const g = Math.round(222 + (189 - 222) * factor);
           const b = Math.round(128 + (248 - 128) * factor);
@@ -303,17 +293,18 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           welcomeEl.style.setProperty('text-shadow', `0 0 16px rgba(${{r}}, ${{g}}, ${{b}}, 0.95), 0 0 5px rgba(${{r}}, ${{g}}, ${{b}}, 0.6)`, 'important');
         }}
 
-        // 2. Định dạng nút XÁC THỰC TRUY CẬP (Màu xanh lá + khối 3D)
         const btnLogin = doc.querySelector('.st-key-btn_login_submit button');
         if (btnLogin && !btnLogin.dataset.customizedGreen) {{
           btnLogin.dataset.customizedGreen = 'true';
           btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
           btnLogin.style.setProperty('border', '1.5px solid #4ade80', 'important');
-          btnLogin.style.setProperty('color', '#ffffff', 'important');
           btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
           btnLogin.style.setProperty('border-radius', '10px', 'important');
           btnLogin.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
 
+          const texts = btnLogin.querySelectorAll('*');
+          texts.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
+          
           btnLogin.addEventListener('mouseenter', () => {{
             btnLogin.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
             btnLogin.style.setProperty('box-shadow', '0 8px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75)', 'important');
@@ -324,22 +315,19 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
             btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
           }});
-          btnLogin.addEventListener('mousedown', () => {{
-            btnLogin.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-            btnLogin.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
-          }});
         }}
 
-        // 3. Định dạng nút KHÁM PHÁ SỨ MỆNH (Màu xanh dương + hiệu ứng nổi lên khi rê chuột)
         const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
         if (btnMission && !btnMission.dataset.customizedBlue) {{
           btnMission.dataset.customizedBlue = 'true';
           btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
           btnMission.style.setProperty('border', '1.8px solid #38bdf8', 'important');
-          btnMission.style.setProperty('color', '#ffffff', 'important');
           btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
           btnMission.style.setProperty('border-radius', '10px', 'important');
           btnMission.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
+
+          const texts2 = btnMission.querySelectorAll('*');
+          texts2.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
 
           btnMission.addEventListener('mouseenter', () => {{
             btnMission.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
@@ -351,10 +339,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
             btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
           }});
-          btnMission.addEventListener('mousedown', () => {{
-            btnMission.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 2px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4)', 'important');
-          }});
         }}
       }} catch(e) {{}}
     }}
@@ -363,9 +347,8 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       const now = performance.now();
       const elapsed = (now - startTime) % CYCLE;
       ctx.clearRect(0, 0, logicalW, logicalH);
-
-      // Cập nhật phong cách DOM mượt mà liên tục
-      enforceRealStyles();
+      
+      enforceRealDOMStyles();
 
       if (elapsed < 4500) {{
         renderVectorLogo(ctx, 1.0, 1.0);
@@ -485,7 +468,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
-        /* PHÔNG NỀN CHUYỂN DỊCH SẮC MÀU TV AMBIENT SÂU LẮNG */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -536,7 +518,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             92%, 100% { left: 220%; opacity: 0; }
         }
 
-        /* KHỐI FORM BÊN TRÁI PHỦ KÍNH MỜ */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
             backdrop-filter: blur(14px) !important;
@@ -563,7 +544,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             pointer-events: none;
         }
 
-        /* GIÃN CÁCH KHÔNG GIAN CÁC KHỐI BÊN PHẢI */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -589,21 +569,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 10;
             pointer-events: none;
         }
-        .hardcore-green-card:hover {
-            transform: translateY(-3px) scale(1.015) !important;
-            box-shadow: 0 14px 35px rgba(72, 187, 120, 0.9) !important;
-            border-color: #48bb78 !important;
-        }
 
-        /* ==========================================================================
-           LÁ CỜ VIỆT NAM VÀ HIỆU ỨNG CHỮ LÓA SÁNG TRẮNG CHẠY TỪNG CHỮ
-           ========================================================================== */
+        /* KHỐI LÁ CỜ VIỆT NAM (KHÔNG GIAN RỘNG) VÀ BÓNG TO 6 GIÂY MỘT LẦN */
         .vn-flag-card-expanded {
             background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
             border: 1.8px solid rgba(239, 68, 68, 0.65) !important;
             border-radius: 14px !important;
-            padding: 12px 18px !important;
+            padding: 16px 20px !important;
             margin-bottom: 0px !important;
             display: flex;
             align-items: center;
@@ -611,13 +584,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 6px 25px rgba(220, 38, 38, 0.25);
             transition: all 0.3s ease;
         }
-        .vn-flag-card-expanded:hover {
-            border-color: #ef4444 !important;
-            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.45) !important;
-            transform: translateY(-2px);
-        }
 
-        @keyframes sweepWhiteGlowText {
+        @keyframes sweepGoldenGlowText {
             0%, 15% { background-position: -200% 0; }
             85%, 100% { background-position: 200% 0; }
         }
@@ -625,121 +593,41 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             font-size: 0.98rem;
             font-weight: 900;
             letter-spacing: 0.8px;
-            background: linear-gradient(90deg, #ef4444 0%, #ef4444 35%, #ffffff 50%, #ef4444 65%, #ef4444 100%);
+            background: linear-gradient(90deg, #ef4444 0%, #ef4444 35%, #fde047 50%, #ffffff 52%, #fde047 54%, #ef4444 65%, #ef4444 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: sweepWhiteGlowText 3.8s linear infinite;
+            filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.6));
+            animation: sweepGoldenGlowText 4s linear infinite;
         }
 
+        /* CHU KỲ 6 GIÂY: NỞ KHỐI TO NHẸ NHÀNG */
         @keyframes flagBreatheBloom {
-            0%, 100% {
+            0%, 90%, 100% {
                 transform: scale(1);
-                box-shadow: 0 0 14px rgba(218, 37, 29, 0.8), 0 0 28px rgba(239, 68, 68, 0.5);
+                box-shadow: 0 0 12px rgba(218, 37, 29, 0.85);
             }
-            50% {
-                transform: scale(1.08); /* NỞ TO RA KHI ĐẾN LƯỢT */
-                box-shadow: 0 0 24px rgba(218, 37, 29, 1), 0 0 38px rgba(239, 68, 68, 0.85);
+            95% {
+                transform: scale(1.08);
+                box-shadow: 0 0 25px rgba(218, 37, 29, 1), 0 0 45px rgba(239, 68, 68, 0.8);
             }
         }
         .flag-box-glowing {
-            width: 72px;
-            height: 48px;
+            width: 90px;
+            height: 60px;
             background: #da251d;
-            border-radius: 6px;
-            border: 1.5px solid rgba(254, 202, 202, 0.4);
+            border-radius: 4px;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: flagBreatheBloom 3.8s infinite ease-in-out;
+            animation: flagBreatheBloom 6s infinite ease-in-out;
             flex-shrink: 0;
+            box-shadow: 0 0 12px rgba(218, 37, 29, 0.85);
         }
 
-        @keyframes starYellowGlow {
-            0%, 100% { filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15); }
-            50% { filter: drop-shadow(0 0 8px #ffff00) drop-shadow(0 0 16px #eab308); }
-        }
         .flag-star-svg {
-            animation: starYellowGlow 2.5s infinite ease-in-out;
-        }
-
-        /* ==========================================================================
-           NÚT 1: XÁC THỰC TRUY CẬP (SCOPED CSS TỰ ĐỘNG THEO KEY)
-           ========================================================================== */
-        div[class*="st-key-btn_login_submit"] button,
-        div[class*="st-key-btn_login_submit"] button:focus {
-            background-color: #16a34a !important;
-            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
-            border: 1.5px solid #4ade80 !important;
-            color: #ffffff !important;
-            font-weight: 800 !important;
-            letter-spacing: 0.8px !important;
-            border-radius: 10px !important;
-            box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            margin-top: 2px !important;
-            padding: 8px 14px !important;
-            position: relative !important;
-        }
-        div[class*="st-key-btn_login_submit"] button p,
-        div[class*="st-key-btn_login_submit"] button span {
-            color: #ffffff !important;
-            font-weight: 800 !important;
-        }
-        div[class*="st-key-btn_login_submit"] button:hover {
-            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 7px 0 #15803d, 0 12px 24px rgba(34, 197, 94, 0.65) !important;
-        }
-        div[class*="st-key-btn_login_submit"] button:active {
-            transform: translateY(4px) !important;
-            box-shadow: 0 1px 0 #15803d, 0 3px 10px rgba(34, 197, 94, 0.4) !important;
-        }
-
-        /* ==========================================================================
-           NÚT 2: KHÁM PHÁ SỨ MỆNH (SCOPED CSS TỰ ĐỘNG THEO KEY)
-           ========================================================================== */
-        @keyframes blueMissionFloatingGlow {
-            0%, 100% {
-                box-shadow: 0 0 14px rgba(14, 165, 233, 0.6), 0 5px 0 #075985;
-                border-color: rgba(56, 189, 248, 0.75) !important;
-            }
-            50% {
-                box-shadow: 0 0 28px rgba(14, 165, 233, 0.95), 0 5px 0 #075985;
-                border-color: #38bdf8 !important;
-            }
-        }
-        div[class*="st-key-btn_mission_submit"] button,
-        div[class*="st-key-btn_mission_submit"] button:focus {
-            background-color: #0369a1 !important;
-            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
-            border: 1.8px solid #38bdf8 !important;
-            color: #ffffff !important;
-            font-weight: 800 !important;
-            letter-spacing: 0.8px !important;
-            border-radius: 10px !important;
-            box-shadow: 0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65) !important;
-            animation: blueMissionFloatingGlow 3.5s infinite ease-in-out !important;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            margin-top: 2px !important;
-            padding: 8px 14px !important;
-        }
-        div[class*="st-key-btn_mission_submit"] button p,
-        div[class*="st-key-btn_mission_submit"] button span {
-            color: #ffffff !important;
-            font-weight: 800 !important;
-        }
-        div[class*="st-key-btn_mission_submit"] button:hover {
-            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
-            border-color: #7dd3fc !important;
-            transform: translateY(-3px) scale(1.02) !important;
-            box-shadow: 0 8px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95) !important;
-            color: #ffffff !important;
-        }
-        div[class*="st-key-btn_mission_submit"] button:active {
-            transform: translateY(4px) scale(0.99) !important;
-            box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
+            filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15);
         }
 
         /* KHUNG CHỨA SLOGAN ĐƯỢC GIÃN KHOẢNG CÁCH RỘNG RÃI VỚI CÁC KHỐI BÊN DƯỚI */
@@ -823,7 +711,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # 1. SLOGAN LÀM MỐC CỐ ĐỊNH & DÒNG CHỮ DƯỚI TO HƠN, MÀU XANH, GIÃN CÁCH RỘNG RÃI
     wave_html = '<div class="slogan-fixed-anchor">'
     delay = 0.0
     for char in t["slogan"]:
@@ -836,12 +723,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     _, col_form, col_space, col_info, _ = st.columns([0.1, 1.25, 0.08, 1.25, 0.1])
     
-    # ================= CỘT TRÁI =================
     with col_form:
         tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
         with tab_dang_nhap:
             with st.form("form_login"):
-                # TIÊU ĐỀ GÁN ID TRỰC TIẾP ĐỂ CHUYỂN MÀU MỀM MẠI XANH LÁ <-> XANH DƯƠNG
+                # DÒNG CHỮ TRUNG TÂM SẼ ĐƯỢC CHUYỂN MÀU QUA JAVASCRIPT ĐỂ KHÔNG BỊ GHI ĐÈ
                 st.markdown(f"""
                     <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px; transition: color 0.3s ease;">
                         {t["welcome_msg"]}
@@ -853,10 +739,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 
                 col_btn_log, col_btn_mis = st.columns([0.55, 0.45])
                 with col_btn_log:
-                    # GÁN KEY ĐỊNH DANH ĐỂ STREAMLIT TẠO CLASS SCOPED .st-key-btn_login_submit (MÀU XANH LÁ)
                     submitted = st.form_submit_button(t["btn_login"], key="btn_login_submit", use_container_width=True)
                 with col_btn_mis:
-                    # GÁN KEY ĐỊNH DANH ĐỂ STREAMLIT TẠO CLASS SCOPED .st-key-btn_mission_submit (MÀU XANH DƯƠNG)
                     open_mission = st.form_submit_button(t["btn_mission"], key="btn_mission_submit", use_container_width=True)
                 
                 if submitted:
@@ -872,7 +756,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
             
-            # HOẠT HỌA LOGO VÀ BỘ ĐIỀU KHIỂN DOM ĐẢM BẢO CHÍNH XÁC MỌI HIỆU ỨNG
             components.html(get_particle_logo_html(lang), height=150, scrolling=False)
                         
         with tab_dang_ky:
@@ -885,7 +768,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         <p style="color:#cbd5e1; margin-bottom: 0px; font-size:0.88rem;">{account_txt}: <b style="color:#63b3ed;">{registered_user}</b></p>
                     </div>
                 """, unsafe_allow_html=True)
-                if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
+                if st.button(t["btn_auto_login"], key="btn_auto_login_key", use_container_width=True):
                     data = st.session_state["reg_success_data"]
                     st.session_state["logged_in"] = True
                     st.session_state["current_user"] = data["user"]
@@ -895,7 +778,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             else:
                 with st.form("form_register", clear_on_submit=True):
                     st.markdown(f"""
-                        <div style="text-align:center; margin-bottom:12px; font-size:1.15rem; font-weight:800; color:#4ade80; letter-spacing:0.8px;">
+                        <div id="welcomeHeadingReg" style="text-align:center; margin-bottom:12px; font-size:1.15rem; font-weight:800; letter-spacing:0.8px;">
                             {t["welcome_msg"]}
                         </div>
                     """, unsafe_allow_html=True)
@@ -906,7 +789,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         ["Doanh nghiệp mua tín chỉ", "Chủ rừng / Kỹ sư MRV", "Nhà đầu tư từ xa (Cổ đông)"],
                         format_func=lambda x: {"Doanh nghiệp mua tín chỉ": "Credit Buyer Enterprise", "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Engineer", "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor (Shareholder)"}.get(x, x) if lang == "English" else x
                     )
-                    reg_submitted = st.form_submit_button(t["btn_reg"], type="primary", use_container_width=True)
+                    reg_submitted = st.form_submit_button(t["btn_reg"], key="btn_reg_submit", use_container_width=True)
                     if reg_submitted:
                         if not new_user or not new_pass:
                             st.error("Vui lòng điền đủ thông tin." if lang=="Tiếng Việt" else "Please fill all fields.")
@@ -923,7 +806,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-    # ================= CỘT PHẢI: GIÃN CÁCH THOÁNG ĐÃNG + LÁ CỜ MỞ RỘNG PHÁT SÁNG =================
     with col_info:
         st.markdown(f"""
             <div class="hardcore-green-card">
@@ -962,22 +844,21 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-        # LÁ CỜ VIỆT NAM MỞ RỘNG TO - PHÁT SÁNG ĐỎ & NGÔI SAO VÀNG PHÁT SÁNG
+        # LÁ CỜ VIỆT NAM TỈ LỆ 3:2 CHUẨN - NGÔI SAO TRUNG TÂM PHÁT SÁNG VÀNG LÓA
         st.markdown(f"""
             <div class="vn-flag-card-expanded">
                 <div>
                     <div class="nation-title-sweeping">{t["flag_title"]}</div>
-                    <div style="font-size:0.78rem; color:#cbd5e1; margin-top:3px; line-height:1.35;">{t["flag_desc"]}</div>
+                    <div style="font-size:0.78rem; color:#cbd5e1; margin-top:5px; line-height:1.45;">{t["flag_desc"]}</div>
                 </div>
                 <div class="flag-box-glowing" title="Cộng hòa Xã hội Chủ nghĩa Việt Nam">
-                    <svg viewBox="0 0 30 20" width="40" height="26" class="flag-star-svg">
-                        <polygon points="15,3.5 17.3,10.2 24.3,10.2 18.6,14.3 20.8,21 15,16.8 9.2,21 11.4,14.3 5.7,10.2 12.7,10.2" fill="#ffff00"/>
+                    <svg viewBox="0 0 90 60" width="90" height="60" class="flag-star-svg">
+                        <polygon points="45.00,12.00 49.04,24.44 62.12,24.44 51.54,32.12 55.58,44.56 45.00,36.88 34.42,44.56 38.46,32.12 27.88,24.44 40.96,24.44" fill="#ffff00"/>
                     </svg>
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
-    # Thanh tin tức chân trang
     st.markdown(f"""
     <div class="news-ticker-container">
         <div style="font-weight:900; color:#fc8181; margin-right:15px; white-space:nowrap; text-transform:uppercase; font-size:0.8rem;">{t['news_lbl']}</div>
