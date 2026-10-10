@@ -309,11 +309,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           }}
         }});
 
-        // STYLE NÚT: XÁC THỰC TRUY CẬP, TẠO MỚI TÀI KHOẢN, ĐĂNG NHẬP NGAY (MÀU XANH LÁ + KHỐI 3D + ĐỒNG BỘ NỔI BỔNG)
+        // STYLE NÚT: XÁC THỰC TRUY CẬP & TẠO MỚI TÀI KHOẢN (MÀU XANH LÁ + KHỐI 3D + ĐỒNG BỘ NỔI BỔNG)
         const greenBtns = [
             doc.querySelector('.st-key-btn_login_submit button'), 
-            doc.querySelector('.st-key-btn_reg_submit button'),
-            doc.querySelector('.st-key-btn_auto_login_key button') // BỔ SUNG NÚT ĐĂNG NHẬP NGAY
+            doc.querySelector('.st-key-btn_reg_submit button')
         ];
         
         greenBtns.forEach(btn => {{
@@ -628,7 +627,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* LÁ CỜ VIỆT NAM QUÉT SÁNG TỪ TRÁI SANG PHẢI VÀ NỞ ÊM ÁI CHẬM RÃI */
         .vn-flag-card-expanded {
             background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -642,8 +640,13 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 6px 25px rgba(220, 38, 38, 0.25);
             transition: all 0.3s ease;
         }
+        .vn-flag-card-expanded:hover {
+            border-color: #ef4444 !important;
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.45) !important;
+            transform: translateY(-2px);
+        }
 
-        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
+        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI QUA TỪNG CHỮ */
         @keyframes sweepGoldenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -789,7 +792,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         with tab_dang_nhap:
             with st.form("form_login"):
                 st.markdown(f"""
-                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px; transition: color 0.3s ease;">
+                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px;">
                         {t["welcome_msg"]}
                     </div>
                 """, unsafe_allow_html=True)
@@ -811,7 +814,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                         st.session_state["current_role"] = users[u_name]["role"]
                         st.rerun()
                     else:
-                        st.error("Thôngத்துtin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
+                        st.error("Thông tin không chính xác." if lang=="Tiếng Việt" else "Invalid credentials.")
                 
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
@@ -823,9 +826,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 registered_user = st.session_state['reg_success_data']['user']
                 account_txt = t["account_label"]
                 st.markdown(f"""
-                    <div class="hardcore-green-card" style="text-align:center; padding: 20px 14px; margin-top: 10px; margin-bottom: 24px !important;">
-                        <div style="color:#4ade80; font-weight:800; margin-bottom:8px; font-size:1.05rem; letter-spacing:0.5px;">{t['reg_success_line1']}<br/>{t['reg_success_line2']}</div>
-                        <div style="color:#cbd5e1; margin-bottom: 0px; font-size:0.95rem;">{account_txt}: <b style="color:#38bdf8; font-size:1.1rem;">{registered_user}</b></div>
+                    <div style="background: rgba(72,187,120,0.12); border: 1.5px solid #48bb78; text-align:center; padding: 12px 10px; border-radius:12px; margin-top: 6px;">
+                        <p style="color:#48bb78; font-weight:700; margin-bottom:4px; font-size:0.92rem;">{t['reg_success_line1']} {t['reg_success_line2']}</p>
+                        <p style="color:#cbd5e1; margin-bottom: 0px; font-size:0.88rem;">{account_txt}: <b style="color:#63b3ed;">{registered_user}</b></p>
                     </div>
                 """, unsafe_allow_html=True)
                 if st.button(t["btn_auto_login"], key="btn_auto_login_key", use_container_width=True):
