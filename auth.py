@@ -26,26 +26,26 @@ def get_particle_logo_html():
     </style>
     </head>
     <body>
-    <canvas id="particleCanvas" width="380" height="130"></canvas>
+    <canvas id="particleCanvas" width="380" height="135"></canvas>
     <script>
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
 
-    // 1. Vẽ logo gốc lên offscreen canvas để lấy mẫu các mảnh nhỏ (particles)
+    // 1. Vẽ logo mẫu lên canvas ảo để trích xuất các mảnh hạt
     const off = document.createElement('canvas');
     off.width = 380;
-    off.height = 130;
+    off.height = 135;
     const octx = off.getContext('2d');
 
     const cx = 190;
-    const cy = 68;
+    const cy = 70;
     const R = 30;
 
     // Viền xám mỏng bo góc quanh logo
-    octx.strokeStyle = "rgba(148, 163, 184, 0.4)";
-    octx.lineWidth = 1.2;
+    octx.strokeStyle = "rgba(148, 163, 184, 0.45)";
+    octx.lineWidth = 1.3;
     octx.beginPath();
-    const bx = cx - 52, by = cy - R - 17, bw = 104, bh = R * 2 + 35, rad = 14;
+    const bx = cx - 52, by = cy - R - 18, bw = 104, bh = R * 2 + 36, rad = 14;
     octx.moveTo(bx + rad, by);
     octx.lineTo(bx + bw - rad, by);
     octx.quadraticCurveTo(bx + bw, by, bx + bw, by + rad);
@@ -79,7 +79,7 @@ def get_particle_logo_html():
     octx.arc(cx + 11, cy + 15, 11, 0, Math.PI * 2);
     octx.fill();
 
-    // Mắt & Miệng hoạt hình đáng yêu
+    // Mắt & Miệng hoạt hình
     octx.fillStyle = '#0f172a';
     octx.beginPath();
     octx.arc(cx - 9, cy + 2, 2.2, 0, Math.PI * 2);
@@ -98,7 +98,7 @@ def get_particle_logo_html():
     octx.fill();
     octx.restore();
 
-    // Mầm cây trên đầu (Thân nâu dày dặn + lá mầm xanh đậm, không bóng chói)
+    // Mầm cây: Thân nâu dày dặn + lá mầm xanh đậm, không bóng chói
     octx.strokeStyle = '#0f172a';
     octx.lineWidth = 5.5;
     octx.lineCap = 'round';
@@ -113,7 +113,7 @@ def get_particle_logo_html():
     octx.lineTo(cx, cy - R - 8);
     octx.stroke();
 
-    // Lá mầm màu xanh đậm (#14532d)
+    // 2 Lá mầm: Xanh lục rừng già (#14532d)
     octx.fillStyle = '#14532d';
     octx.strokeStyle = '#0f172a';
     octx.lineWidth = 1.8;
@@ -150,7 +150,7 @@ def get_particle_logo_html():
     drawLeaf(-Math.PI / 4, false);
     drawLeaf(Math.PI / 4, true);
 
-    // 2. Trích xuất mảng các mảnh nhỏ (particles)
+    // 2. Trích xuất mảng các mảnh nhỏ
     const imgData = octx.getImageData(0, 0, off.width, off.height).data;
     const particles = [];
     const step = 3;
@@ -177,7 +177,7 @@ def get_particle_logo_html():
       }
     }
 
-    // 3. Chu kỳ chuyển động đúng 15 giây (15000 ms)
+    // 3. Chu kỳ chuyển động đúng 15 giây
     const CYCLE = 15000;
     const startTime = performance.now();
 
@@ -190,7 +190,7 @@ def get_particle_logo_html():
         const p = particles[i];
 
         if (elapsed < 3500) {
-          // Giai đoạn 1 (0s -> 3.5s): Các mảnh nhỏ từ ngoài tụ lại thành logo
+          // Giai đoạn 1 (0s -> 3.5s): Các mảnh nhỏ bay vào ráp nối thành logo
           const prog = elapsed / 3500;
           const easeOut = 1 - Math.pow(1 - Math.min(1, prog), 3);
           p.x += (p.tx - p.x) * 0.085;
@@ -202,7 +202,7 @@ def get_particle_logo_html():
           p.y = p.ty;
           ctx.globalAlpha = 1.0;
         } else if (elapsed < 12500) {
-          // Giai đoạn 3 (8.5s -> 12.5s): Tan rã, gió thổi cuốn các mảnh nhỏ NGANG TỪ TRÁI SANG PHẢI
+          // Giai đoạn 3 (8.5s -> 12.5s): Tan rã, gió thổi cuốn các mảnh NGANG TỪ TRÁI SANG PHẢI
           const disperseProg = (elapsed - 8500) / 4000;
           p.x += (p.driftSpeed * 3.6) + (p.tx / canvas.width) * 1.6;
           p.y += Math.sin((elapsed + p.randOffset) * p.waveFreq) * 0.75;
@@ -537,6 +537,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
+            
+            # LOGO HẠT HOẠT HỌA ĐẶT NGAY BÊN DƯỚI FORM ĐĂNG NHẬP
+            components.html(get_particle_logo_html(), height=135, scrolling=False)
                         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
@@ -580,9 +583,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["users_db"][new_user] = {"password": new_pass, "role": role_sel, "wallet_balance": 100000.0}
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
-
-        # LOGO HẠT HOẠT HỌA ĐẶT NGAY DƯỚI PHẦN ĐĂNG NHẬP (CHU KỲ 15S: TỤ LẠI -> ĐỨNG 5S -> GIÓ CUỐN PHÂN TÁN TỪ TRÁI SANG PHẢI)
-        components.html(get_particle_logo_html(), height=135, scrolling=False)
 
     # CỘT PHẢI: 3 KHỐI THÔNG TIN
     with col_info:
