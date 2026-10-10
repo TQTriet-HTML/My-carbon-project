@@ -137,7 +137,8 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    const TOTAL_DURATION = 25000;
+    // KÉO DÀI THÊM 4 GIÂY Ở KHÚC CUỐI (TỪ 25s LÊN 29s) TRƯỚC KHI TỰ ĐỘNG ĐÓNG
+    const TOTAL_DURATION = 29000;
 
     let smokeParticles = [];
     let carbonParticles = [];
@@ -322,14 +323,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
             const R = 95;
 
-            // VIỀN MÀU XÁM MỎNG BO THEO TỪNG GÓC CỦA LOGO
-            ctx.save();
-            ctx.strokeStyle = "rgba(148, 163, 184, 0.45)";
-            ctx.lineWidth = 1.5;
-            drawRoundedRect(ctx, -145, -R - 38, 290, R * 2 + 78, 28);
-            ctx.stroke();
-            ctx.restore();
-
             // 1. QUẢ ĐỊA CẦU THEO HÌNH MẪU
             ctx.save();
             ctx.beginPath();
@@ -405,11 +398,10 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.strokeStyle = "#0f172a";
             ctx.stroke();
 
-            // 2. MẦM CÂY TRÊN ĐẦU: THÂN MÀU NÂU DÀY DẶN, LÁ MẦM MÀU XANH ĐẬM HƠN 2 LÁ BỰ, KHÔNG HIỆU ỨNG ĐÁNH BÓNG/CHÓI SÁNG
+            // 2. MẦM CÂY TRÊN ĐẦU
             ctx.save();
             ctx.translate(0, -R);
 
-            // Viền đen hoạt hình cho thân mầm
             ctx.strokeStyle = "#0f172a";
             ctx.lineWidth = 14;
             ctx.lineCap = "round";
@@ -418,7 +410,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.lineTo(0, -20);
             ctx.stroke();
 
-            // Thân mầm chính màu NÂU đậm, dày dặn
             ctx.strokeStyle = "#78350f";
             ctx.lineWidth = 9;
             ctx.beginPath();
@@ -426,8 +417,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.lineTo(0, -19);
             ctx.stroke();
 
-            // 2 Lá mầm: Màu xanh lục rừng già (#14532d), đậm hơn 2 chiếc lá bự, KHÔNG đánh bóng / KHÔNG chói sáng
-            // Lá mầm trái
             ctx.beginPath();
             ctx.ellipse(-16, -26, 16, 10.5, -Math.PI / 5, 0, Math.PI * 2);
             ctx.fillStyle = "#14532d";
@@ -436,7 +425,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.strokeStyle = "#0f172a";
             ctx.stroke();
 
-            // Lá mầm phải
             ctx.beginPath();
             ctx.ellipse(16, -26, 16, 10.5, Math.PI / 5, 0, Math.PI * 2);
             ctx.fillStyle = "#14532d";
@@ -463,20 +451,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
             ctx.restore();
         }}
-    }}
-
-    function drawRoundedRect(c, x, y, width, height, radius) {{
-        c.beginPath();
-        c.moveTo(x + radius, y);
-        c.lineTo(x + width - radius, y);
-        c.quadraticCurveTo(x + width, y, x + width, y + radius);
-        c.lineTo(x + width, y + height - radius);
-        c.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        c.lineTo(x + radius, y + height);
-        c.quadraticCurveTo(x, y + height, x, y + height - radius);
-        c.lineTo(x, y + radius);
-        c.quadraticCurveTo(x, y, x + radius, y);
-        c.closePath();
     }}
 
     function drawTree(x, baseY, scale, trunkColor, leafColor) {{
