@@ -56,24 +56,30 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     st.markdown("""
         <style>
         /* ==========================================================================
-           HIỆU ỨNG MÀN HÌNH CHỜ TV AMBIENT: SẮC MÀU XANH DƯƠNG & XANH LÁ CHUYỂN DỊCH ÊM DỊU
+           HIỆU ỨNG LUỒNG MÀU XANH LÁ & XANH DƯƠNG CHUYỂN DỊCH ÊM ÁI (28 GIÂY)
            ========================================================================== */
-        @keyframes tvAmbientFlow {
+        @keyframes gentleStreamFlow {
             0% {
-                background-position: 0% 50%;
+                background-position: 0% 40%;
             }
             50% {
-                background-position: 100% 50%;
+                background-position: 100% 60%;
             }
             100% {
-                background-position: 0% 50%;
+                background-position: 0% 40%;
             }
         }
 
         .stApp, [data-testid="stAppViewContainer"] {
-            background: linear-gradient(125deg, #05131e 0%, #06261a 22%, #081d33 45%, #052a1e 68%, #091a29 85%, #072e21 100%) !important;
-            background-size: 350% 350% !important;
-            animation: tvAmbientFlow 22s ease-in-out infinite !important;
+            background-color: #060d15 !important;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(16, 185, 129, 0.32) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(14, 165, 233, 0.30) 0%, transparent 50%),
+                radial-gradient(circle at 75% 20%, rgba(5, 150, 105, 0.26) 0%, transparent 45%),
+                radial-gradient(circle at 25% 80%, rgba(37, 99, 235, 0.28) 0%, transparent 50%),
+                linear-gradient(130deg, #071520 0%, #082a1d 25%, #081d33 50%, #063426 75%, #0a2135 100%) !important;
+            background-size: 260% 260% !important;
+            animation: gentleStreamFlow 28s ease-in-out infinite !important;
         }
 
         html, body, [data-testid="stAppViewContainer"], .main {
