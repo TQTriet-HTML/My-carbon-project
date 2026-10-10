@@ -131,7 +131,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // Mầm cây trên đầu (Thân nâu dày + 2 lá xanh đậm)
+      // Mầm cây trên đầu
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ nâng đỡ (gân lá trắng)
+      // 2 Lá bự 45 độ nâng đỡ
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,7 +206,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // VẼ DÒNG CHỮ CHỈ LƯỢN SÓNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG XANH LÁ LƯỚT QUA TỪNG CHỮ
+    // DÒNG CHỮ LƯỢN SÓNG ĐÚNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG XANH QUÉT
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -220,9 +220,8 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       const startX = cx - (metrics.width / 2);
       let currX = startX;
 
-      // Sóng lướt qua đúng 1 lần từ 7700ms đến 10200ms (2.5 giây)
-      const waveStart = 7700;
-      const waveDuration = 2500;
+      const waveStart = 7500;
+      const waveDuration = 2400;
       const waveProg = (elapsed - waveStart) / waveDuration;
 
       for (let i = 0; i < totalChars; i++) {{
@@ -235,11 +234,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
         let isSwept = false;
         let sweepIntensity = 0;
 
-        // Chỉ khi luồng sóng quét qua đúng chữ đó
         if (waveProg >= 0 && waveProg <= 1.25) {{
           const dist = Math.abs(waveProg - charNorm);
-          if (dist < 0.18) {{
-            const factor = 1 - (dist / 0.18);
+          if (dist < 0.16) {{
+            const factor = 1 - (dist / 0.16);
             waveY = cy - Math.sin(factor * Math.PI) * 9;
             sweepIntensity = Math.sin(factor * Math.PI);
             isSwept = true;
@@ -248,12 +246,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
 
         c.save();
         if (isSwept) {{
-          // Ánh sáng xanh lá cực sáng lướt qua theo con sóng
           c.fillStyle = '#bbf7d0';
           c.shadowColor = '#22c55e';
           c.shadowBlur = 18 * sweepIntensity;
         }} else {{
-          // Chữ nằm yên tĩnh lặng màu xanh lá tươi mát
           c.fillStyle = '#4ade80';
           c.shadowColor = 'rgba(74, 222, 128, 0.45)';
           c.shadowBlur = 6;
@@ -435,6 +431,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             max-height: 100vh !important;
         }
 
+        /* KHUNG CHÍNH CỐ ĐỊNH KHOẢNG CÁCH CHUẨN ĐỈNH */
         .block-container {
             padding-top: 1.8rem !important;
             padding-bottom: 1.2rem !important;
@@ -496,11 +493,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         /* HIỆU ỨNG CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG CHO 'XIN CHÀO QUÝ ĐỒNG HÀNH!' */
         @keyframes greenToBlueGlow {
             0%, 100% {
-                color: #4ade80;
+                color: #4ade80 !important;
                 text-shadow: 0 0 14px rgba(74, 222, 128, 0.85);
             }
             50% {
-                color: #38bdf8;
+                color: #38bdf8 !important;
                 text-shadow: 0 0 16px rgba(56, 189, 248, 0.85);
             }
         }
@@ -520,7 +517,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border: 2px solid #22c55e !important;
             border-radius: 14px !important;
             padding: 12px 18px !important;
-            margin-bottom: 14px !important; /* GIÃN KHÔNG GIAN THOÁNG HƠN */
+            margin-bottom: 14px !important;
             position: relative !important;
             overflow: hidden !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
@@ -567,10 +564,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
         @keyframes flagRedPulseGlow {
             0%, 100% {
-                box-shadow: 0 0 12px rgba(218, 37, 29, 0.75), 0 0 24px rgba(239, 68, 68, 0.45);
+                box-shadow: 0 0 14px rgba(218, 37, 29, 0.8), 0 0 28px rgba(239, 68, 68, 0.5);
             }
             50% {
-                box-shadow: 0 0 20px rgba(218, 37, 29, 0.95), 0 0 32px rgba(239, 68, 68, 0.7);
+                box-shadow: 0 0 22px rgba(218, 37, 29, 0.95), 0 0 35px rgba(239, 68, 68, 0.75);
             }
         }
         .flag-box-glowing {
@@ -600,8 +597,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
 
         /* NÚT XÁC THỰC TRUY CẬP (MÀU XANH LÁ) */
-        button[kind="primary"],
-        div[data-testid="stFormSubmitButton"] button {
+        div[data-testid="column"]:nth-child(1) div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
             color: white !important;
@@ -613,25 +609,25 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             margin-top: 2px !important;
             padding: 8px 14px !important;
         }
-        button[kind="primary"]:hover,
-        div[data-testid="stFormSubmitButton"] button:hover {
+        div[data-testid="column"]:nth-child(1) div[data-testid="stFormSubmitButton"] button:hover {
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
             transform: translateY(-2px) scale(1.02) !important;
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
         /* NÚT KHÁM PHÁ SỨ MỆNH: ĐỔI SANG MÀU XANH DƯƠNG CÔNG NGHỆ (ELECTRIC BLUE) */
-        .btn-mission-blue div[data-testid="stFormSubmitButton"] button,
         div[data-testid="column"]:nth-child(2) div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%) !important;
             border: 1.5px solid #38bdf8 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
             border-radius: 9px !important;
             box-shadow: 0 4px 18px rgba(14, 165, 233, 0.5) !important;
             transition: all 0.3s ease !important;
+            margin-top: 2px !important;
+            padding: 8px 14px !important;
         }
-        .btn-mission-blue div[data-testid="stFormSubmitButton"] button:hover,
         div[data-testid="column"]:nth-child(2) div[data-testid="stFormSubmitButton"] button:hover {
             background: linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%) !important;
             border-color: #7dd3fc !important;
@@ -650,12 +646,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
         .subtitle-custom-green-blue {
             text-align: center;
-            color: #38bdf8; /* ĐỔI SANG MÀU XANH TƯƠI SÁNG */
-            font-size: 1.05rem; /* PHÓNG TO HƠN */
-            font-weight: 600;
-            margin-top: 4px;
-            margin-bottom: 26px; /* GIÃN CÁCH RỘNG RÃI VỚI CÁC KHỐI BÊN DƯỚI */
-            text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+            color: #38bdf8 !important;
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
+            margin-top: 4px !important;
+            margin-bottom: 26px !important;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
             letter-spacing: 0.3px;
         }
 
