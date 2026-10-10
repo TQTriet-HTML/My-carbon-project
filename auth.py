@@ -61,7 +61,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             max-height: 100vh !important;
         }
 
-        /* TĂNG KHOẢNG ĐỆM ĐỈNH ĐỂ CHỮ SLOGAN LƯỚT SÓNG KHÔNG BỊ CẮT DẤU */
         .block-container {
             padding-top: 2.4rem !important;
             padding-bottom: 2rem !important;
@@ -71,7 +70,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             overflow: hidden !important;
         }
 
-        /* Thở phát sáng xanh neon */
         @keyframes greenBreathePulse {
             0%, 100% {
                 box-shadow: 0 0 14px rgba(72, 187, 120, 0.35), inset 0 0 12px rgba(72, 187, 120, 0.15);
@@ -83,13 +81,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
-        @keyframes sweepLight10s {
-            0%, 85% { left: -120%; opacity: 0; }
-            86% { opacity: 1; left: -120%; }
-            95%, 100% { left: 220%; opacity: 0; }
+        /* ĐIỀU CHỈNH CHU KỲ 7 GIÂY: ÁNH SÁNG XANH DƯƠNG LƯỚT ĐỒNG NHỊP TRÊN BỀ MẶT CÁC KHỐI */
+        @keyframes sweepBlueLight7s {
+            0%, 75% { left: -120%; opacity: 0; }
+            78% { opacity: 0.95; left: -120%; }
+            92%, 100% { left: 220%; opacity: 0; }
         }
 
-        /* FORM BÊN TRÁI */
+        /* KHỐI FORM BÊN TRÁI */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.94)) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
@@ -106,11 +105,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             position: absolute;
             top: 0;
             left: -120%;
-            width: 60%;
+            width: 65%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.7), transparent);
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.75), rgba(96, 165, 250, 0.85), transparent);
             transform: skewX(-25deg);
-            animation: sweepLight10s 10s infinite linear;
+            animation: sweepBlueLight7s 7s infinite linear;
             z-index: 10;
             pointer-events: none;
         }
@@ -120,7 +119,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* CÁC KHỐI XANH BÊN PHẢI */
+        /* 3 KHỐI BÊN PHẢI (CHẠY ĐỒNG BỘ 7 GIÂY) */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.96) 0%, rgba(10, 61, 35, 0.94) 100%) !important;
             border: 2px solid #22c55e !important;
@@ -137,11 +136,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             position: absolute;
             top: 0;
             left: -120%;
-            width: 60%;
+            width: 65%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.7), transparent);
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.75), rgba(96, 165, 250, 0.85), transparent);
             transform: skewX(-25deg);
-            animation: sweepLight10s 10s infinite linear;
+            animation: sweepBlueLight7s 7s infinite linear;
             z-index: 10;
             pointer-events: none;
         }
@@ -172,7 +171,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
-        /* NÚT SỨ MỆNH CẠNH NÚT ĐĂNG NHẬP */
+        /* Nút Sứ mệnh */
         button[key="btn_inline_mission"] {
             background: linear-gradient(135deg, #0d5a30 0%, #15803d 50%, #22c55e 100%) !important;
             border: 1.5px solid #4ade80 !important;
@@ -194,7 +193,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             color: #ffffff !important;
         }
 
-        /* KHUNG CHỨA SLOGAN LÀM CHUẨN: KHÔNG GIAN THOÁNG PHÍA TRÊN */
+        /* KHUNG CHỨA SLOGAN LÀM CHUẨN CỐ ĐỊNH */
         .slogan-wrapper {
             text-align: center;
             padding-top: 15px;
@@ -266,7 +265,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # KHUNG SLOGAN LÀM CHUẨN CỐ ĐỊNH PHÍA TRÊN
     wave_html = '<div class="slogan-wrapper">'
     delay = 0.0
     for char in t["slogan"]:
