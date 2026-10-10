@@ -1,7 +1,65 @@
 import streamlit as st
 import datetime
 
-def hien_thi_mang_xa_hoi():
+def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
+    T = {
+        "Tiếng Việt": {
+            "title": "MẠNG XÃ HỘI TÍN CHỈ CARBON",
+            "subtitle": "Nơi cộng đồng kết nối, chia sẻ kiến thức và lan tỏa giá trị Net-Zero",
+            "area_lbl": "Khu vực thảo luận:",
+            "room_1": "Phòng Thế giới (Toàn cầu)",
+            "room_2": "Phòng Tỉnh thành (Địa phương)",
+            "room_3": "Phòng Nhóm dự án riêng",
+            "select_prov": "Chọn tỉnh / thành phố:",
+            "select_group": "Chọn nhóm chuyên trách:",
+            "create_post": "TẠO BÀI VIẾT MỚI",
+            "post_content": "Nội dung bài viết:",
+            "post_placeholder": "Chia sẻ góc nhìn xanh tại {room}...",
+            "btn_post": "ĐĂNG BÀI",
+            "msg_success": "Đã đăng bài viết thành công.",
+            "msg_warning": "Vui lòng nhập nội dung bài viết.",
+            "news_feed": "BẢNG TIN CỘNG ĐỒNG",
+            "no_post": "Chưa có bài viết nào.",
+            "world": "Thế giới",
+            "likes": "Lượt thích",
+            "comments": "Bình luận",
+            "btn_like": "Thích",
+            "btn_rep": "Báo cáo vi phạm",
+            "rep_msg": "Đã tiếp nhận báo cáo vi phạm. Ban kiểm duyệt sẽ xử lý trong 24h.",
+            "cmt_lbl": "BÌNH LUẬN NỘI BỘ:",
+            "cmt_input": "Viết bình luận công khai...",
+            "btn_send": "Gửi"
+        },
+        "English": {
+            "title": "CARBON CREDIT SOCIAL NETWORK",
+            "subtitle": "Where the community connects, shares knowledge, and spreads Net-Zero values",
+            "area_lbl": "Discussion Area:",
+            "room_1": "Global Room (Worldwide)",
+            "room_2": "Provincial Room (Local)",
+            "room_3": "Private Project Room",
+            "select_prov": "Select province / city:",
+            "select_group": "Select specialized group:",
+            "create_post": "CREATE NEW POST",
+            "post_content": "Post content:",
+            "post_placeholder": "Share your green perspective in {room}...",
+            "btn_post": "POST",
+            "msg_success": "Post created successfully.",
+            "msg_warning": "Please enter post content.",
+            "news_feed": "COMMUNITY NEWS FEED",
+            "no_post": "No posts yet.",
+            "world": "Worldwide",
+            "likes": "Likes",
+            "comments": "Comments",
+            "btn_like": "Like",
+            "btn_rep": "Report Violation",
+            "rep_msg": "Violation report received. The moderation team will process within 24h.",
+            "cmt_lbl": "INTERNAL COMMENTS:",
+            "cmt_input": "Write a public comment...",
+            "btn_send": "Send"
+        }
+    }
+    t = T.get(lang, T["Tiếng Việt"])
+
     st.markdown("""
         <style>
         .social-title-green {
@@ -53,8 +111,6 @@ def hien_thi_mang_xa_hoi():
             font-weight: 700;
             margin-left: 8px;
         }
-
-        /* NÚT THÍCH MÀU XANH DƯƠNG (TECH/FACEBOOK BLUE) */
         button[key^="btn_like_"] {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
             border: 1px solid #60a5fa !important;
@@ -71,8 +127,6 @@ def hien_thi_mang_xa_hoi():
             box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6) !important;
             border-color: #93c5fd !important;
         }
-
-        /* NÚT BÁO CÁO VI PHẠM TÔNG TRẦM KÍN ĐÁO */
         button[key^="btn_rep_"] {
             background: rgba(51, 65, 85, 0.4) !important;
             border: 1px solid rgba(148, 163, 184, 0.3) !important;
@@ -87,8 +141,6 @@ def hien_thi_mang_xa_hoi():
             color: #fca5a5 !important;
             border-color: rgba(239, 68, 68, 0.5) !important;
         }
-
-        /* NÚT ĐĂNG BÀI MÀU XANH LÁ */
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
@@ -101,8 +153,6 @@ def hien_thi_mang_xa_hoi():
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
             box-shadow: 0 0 20px rgba(72, 187, 120, 0.8) !important;
         }
-
-        /* KHUNG HIỂN THỊ BÌNH LUẬN CÔNG KHAI */
         .comment-thread {
             background: rgba(15, 23, 42, 0.55);
             border-left: 3px solid rgba(72, 187, 120, 0.6);
@@ -125,38 +175,37 @@ def hien_thi_mang_xa_hoi():
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="social-title-green">MẠNG XÃ HỘI TÍN CHỈ CARBON</div>', unsafe_allow_html=True)
-    st.markdown('<div class="social-sub">Nơi cộng đồng kết nối, chia sẻ kiến thức và lan tỏa giá trị Net-Zero</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="social-title-green">{t["title"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="social-sub">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
-    # 1. Phân chia phòng trò chuyện
     phong_chon = st.radio(
-        "Khu vực thảo luận:",
-        ["Phòng Thế giới (Toàn cầu)", "Phòng Tỉnh thành (Địa phương)", "Phòng Nhóm dự án riêng"],
+        t["area_lbl"],
+        [t["room_1"], t["room_2"], t["room_3"]],
         horizontal=True
     )
 
-    if phong_chon == "Phòng Tỉnh thành (Địa phương)":
-        tinh_chon = st.selectbox("Chọn tỉnh / thành phố:", ["Cà Mau", "Quảng Bình", "Lâm Đồng", "Hà Tĩnh", "Sơn La", "TP. Hồ Chí Minh"])
-        room_label = f"Tỉnh {tinh_chon}"
-    elif phong_chon == "Phòng Nhóm dự án riêng":
-        nhom_chon = st.selectbox("Chọn nhóm chuyên trách:", ["Kỹ sư viễn thám & MRV", "Nhà đầu tư thị trường", "Chủ rừng ngập mặn"])
+    if phong_chon == t["room_2"]:
+        tinh_chon = st.selectbox(t["select_prov"], ["Cà Mau", "Quảng Bình", "Lâm Đồng", "Hà Tĩnh", "Sơn La", "TP. Hồ Chí Minh"])
+        room_label = f"Tỉnh {tinh_chon}" if lang == "Tiếng Việt" else f"{tinh_chon} Province"
+    elif phong_chon == t["room_3"]:
+        nhom_chon = st.selectbox(t["select_group"], ["Kỹ sư viễn thám & MRV", "Nhà đầu tư thị trường", "Chủ rừng ngập mặn"])
         room_label = nhom_chon
     else:
-        room_label = "Thế giới"
+        room_label = t["world"]
 
-    # 2. Tạo bài viết mới
     with st.container(border=True):
-        st.markdown('<div style="color:#48bb78; font-weight:800; font-size:1.15rem; margin-bottom:12px;">TẠO BÀI VIẾT MỚI</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="color:#48bb78; font-weight:800; font-size:1.15rem; margin-bottom:12px;">{t["create_post"]}</div>', unsafe_allow_html=True)
         with st.form("form_post", clear_on_submit=True):
-            post_content = st.text_area("Nội dung bài viết:", placeholder=f"Chia sẻ góc nhìn xanh tại {room_label}...")
-            submitted = st.form_submit_button("ĐĂNG BÀI", use_container_width=True)
+            placeholder_text = t["post_placeholder"].replace("{room}", room_label)
+            post_content = st.text_area(t["post_content"], placeholder=placeholder_text)
+            submitted = st.form_submit_button(t["btn_post"], use_container_width=True)
             if submitted:
                 if post_content.strip():
                     if "social_posts_mem" not in st.session_state:
                         st.session_state["social_posts_mem"] = []
                     now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
-                    author = st.session_state.get("current_user", "Thành viên")
-                    role = st.session_state.get("current_role", "Đồng hành xanh")
+                    author = st.session_state.get("current_user", "Member" if lang == "English" else "Thành viên")
+                    role = st.session_state.get("current_role", "Green Companion" if lang == "English" else "Đồng hành xanh")
                     
                     new_p = {
                         "id": f"p_{len(st.session_state['social_posts_mem']) + 1}",
@@ -169,49 +218,47 @@ def hien_thi_mang_xa_hoi():
                         "comments": []
                     }
                     st.session_state["social_posts_mem"].insert(0, new_p)
-                    st.success("Đã đăng bài viết thành công.")
+                    st.success(t["msg_success"])
                     st.rerun()
                 else:
-                    st.warning("Vui lòng nhập nội dung bài viết.")
+                    st.warning(t["msg_warning"])
 
-    st.markdown('<div class="social-title-green" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px;">BẢNG TIN CỘNG ĐỒNG</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="social-title-green" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px;">{t["news_feed"]}</div>', unsafe_allow_html=True)
 
-    # Dữ liệu mặc định ban đầu nếu chưa có bài
     if "social_posts_mem" not in st.session_state:
         st.session_state["social_posts_mem"] = [
             {
                 "id": "p_default_1",
                 "author": "Kỹ Sư Rừng Cà Mau",
-                "role": "Chủ rừng / Kỹ sư MRV",
-                "content": "Đợt đo kiểm viễn thám tháng này ghi nhận mật độ sinh khối ven biển tăng rất tốt, dữ liệu viễn thám đã khớp với chỉ số thực địa.",
+                "role": "Forest Owner / MRV Engineer" if lang == "English" else "Chủ rừng / Kỹ sư MRV",
+                "content": "The remote sensing survey this month shows very good coastal biomass growth, matching field data perfectly." if lang == "English" else "Đợt đo kiểm viễn thám tháng này ghi nhận mật độ sinh khối ven biển tăng rất tốt, dữ liệu viễn thám đã khớp với chỉ số thực địa.",
                 "time": "08/10/2026 14:20",
-                "room": "Thế giới",
+                "room": t["world"],
                 "likes": 24,
                 "comments": [
-                    {"user": "Vinamilk Net-Zero", "text": "Dự án rất triển vọng, bên mình đang quan tâm nguồn cung đợt tới."},
-                    {"user": "Nhà Đầu Tư Xanh", "text": "Dữ liệu ảnh viễn thám rõ nét và minh bạch lắm."}
+                    {"user": "Vinamilk Net-Zero", "text": "Very promising project, we are interested in the next supply batch." if lang == "English" else "Dự án rất triển vọng, bên mình đang quan tâm nguồn cung đợt tới."},
+                    {"user": "Nhà Đầu Tư Xanh", "text": "Satellite data is very clear and transparent." if lang == "English" else "Dữ liệu ảnh viễn thám rõ nét và minh bạch lắm."}
                 ]
             },
             {
                 "id": "p_default_2",
                 "author": "Quỹ Đầu Tư Xanh",
-                "role": "Nhà đầu tư từ xa",
-                "content": "Chúng tôi đang thẩm định thêm 3 dự án tại khu vực Bắc Trung Bộ. Nền tảng hiển thị minh bạch giúp rút ngắn rất nhiều thời gian giải ngân.",
+                "role": "Remote Investor" if lang == "English" else "Nhà đầu tư từ xa",
+                "content": "We are appraising 3 more projects in the North Central region. The transparent platform significantly shortens disbursement time." if lang == "English" else "Chúng tôi đang thẩm định thêm 3 dự án tại khu vực Bắc Trung Bộ. Nền tảng hiển thị minh bạch giúp rút ngắn rất nhiều thời gian giải ngân.",
                 "time": "07/10/2026 09:15",
-                "room": "Thế giới",
+                "room": t["world"],
                 "likes": 18,
                 "comments": [
-                    {"user": "Bộ NN&PTNT", "text": "Rất mong được hợp tác phát triển bền vững cùng quý quỹ."}
+                    {"user": "Bộ NN&PTNT", "text": "Looking forward to sustainable cooperation with your fund." if lang == "English" else "Rất mong được hợp tác phát triển bền vững cùng quý quỹ."}
                 ]
             }
         ]
 
     posts = st.session_state["social_posts_mem"]
     if not posts:
-        st.info("Chưa có bài viết nào.")
+        st.info(t["no_post"])
         return
 
-    # Duyệt và hiển thị danh sách bài viết
     for idx, p in enumerate(posts):
         st.markdown(f"""
             <div class="social-card">
@@ -219,39 +266,37 @@ def hien_thi_mang_xa_hoi():
                     <div>
                         <span class="social-author">{p['author']}</span> 
                         <span style="color:#94a3b8; font-size:0.85rem;">({p['role']})</span>
-                        <span class="badge-room">{p.get('room', 'Thế giới')}</span>
+                        <span class="badge-room">{p.get('room', t['world'])}</span>
                     </div>
                     <span class="social-meta">{p['time']}</span>
                 </div>
                 <div class="social-content">{p['content']}</div>
                 <div style="color:#94a3b8; font-size:0.88rem; margin-bottom:12px;">
-                    Lượt thích: <b style="color:#38bdf8;">{p['likes']}</b> &nbsp;|&nbsp; 
-                    Bình luận: <b style="color:#48bb78;">{len(p.get('comments', []))}</b>
+                    {t['likes']}: <b style="color:#38bdf8;">{p['likes']}</b> &nbsp;|&nbsp; 
+                    {t['comments']}: <b style="color:#48bb78;">{len(p.get('comments', []))}</b>
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
-        # Hàng nút Thao tác: Nút Thích xanh dương & Báo cáo vi phạm
         c_like, c_rep, _ = st.columns([0.22, 0.28, 0.5])
         with c_like:
-            if st.button(f"Thích ({p['likes']})", key=f"btn_like_{p['id']}_{idx}"):
+            if st.button(f"{t['btn_like']} ({p['likes']})", key=f"btn_like_{p['id']}_{idx}"):
                 p["likes"] += 1
                 st.rerun()
         with c_rep:
-            if st.button("Báo cáo vi phạm", key=f"btn_rep_{p['id']}_{idx}"):
-                st.toast("Đã tiếp nhận báo cáo vi phạm. Ban kiểm duyệt sẽ xử lý trong 24h.")
+            if st.button(t["btn_rep"], key=f"btn_rep_{p['id']}_{idx}"):
+                st.toast(t["rep_msg"])
 
-        # KHU VỰC BÌNH LUẬN CÔNG KHAI TRỰC TIẾP (TỰ ĐỘNG HIỆN TOÀN BỘ)
         comments_list = p.get("comments", [])
         if comments_list:
-            st.markdown("<div style='margin-top:10px; margin-bottom:5px; font-weight:700; color:#94a3b8; font-size:0.88rem;'>BÌNH LUẬN NỘI BỘ:</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='margin-top:10px; margin-bottom:5px; font-weight:700; color:#94a3b8; font-size:0.88rem;'>{t['cmt_lbl']}</div>", unsafe_allow_html=True)
             for cm in comments_list:
                 if isinstance(cm, dict):
-                    u_c = cm.get("user", "Thành viên")
+                    u_c = cm.get("user", "Member" if lang == "English" else "Thành viên")
                     t_c = cm.get("text", "")
                 else:
                     parts = str(cm).split(":", 1)
-                    u_c = parts[0] if len(parts) > 1 else "Thành viên"
+                    u_c = parts[0] if len(parts) > 1 else ("Member" if lang == "English" else "Thành viên")
                     t_c = parts[1] if len(parts) > 1 else str(cm)
                     
                 st.markdown(f"""
@@ -261,16 +306,15 @@ def hien_thi_mang_xa_hoi():
                     </div>
                 """, unsafe_allow_html=True)
 
-        # Ô nhập bình luận trực tiếp bên dưới mỗi bài
         with st.form(f"form_quick_cmt_{p['id']}_{idx}", clear_on_submit=True):
             col_in, col_btn = st.columns([0.82, 0.18])
             with col_in:
-                new_c_txt = st.text_input("Viết bình luận công khai...", placeholder="Viết phản hồi của bạn...", label_visibility="collapsed")
+                new_c_txt = st.text_input(t["cmt_input"], placeholder=t["cmt_input"], label_visibility="collapsed")
             with col_btn:
-                btn_send_c = st.form_submit_button("Gửi", use_container_width=True)
+                btn_send_c = st.form_submit_button(t["btn_send"], use_container_width=True)
             
             if btn_send_c and new_c_txt.strip():
-                cur_user = st.session_state.get("current_user", "Ẩn danh")
+                cur_user = st.session_state.get("current_user", "Anonymous" if lang == "English" else "Ẩn danh")
                 p.setdefault("comments", []).append({"user": cur_user, "text": new_c_txt.strip()})
                 st.rerun()
 
