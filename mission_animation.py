@@ -137,7 +137,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    // KÉO DÀI THÊM 4 GIÂY Ở KHÚC CUỐI (TỪ 25s LÊN 29s) TRƯỚC KHI TỰ ĐỘNG ĐÓNG
+    // TĂNG LÊN ĐÚNG 29 GIÂY (GIỮ LÂU THÊM 4S Ở ĐOẠN CUỐI)
     const TOTAL_DURATION = 29000;
 
     let smokeParticles = [];
