@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ nâng đỡ (Gân lá màu nâu)
+      // 2 Lá bự 45 độ (Gân lá màu nâu)
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -290,7 +290,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       try {{
         const doc = window.parent.document;
         
-        // TIÊU ĐỀ LƯỚT MÀU TỪNG CHỮ CÁI TỪ XANH LÁ SANG XANH DƯƠNG
+        // TIÊU ĐỀ LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI
         const welcomeEls = [doc.getElementById('welcomeHeading'), doc.getElementById('welcomeHeadingReg')];
         welcomeEls.forEach(el => {{
           if (el && !el.dataset.wrapped) {{
@@ -300,6 +300,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
               const span = doc.createElement('span');
               span.innerText = text[i] === ' ' ? '\\u00A0' : text[i];
               span.style.animation = `smoothLetterShift 4s ease-in-out infinite`;
+              // Tăng delay dần đều từ trái sang phải
               span.style.animationDelay = `${{i * 0.12}}s`;
               span.style.display = 'inline-block';
               el.appendChild(span);
@@ -308,34 +309,42 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           }}
         }});
 
-        const btnLogin = doc.querySelector('.st-key-btn_login_submit button');
-        if (btnLogin && !btnLogin.dataset.customizedGreen) {{
-          btnLogin.dataset.customizedGreen = 'true';
-          btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
-          btnLogin.style.setProperty('border', '1.5px solid #4ade80', 'important');
-          btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
-          btnLogin.style.setProperty('border-radius', '10px', 'important');
-          btnLogin.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
+        // STYLE NÚT: XÁC THỰC TRUY CẬP & TẠO MỚI TÀI KHOẢN (MÀU XANH LÁ + KHỐI 3D + ĐỒNG BỘ NỔI BỔNG)
+        const greenBtns = [
+            doc.querySelector('.st-key-btn_login_submit button'), 
+            doc.querySelector('.st-key-btn_reg_submit button')
+        ];
+        
+        greenBtns.forEach(btn => {{
+          if (btn && !btn.dataset.customizedGreen) {{
+            btn.dataset.customizedGreen = 'true';
+            btn.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
+            btn.style.setProperty('border', '1.5px solid #4ade80', 'important');
+            btn.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
+            btn.style.setProperty('border-radius', '10px', 'important');
+            btn.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
 
-          const texts = btnLogin.querySelectorAll('*');
-          texts.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
-          
-          btnLogin.addEventListener('mouseenter', () => {{
-            btnLogin.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
-            btnLogin.style.setProperty('box-shadow', '0 8px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75)', 'important');
-            btnLogin.style.setProperty('background', 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)', 'important');
-          }});
-          btnLogin.addEventListener('mouseleave', () => {{
-            btnLogin.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
-            btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
-            btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
-          }});
-          btnLogin.addEventListener('mousedown', () => {{
-            btnLogin.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-            btnLogin.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
-          }});
-        }}
+            const texts = btn.querySelectorAll('*');
+            texts.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
+            
+            btn.addEventListener('mouseenter', () => {{
+              btn.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
+              btn.style.setProperty('box-shadow', '0 8px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75)', 'important');
+              btn.style.setProperty('background', 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)', 'important');
+            }});
+            btn.addEventListener('mouseleave', () => {{
+              btn.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
+              btn.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
+              btn.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
+            }});
+            btn.addEventListener('mousedown', () => {{
+              btn.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
+              btn.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
+            }});
+          }}
+        }});
 
+        // STYLE NÚT: KHÁM PHÁ SỨ MỆNH (MÀU XANH DƯƠNG CÔNG NGHỆ)
         const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
         if (btnMission && !btnMission.dataset.customizedBlue) {{
           btnMission.dataset.customizedBlue = 'true';
@@ -357,6 +366,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             btnMission.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
             btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
             btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
+          }});
+          btnMission.addEventListener('mousedown', () => {{
+            btnMission.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
+            btnMission.style.setProperty('box-shadow', '0 2px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4)', 'important');
           }});
         }}
       }} catch(e) {{}}
@@ -487,7 +500,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
-        /* PHÔNG NỀN ĐEN TUYỀN CÙNG CỰC QUANG XANH LÁ & XANH DƯƠNG */
+        /* PHÔNG NỀN ĐEN TUYỀN CÙNG CỰC QUANG XANH LÁ & XANH DƯƠNG XEN KẼ */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -538,6 +551,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             92%, 100% { left: 220%; opacity: 0; }
         }
 
+        /* KHỐI FORM BÊN TRÁI HIỆU ỨNG NỔI LÊN KHI TRỎ CHUỘT VÀO */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
             backdrop-filter: blur(14px) !important;
@@ -547,7 +561,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: greenBreathePulse 4s infinite ease-in-out !important;
             position: relative;
             overflow: hidden !important;
-            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease !important;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease !important;
             margin-bottom: 0px !important;
         }
         div[data-testid="stForm"]::after {
@@ -563,8 +577,13 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 10;
             pointer-events: none;
         }
+        div[data-testid="stForm"]:hover {
+            transform: translateY(-4px) scale(1.015) !important;
+            box-shadow: 0 16px 45px rgba(72, 187, 120, 0.95) !important;
+            border-color: #48bb78 !important;
+        }
 
-        /* LƯỚT MÀU TỪNG CHỮ CÁI XANH LÁ <-> XANH DƯƠNG */
+        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI */
         @keyframes smoothLetterShift {
             0%, 100% {
                 color: #4ade80 !important;
@@ -576,6 +595,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
+        /* HIỆU ỨNG NỔI LÊN CỦA CÁC KHỐI KHI ĐƯỢC TRỎ CHUỘT VÀO */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -586,7 +606,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             position: relative !important;
             overflow: hidden !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
-            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease !important;
         }
         .hardcore-green-card::after {
             content: '';
@@ -601,8 +621,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 10;
             pointer-events: none;
         }
+        .hardcore-green-card:hover {
+            transform: translateY(-4px) scale(1.015) !important;
+            box-shadow: 0 16px 45px rgba(72, 187, 120, 0.95) !important;
+            border-color: #48bb78 !important;
+        }
 
-        /* LÁ CỜ VIỆT NAM QUÉT SÁNG TRÁI SANG PHẢI VÀ NỞ ÊM ÁI CHẬM RÃI */
         .vn-flag-card-expanded {
             background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -616,11 +640,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 6px 25px rgba(220, 38, 38, 0.25);
             transition: all 0.3s ease;
         }
+        .vn-flag-card-expanded:hover {
+            border-color: #ef4444 !important;
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.45) !important;
+            transform: translateY(-2px);
+        }
 
-        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
+        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI QUA TỪNG CHỮ */
         @keyframes sweepGoldenGlowTextL2R {
-            0%, 10% { background-position: -200% 0; }
-            90%, 100% { background-position: 200% 0; }
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
         .nation-title-sweeping {
             font-size: 0.98rem;
@@ -631,10 +660,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.6));
-            animation: sweepGoldenGlowTextL2R 5s linear infinite;
+            animation: sweepGoldenGlowTextL2R 5.5s linear infinite;
         }
 
-        /* NỞ RA THU LẠI TỪ TỪ CHẬM RÃI MỖI 6 GIÂY */
+        /* NỞ RA THU LẠI TỪ TỪ CHẬM RÃI MỖI 6 GIÂY (ÊM ÁI) */
         @keyframes flagBreatheBloom {
             0%, 100% {
                 transform: scale(1);
