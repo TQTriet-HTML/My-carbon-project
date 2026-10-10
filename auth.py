@@ -48,7 +48,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
     const R = 38;
     const phrase = "{text_slogan}";
 
-    // VẼ LOGO VECTOR NÉT CĂNG NGUYÊN BẢN (KHÔNG CÒN KHUNG VIỀN XÁM BAO NGOÀI)
     function renderVectorLogo(c, alpha = 1.0, scale = 1.0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -165,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Chiếc lá bự 45 độ nâng đỡ (gân lá trắng nổi bật)
+      // 2 Lá bự 45 độ nâng đỡ (gân lá trắng)
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -207,8 +206,8 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // VẼ DÒNG CHỮ LƯỢN SÓNG TỪNG KÝ TỰ MÀU XANH LÁ
-    function renderWavingText(c, alpha = 1.0, time = 0) {{
+    // VẼ DÒNG CHỮ CHỈ LƯỢN SÓNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG XANH LÁ LƯỚT QUA TỪNG CHỮ
+    function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
       c.globalAlpha = alpha;
@@ -221,16 +220,47 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       const startX = cx - (metrics.width / 2);
       let currX = startX;
 
+      // Sóng lướt qua đúng 1 lần từ 7700ms đến 10200ms (2.5 giây)
+      const waveStart = 7700;
+      const waveDuration = 2500;
+      const waveProg = (elapsed - waveStart) / waveDuration;
+
       for (let i = 0; i < totalChars; i++) {{
         const ch = phrase[i];
         const w = c.measureText(ch).width;
         const charCx = currX + w / 2;
-        const waveY = cy + Math.sin(time * 0.004 + i * 0.45) * 6;
+        const charNorm = i / Math.max(1, totalChars - 1);
+        
+        let waveY = cy;
+        let isSwept = false;
+        let sweepIntensity = 0;
 
-        c.fillStyle = '#4ade80';
-        c.shadowColor = 'rgba(74, 222, 128, 0.85)';
-        c.shadowBlur = 10;
+        // Chỉ khi luồng sóng quét qua đúng chữ đó
+        if (waveProg >= 0 && waveProg <= 1.25) {{
+          const dist = Math.abs(waveProg - charNorm);
+          if (dist < 0.18) {{
+            const factor = 1 - (dist / 0.18);
+            waveY = cy - Math.sin(factor * Math.PI) * 9;
+            sweepIntensity = Math.sin(factor * Math.PI);
+            isSwept = true;
+          }}
+        }}
+
+        c.save();
+        if (isSwept) {{
+          // Ánh sáng xanh lá cực sáng lướt qua theo con sóng
+          c.fillStyle = '#bbf7d0';
+          c.shadowColor = '#22c55e';
+          c.shadowBlur = 18 * sweepIntensity;
+        }} else {{
+          // Chữ nằm yên tĩnh lặng màu xanh lá tươi mát
+          c.fillStyle = '#4ade80';
+          c.shadowColor = 'rgba(74, 222, 128, 0.45)';
+          c.shadowBlur = 6;
+        }}
         c.fillText(ch, charCx, waveY);
+        c.restore();
+
         currX += w;
       }}
       c.restore();
@@ -255,12 +285,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       }});
     }}
 
-    // CHU KỲ CHUYỂN ĐỔI:
-    // 0s - 4.5s: LOGO HOÀN CHỈNH SẮC NÉT
-    // 4.5s - 7.5s: LOGO TAN RÃ, HẠT BAY TẠO VÒNG VÀ TỤ THÀNH DÒNG CHỮ
-    // 7.5s - 13s: DÒNG CHỮ "VÌ MỘT NGÀY MAI TƯƠI SÁNG!" LƯỢN SÓNG TỪNG CHỮ MÀU XANH LÁ
-    // 13s - 15.5s: DÒNG CHỮ TAN RÃ THÀNH HẠT BAY VÒNG
-    // 15.5s - 18s: HẠT TỤ LẠI TÁI HIỆN LOGO BAN ĐẦU
     const CYCLE = 18000;
     const startTime = performance.now();
 
@@ -291,14 +315,14 @@ def get_particle_logo_html(lang="Tiếng Việt"):
         ctx.globalAlpha = 1.0;
 
         if (pProg > 0.5) {{
-          renderWavingText(ctx, (pProg - 0.5) * 2, elapsed);
+          renderWavingTextOnce(ctx, (pProg - 0.5) * 2, elapsed);
         }}
       }} else if (elapsed < 13000) {{
-        renderWavingText(ctx, 1.0, elapsed);
+        renderWavingTextOnce(ctx, 1.0, elapsed);
       }} else if (elapsed < 15500) {{
         const dProg = (elapsed - 13000) / 2500;
         const textAlpha = Math.max(0, 1 - dProg * 2.0);
-        if (textAlpha > 0) renderWavingText(ctx, textAlpha, elapsed);
+        if (textAlpha > 0) renderWavingTextOnce(ctx, textAlpha, elapsed);
 
         for (let i = 0; i < NUM_PARTICLES; i++) {{
           const p = particles[i];
@@ -384,7 +408,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
-    text_sub = "#cbd5e1"
 
     st.markdown("""
         <style>
@@ -412,9 +435,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             max-height: 100vh !important;
         }
 
-        /* KHUNG CHÍNH CỐ ĐỊNH KHOẢNG CÁCH CHUẨN ĐỈNH */
         .block-container {
-            padding-top: 2.2rem !important;
+            padding-top: 1.8rem !important;
             padding-bottom: 1.2rem !important;
             padding-left: 2rem !important;
             padding-right: 2rem !important;
@@ -445,7 +467,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             backdrop-filter: blur(14px) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
             border-radius: 16px !important;
-            padding: 12px 18px !important;
+            padding: 14px 20px !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
             position: relative;
             overflow: hidden !important;
@@ -471,14 +493,34 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* CÁC KHỐI XANH BÊN PHẢI */
+        /* HIỆU ỨNG CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG CHO 'XIN CHÀO QUÝ ĐỒNG HÀNH!' */
+        @keyframes greenToBlueGlow {
+            0%, 100% {
+                color: #4ade80;
+                text-shadow: 0 0 14px rgba(74, 222, 128, 0.85);
+            }
+            50% {
+                color: #38bdf8;
+                text-shadow: 0 0 16px rgba(56, 189, 248, 0.85);
+            }
+        }
+        .welcome-title-animated {
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 1.18rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            animation: greenToBlueGlow 5s infinite ease-in-out;
+        }
+
+        /* GIÃN CÁCH KHÔNG GIAN CÁC KHỐI BÊN PHẢI (MARGIN RỘNG RÃI HƠN) */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
             border: 2px solid #22c55e !important;
             border-radius: 14px !important;
-            padding: 9px 15px !important;
-            margin-bottom: 8px !important;
+            padding: 12px 18px !important;
+            margin-bottom: 14px !important; /* GIÃN KHÔNG GIAN THOÁNG HƠN */
             position: relative !important;
             overflow: hidden !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
@@ -503,63 +545,61 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* KHỐI LÁ CỜ VIỆT NAM TUNG BAY GÓC DƯỚI BÊN PHẢI */
-        .vn-flag-card {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(20, 30, 50, 0.86) 100%) !important;
+        /* KHỐI LÁ CỜ VIỆT NAM MỞ RỘNG TO - PHÁT SÁNG ĐỎ & NGÔI SAO PHÁT SÁNG VÀNG - BỎ UỐN LƯỢN */
+        .vn-flag-card-expanded {
+            background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
-            border: 1.5px solid rgba(239, 68, 68, 0.5) !important;
+            border: 1.8px solid rgba(239, 68, 68, 0.65) !important;
             border-radius: 14px !important;
-            padding: 8px 14px !important;
+            padding: 12px 18px !important;
             margin-bottom: 0px !important;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.25);
             transition: all 0.3s ease;
         }
-        .vn-flag-card:hover {
+        .vn-flag-card-expanded:hover {
             border-color: #ef4444 !important;
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.35) !important;
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.45) !important;
             transform: translateY(-2px);
         }
 
-        @keyframes flagWaveSheen {
-            0% {
-                background-position: -200% 0;
-                transform: skewY(0deg) scaleY(1);
+        @keyframes flagRedPulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(218, 37, 29, 0.75), 0 0 24px rgba(239, 68, 68, 0.45);
             }
             50% {
-                transform: skewY(1.8deg) scaleY(0.98);
-            }
-            100% {
-                background-position: 200% 0;
-                transform: skewY(0deg) scaleY(1);
+                box-shadow: 0 0 20px rgba(218, 37, 29, 0.95), 0 0 32px rgba(239, 68, 68, 0.7);
             }
         }
-        .waving-flag-box {
-            width: 58px;
-            height: 38px;
+        .flag-box-glowing {
+            width: 72px;
+            height: 48px;
             background: #da251d;
-            border-radius: 5px;
+            border-radius: 6px;
+            border: 1.5px solid rgba(254, 202, 202, 0.4);
             position: relative;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: flagWaveSheen 3.2s infinite ease-in-out;
+            animation: flagRedPulseGlow 3s infinite ease-in-out;
             flex-shrink: 0;
         }
-        .waving-flag-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(115deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.35) 50%, rgba(0,0,0,0.2) 75%);
-            background-size: 200% 100%;
-            animation: flagWaveSheen 3.2s infinite linear;
-            pointer-events: none;
+
+        @keyframes starYellowGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15);
+            }
+            50% {
+                filter: drop-shadow(0 0 7px #ffff00) drop-shadow(0 0 14px #eab308);
+            }
+        }
+        .flag-star-svg {
+            animation: starYellowGlow 2.5s infinite ease-in-out;
         }
 
+        /* NÚT XÁC THỰC TRUY CẬP (MÀU XANH LÁ) */
         button[kind="primary"],
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -571,7 +611,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.45) !important;
             transition: all 0.3s ease !important;
             margin-top: 2px !important;
-            padding: 6px 14px !important;
+            padding: 8px 14px !important;
         }
         button[kind="primary"]:hover,
         div[data-testid="stFormSubmitButton"] button:hover {
@@ -580,13 +620,43 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
-        /* KHUNG CHỨA SLOGAN ĐƯỢC CỐ ĐỊNH KHOẢNG CÁCH CHUẨN LÀM MỐC */
+        /* NÚT KHÁM PHÁ SỨ MỆNH: ĐỔI SANG MÀU XANH DƯƠNG CÔNG NGHỆ (ELECTRIC BLUE) */
+        .btn-mission-blue div[data-testid="stFormSubmitButton"] button,
+        div[data-testid="column"]:nth-child(2) div[data-testid="stFormSubmitButton"] button {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%) !important;
+            border: 1.5px solid #38bdf8 !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            border-radius: 9px !important;
+            box-shadow: 0 4px 18px rgba(14, 165, 233, 0.5) !important;
+            transition: all 0.3s ease !important;
+        }
+        .btn-mission-blue div[data-testid="stFormSubmitButton"] button:hover,
+        div[data-testid="column"]:nth-child(2) div[data-testid="stFormSubmitButton"] button:hover {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%) !important;
+            border-color: #7dd3fc !important;
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.85) !important;
+            color: #ffffff !important;
+        }
+
+        /* KHUNG CHỨA SLOGAN ĐƯỢC GIÃN KHOẢNG CÁCH RỘNG RÃI VỚI CÁC KHỐI BÊN DƯỚI */
         .slogan-fixed-anchor {
             text-align: center;
             padding-top: 14px;
-            padding-bottom: 2px;
+            padding-bottom: 4px;
             overflow: visible !important;
             white-space: nowrap;
+        }
+        .subtitle-custom-green-blue {
+            text-align: center;
+            color: #38bdf8; /* ĐỔI SANG MÀU XANH TƯƠI SÁNG */
+            font-size: 1.05rem; /* PHÓNG TO HƠN */
+            font-weight: 600;
+            margin-top: 4px;
+            margin-bottom: 26px; /* GIÃN CÁCH RỘNG RÃI VỚI CÁC KHỐI BÊN DƯỚI */
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+            letter-spacing: 0.3px;
         }
 
         @keyframes waveUp {
@@ -597,7 +667,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             display: inline-block;
             position: relative;
             margin-right: 2px;
-            font-size: clamp(23px, 2.6vw, 34px) !important;
+            font-size: clamp(23px, 2.7vw, 36px) !important;
             font-weight: 900 !important;
             letter-spacing: 1.5px !important;
             line-height: 1.35 !important;
@@ -611,36 +681,35 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
         .section-title-custom {
             color: #ffffff;
-            font-size: 0.95rem;
+            font-size: 0.98rem;
             font-weight: 800;
             letter-spacing: 1.2px;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
             border-left: 4px solid #48bb78;
             padding-left: 8px;
             text-transform: uppercase;
         }
         .stat-value-custom {
-            font-size: 1.65rem;
+            font-size: 1.75rem;
             font-weight: 900;
             color: #63b3ed;
             margin-bottom: 2px;
             line-height: 1.1;
         }
-        .stat-label-custom { color: #cbd5e1; font-size: 0.8rem; font-weight: 500; }
-        .project-title-custom { color: #48bb78; font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
-        .project-desc-custom { color: #cbd5e1; font-size: 0.78rem; margin-bottom: 4px; line-height: 1.3; }
+        .stat-label-custom { color: #cbd5e1; font-size: 0.85rem; font-weight: 500; }
+        .project-title-custom { color: #48bb78; font-weight: 700; font-size: 1.05rem; margin-bottom: 3px; }
+        .project-desc-custom { color: #cbd5e1; font-size: 0.82rem; margin-bottom: 6px; line-height: 1.35; }
         .verified-badge-custom {
             display: inline-block;
             background: rgba(72, 187, 120, 0.2);
             border: 1px solid #48bb78;
             color: #48bb78;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 700;
         }
 
-        /* Thanh tin tức chân trang */
         .news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 18, 30, 0.95);
             border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 6px 20px;
@@ -652,7 +721,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # 1. SLOGAN LÀM MỐC CỐ ĐỊNH PHÍA TRÊN
+    # 1. SLOGAN LÀM MỐC CỐ ĐỊNH & DÒNG CHỮ DƯỚI TO HƠN, MÀU XANH, GIÃN CÁCH RỘNG RÃI
     wave_html = '<div class="slogan-fixed-anchor">'
     delay = 0.0
     for char in t["slogan"]:
@@ -661,19 +730,18 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         delay += 0.1
     wave_html += '</div>'
     st.markdown(wave_html, unsafe_allow_html=True)
-    st.markdown(f'<div style="text-align:center; color:{text_sub}; font-size:0.86rem; margin-top:2px; margin-bottom:12px;">{t["subtitle"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="subtitle-custom-green-blue">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
     _, col_form, col_space, col_info, _ = st.columns([0.1, 1.25, 0.08, 1.25, 0.1])
     
-    # ================= CỘT TRÁI: KHỐI ĐĂNG NHẬP LIỀN MẠCH =================
+    # ================= CỘT TRÁI =================
     with col_form:
-        # BÓ CỤM TIÊU ĐỀ "XIN CHÀO QUÝ ĐỒNG HÀNH!" VÀO LIỀN KHỐI FORM
         tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
         with tab_dang_nhap:
             with st.form("form_login"):
-                # Tiêu đề chào mừng nằm gọn gàng bên trong khối form
+                # DÒNG "XIN CHÀO QUÝ ĐỒNG HÀNH!" CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG
                 st.markdown(f"""
-                    <div style="text-align:center; margin-bottom:12px; font-size:1.15rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
+                    <div class="welcome-title-animated">
                         {t["welcome_msg"]}
                     </div>
                 """, unsafe_allow_html=True)
@@ -685,6 +753,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 with col_btn_log:
                     submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
                 with col_btn_mis:
+                    # NÚT SỨ MỆNH MÀU XANH DƯƠNG CÔNG NGHỆ
                     open_mission = st.form_submit_button(t["btn_mission"], use_container_width=True)
                 
                 if submitted:
@@ -700,7 +769,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
             
-            # HOẠT HỌA: LOGO SẮC NÉT -> TAN RÃ THÀNH HẠT -> "VÌ MỘT NGÀY MAI TƯƠI SÁNG!" LƯỢN SÓNG XANH LÁ -> TỤ LẠI THÀNH LOGO
+            # HOẠT HỌA LOGO -> CHỮ LƯỢN SÓNG 1 LẦN CÙNG ÁNH SÁNG XANH LƯỚT QUA -> TỤ LẠI LOGO
             components.html(get_particle_logo_html(lang), height=150, scrolling=False)
                         
         with tab_dang_ky:
@@ -710,7 +779,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 st.markdown(f"""
                     <div style="background: rgba(72,187,120,0.12); border: 1.5px solid #48bb78; text-align:center; padding: 12px 10px; border-radius:12px; margin-top: 6px;">
                         <p style="color:#48bb78; font-weight:700; margin-bottom:4px; font-size:0.92rem;">{t['reg_success_line1']} {t['reg_success_line2']}</p>
-                        <p style="color:{text_sub}; margin-bottom: 0px; font-size:0.88rem;">{account_txt}: <b style="color:#63b3ed;">{registered_user}</b></p>
+                        <p style="color:#cbd5e1; margin-bottom: 0px; font-size:0.88rem;">{account_txt}: <b style="color:#63b3ed;">{registered_user}</b></p>
                     </div>
                 """, unsafe_allow_html=True)
                 if st.button(t["btn_auto_login"], type="primary", use_container_width=True):
@@ -723,7 +792,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             else:
                 with st.form("form_register", clear_on_submit=True):
                     st.markdown(f"""
-                        <div style="text-align:center; margin-bottom:10px; font-size:1.1rem; font-weight:800; color:#48bb78; letter-spacing:0.8px;">
+                        <div class="welcome-title-animated">
                             {t["welcome_msg"]}
                         </div>
                     """, unsafe_allow_html=True)
@@ -751,7 +820,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-    # ================= CỘT PHẢI: 3 KHỐI + LÁ CỜ VIỆT NAM TUNG BAY GÓC DƯỚI =================
+    # ================= CỘT PHẢI: GIÃN CÁCH THOÁNG ĐÃNG + LÁ CỜ MỞ RỘNG PHÁT SÁNG =================
     with col_info:
         st.markdown(f"""
             <div class="hardcore-green-card">
@@ -790,17 +859,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-        # LÁ CỜ VIỆT NAM TUNG BAY NHẸ TRONG GIÓ TẠI GÓC DƯỚI BÊN PHẢI
+        # LÁ CỜ VIỆT NAM ĐƯỢC MỞ RỘNG TO - PHÁT SÁNG ĐỎ & NGÔI SAO VÀNG PHÁT SÁNG
         st.markdown(f"""
-            <div class="vn-flag-card">
+            <div class="vn-flag-card-expanded">
                 <div>
-                    <div style="font-size:0.88rem; font-weight:800; color:#ef4444; letter-spacing:0.5px;">{t["flag_title"]}</div>
-                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">{t["flag_desc"]}</div>
+                    <div style="font-size:0.95rem; font-weight:800; color:#ef4444; letter-spacing:0.5px;">{t["flag_title"]}</div>
+                    <div style="font-size:0.78rem; color:#cbd5e1; margin-top:3px; line-height:1.35;">{t["flag_desc"]}</div>
                 </div>
-                <div class="waving-flag-box" title="Cộng hòa Xã hội Chủ nghĩa Việt Nam">
-                    <svg viewBox="0 0 30 20" width="30" height="20">
-                        <rect width="30" height="20" fill="#da251d"/>
-                        <polygon points="15,4 17.06,10.34 23.73,10.34 18.33,14.26 20.4,20.6 15,16.67 9.6,20.6 11.67,14.26 6.27,10.34 12.94,10.34" fill="#ffff00"/>
+                <div class="flag-box-glowing" title="Cộng hòa Xã hội Chủ nghĩa Việt Nam">
+                    <svg viewBox="0 0 30 20" width="40" height="26" class="flag-star-svg">
+                        <polygon points="15,3.5 17.3,10.2 24.3,10.2 18.6,14.3 20.8,21 15,16.8 9.2,21 11.4,14.3 5.7,10.2 12.7,10.2" fill="#ffff00"/>
                     </svg>
                 </div>
             </div>
