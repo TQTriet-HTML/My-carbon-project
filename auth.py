@@ -56,6 +56,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.scale(scale, scale);
       c.translate(-cx, -cy);
 
+      // Quả cầu Trái Đất
       c.save();
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
@@ -66,6 +67,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.clip();
 
+      // Mảng lục địa
       c.fillStyle = '#4ade80';
       c.strokeStyle = '#0f172a';
       c.lineWidth = 2.8;
@@ -103,6 +105,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
+      // Khuôn mặt đáng yêu
       c.fillStyle = '#0f172a';
       c.beginPath();
       c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
@@ -128,6 +131,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.strokeStyle = '#0f172a';
       c.stroke();
 
+      // Mầm cây trên đầu
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
@@ -160,6 +164,408 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
+      // 2 Lá bự 45 độ
+      function drawBigLeaf(angle, isFlipped) {{
+        c.save();
+        c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
+        c.rotate(angle);
+        if (isFlipped) c.scale(-1, 1);
+
+        c.beginPath();
+        c.moveTo(0, 0);
+        c.bezierCurveTo(19, -13, 24, -42, 7, -52);
+        c.bezierCurveTo(-7, -42, -11, -13, 0, 0);
+        c.fillStyle = '#22c55e';
+        c.fill();
+        c.strokeStyle = '#0f172a';
+        c.lineWidth = 2.8;
+        c.stroke();
+
+        c.strokeStyle = '#ffffff';
+        c.lineWidth = 1.7;
+        c.beginPath();
+        c.moveTo(0, 0);
+        c.quadraticCurveTo(3, -25, 7, -50);
+        c.stroke();
+
+        c.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        c.lineWidth = 1.1;
+        c.beginPath();
+        c.moveTo(1, -12); c.lineTo(8, -18);
+        c.moveTo(3, -24); c.lineTo(11, -31);
+        c.moveTo(5, -36); c.lineTo(11, -42);
+        c.moveTo(1, -12); c.lineTo(-5, -16);
+        c.moveTo(3, -24); c.lineTo(-4, -28);
+        c.stroke();
+        c.restore();
+      }}
+
+      drawBigLeaf(-Math.PI / 4, false);
+      drawBigLeaf(Math.PI / 4, true);
+
+      c.restore();
+    }}
+
+    function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
+      if (alpha <= 0.001) return;
+      c.save();
+      c.globalAlpha = alpha;
+      c.font = "900 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+
+      const totalChars = phrase.length;
+      const metrics = c.measureText(phrase);
+      const startX = cx - (metrics.width / 2);
+      let currX = startX;
+
+      const waveStart = 7500;
+      const waveDuration = 2400;
+      const waveProg = (elapsed - waveStart) / waveDuration;
+
+      for (let i = 0; i < totalChars; i++) {{
+        const ch = phrase[i];
+        const w = c.measureText(ch).width;
+        const charCx = currX + w / 2;
+        const charNorm = i / Math.max(1, totalChars - 1);
+        
+        let waveY = cy;
+        let isSwept = false;
+        let sweepIntensity = 0;
+
+        if (waveProg >= 0 && waveProg <= 1.25) {{
+          const dist = Math.abs(waveProg - charNorm);
+          if (dist < 0.16) {{
+            const factor = 1 - (dist / 0.16);
+            waveY = cy - Math.sin(factor * Math.PI) * 9;
+            sweepIntensity = Math.sin(factor * Math.PI);
+            isSwept = true;
+          }}
+        }}
+
+        c.save();
+        if (isSwept) {{
+          c.fillStyle = '#bbf7d0';
+          c.shadowColor = '#22c55e';
+          c.shadowBlur = 18 * sweepIntensity;
+        }} else {{
+          c.fillStyle = '#4ade80';
+          c.shadowColor = 'rgba(74, 222, 128, 0.45)';
+          c.shadowBlur = 6;
+        }}
+        c.fillText(ch, charCx, waveY);
+        c.restore();
+
+        currX += w;
+      }}
+      c.restore();
+    }}
+
+    const NUM_PARTICLES = 160;
+    const particles = [];
+    const colors = ['#4ade80', '#22c55e', '#38bdf8', '#7dd3fc', '#86efac', '#34d399'];
+
+    for (let i = 0; i < NUM_PARTICLES; i++) {{
+      const baseAngle = (i / NUM_PARTICLES) * Math.PI * 2;
+      particles.push({{
+        currentAngle: baseAngle,
+        orbitRadius: 55 + Math.random() * 65,
+        speed: (0.012 + Math.random() * 0.018) * (Math.random() < 0.5 ? 1 : -1),
+        targetX: cx + (Math.random() - 0.5) * 220,
+        targetY: cy + (Math.random() - 0.5) * 40,
+        x: cx,
+        y: cy,
+        size: 1.2 + Math.random() * 1.8,
+        color: colors[i % colors.length]
+      }});
+    }}
+
+    const CYCLE = 18000;
+    const startTime = performance.now();
+
+    function enforceRealDOMStyles() {{
+      try {{
+        const doc = window.parent.document;
+        
+        const welcomeEl = doc.getElementById('welcomeHeading');
+        if (welcomeEl) {{
+          const t = performance.now() * 0.0016; 
+          const factor = (Math.sin(t) + 1) / 2; 
+          const r = Math.round(74 + (56 - 74) * factor);
+          const g = Math.round(222 + (189 - 222) * factor);
+          const b = Math.round(128 + (248 - 128) * factor);
+          welcomeEl.style.setProperty('color', `rgb(${{r}}, ${{g}}, ${{b}})`, 'important');
+          welcomeEl.style.setProperty('text-shadow', `0 0 16px rgba(${{r}}, ${{g}}, ${{b}}, 0.95), 0 0 5px rgba(${{r}}, ${{g}}, ${{b}}, 0.6)`, 'important');
+        }}
+
+        const btnLogin = doc.querySelector('.st-key-btn_login_submit button');
+        if (btnLogin && !btnLogin.dataset.customizedGreen) {{
+          btnLogin.dataset.customizedGreen = 'true';
+          btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
+          btnLogin.style.setProperty('border', '1.5px solid #4ade80', 'important');
+          btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
+          btnLogin.style.setProperty('border-radius', '10px', 'important');
+          btnLogin.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
+
+          const texts = btnLogin.querySelectorAll('*');
+          texts.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
+          
+          btnLogin.addEventListener('mouseenter', () => {{
+            btnLogin.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
+            btnLogin.style.setProperty('box-shadow', '0 8px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75)', 'important');
+            btnLogin.style.setProperty('background', 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)', 'important');
+          }});
+          btnLogin.addEventListener('mouseleave', () => {{
+            btnLogin.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
+            btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
+            btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
+          }});
+          btnLogin.addEventListener('mousedown', () => {{
+            btnLogin.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
+            btnLogin.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
+          }});
+        }}
+
+        const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
+        if (btnMission && !btnMission.dataset.customizedBlue) {{
+          btnMission.dataset.customizedBlue = 'true';
+          btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
+          btnMission.style.setProperty('border', '1.8px solid #38bdf8', 'important');
+          btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
+          btnMission.style.setProperty('border-radius', '10px', 'important');
+          btnMission.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
+
+          const texts2 = btnMission.querySelectorAll('*');
+          texts2.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
+
+          btnMission.addEventListener('mouseenter', () => {{
+            btnMission.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
+            btnMission.style.setProperty('box-shadow', '0 8px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95)', 'important');
+            btnMission.style.setProperty('background', 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)', 'important');
+          }});
+          btnMission.addEventListener('mouseleave', () => {{
+            btnMission.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
+            btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
+            btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
+          }});
+        }}
+      }} catch(e) {{}}
+    }}
+
+    function animate() {{
+      const now = performance.now();
+      const elapsed = (now - startTime) % CYCLE;
+      ctx.clearRect(0, 0, logicalW, logicalH);
+      
+      enforceRealDOMStyles();
+
+      if (elapsed < 4500) {{
+        renderVectorLogo(ctx, 1.0, 1.0);
+      }} else if (elapsed < 7500) {{
+        const pProg = (elapsed - 4500) / 3000;
+        const logoAlpha = Math.max(0, 1 - pProg * 2.0);
+        if (logoAlpha > 0) renderVectorLogo(ctx, logoAlpha);
+
+        for (let i = 0; i < NUM_PARTICLES; i++) {{
+          const p = particles[i];
+          p.currentAngle += p.speed;
+          const r = p.orbitRadius * Math.sin(pProg * Math.PI);
+          p.x = cx + Math.cos(p.currentAngle) * r;
+          p.y = cy + Math.sin(p.currentAngle) * (r * 0.6);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.sin(pProg * Math.PI);
+          ctx.fill();
+        }}
+        ctx.globalAlpha = 1.0;
+
+        if (pProg > 0.5) {{
+          renderWavingTextOnce(ctx, (pProg - 0.5) * 2, elapsed);
+        }}
+      }} else if (elapsed < 13000) {{
+        renderWavingTextOnce(ctx, 1.0,Dưới đây là phần cập nhật triệt để cho file **`auth.py`** dựa trên đúng 3 yêu cầu tinh chỉnh của bạn:
+
+1. **Hiệu ứng chữ lướt chậm từ Phải sang Trái**: Đã đổi keyframes sang `@keyframes sweepGoldenGlowTextR2L` (chạy từ `200%` về `-200%`), đồng thời kéo dài chu kỳ lên 6 giây để luồng sáng đi từ từ qua từng con chữ.
+2. **Tách dòng chữ giải nghĩa bên dưới cờ**: Đã ngắt đoạn chữ `"Vận hành theo Nghị định 06/2022/NĐ-CP & Đề án thị trường Carbon"` thành 2 dòng riêng biệt gọn gàng, tránh việc chữ bị nối liền hoặc rớt dòng mất thẩm mỹ.
+3. **Hiệu ứng nở lá cờ êm ái, chậm rãi**: Thay vì nở to đột ngột ở giây cuối, hiệu ứng nở cờ giờ được phân bổ đều (`0%` nhỏ, `50%` nở to, `100%` thu nhỏ lại) trong suốt chu kỳ 6 giây (`ease-in-out`), tạo nhịp thở rất êm ái và từ tốn.
+
+Các chi tiết khác (màu nút, logo, hoạt họa, không gian) đều được giữ nguyên vẹn.
+
+---
+
+### Mã nguồn file `auth.py`:
+
+Bạn mở file **`auth.py`**, bấm **Ctrl + A** và dán đè toàn bộ đoạn code dưới đây:
+
+```python
+import streamlit as st
+import streamlit.components.v1 as components
+import re
+from mission_animation import hien_thi_hop_thoai_su_menh
+
+def get_particle_logo_html(lang="Tiếng Việt"):
+    is_en = (lang == "English")
+    text_slogan = "Vì một ngày mai tươi sáng!" if not is_en else "For a brighter tomorrow!"
+    
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    <style>
+      * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+      body {{
+        background: transparent;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }}
+      canvas {{
+        display: block;
+        background: transparent;
+      }}
+    </style>
+    </head>
+    <body>
+    <canvas id="logoCanvas"></canvas>
+    <script>
+    const canvas = document.getElementById('logoCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const logicalW = 420;
+    const logicalH = 150;
+    const dpr = window.devicePixelRatio || 2;
+    canvas.width = logicalW * dpr;
+    canvas.height = logicalH * dpr;
+    canvas.style.width = logicalW + 'px';
+    canvas.style.height = logicalH + 'px';
+    ctx.scale(dpr, dpr);
+
+    const cx = logicalW / 2;
+    const cy = 72;
+    const R = 38;
+    const phrase = "{text_slogan}";
+
+    function renderVectorLogo(c, alpha = 1.0, scale = 1.0) {{
+      if (alpha <= 0.001) return;
+      c.save();
+      c.globalAlpha = alpha;
+      c.translate(cx, cy);
+      c.scale(scale, scale);
+      c.translate(-cx, -cy);
+
+      // Quả cầu Trái Đất
+      c.save();
+      c.beginPath();
+      c.arc(cx, cy, R, 0, Math.PI * 2);
+      c.fillStyle = '#7dd3fc';
+      c.fill();
+      c.lineWidth = 3.8;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+      c.clip();
+
+      // Mảng lục địa
+      c.fillStyle = '#4ade80';
+      c.strokeStyle = '#0f172a';
+      c.lineWidth = 2.8;
+
+      c.beginPath();
+      c.moveTo(cx - 9, cy - R);
+      c.bezierCurveTo(cx - 6, cy - 26, cx + 9, cy - 24, cx + 12, cy - R);
+      c.closePath();
+      c.fill(); c.stroke();
+
+      c.beginPath();
+      c.moveTo(cx - R, cy - 22);
+      c.bezierCurveTo(cx - 20, cy - 28, cx - 18, cy - 8, cx - 30, cy + 2);
+      c.bezierCurveTo(cx - 38, cy + 6, cx - R, cy + 8, cx - R, cy - 22);
+      c.closePath();
+      c.fill(); c.stroke();
+
+      c.beginPath();
+      c.moveTo(cx - 26, cy + 10);
+      c.bezierCurveTo(cx - 8, cy + 12, cx - 12, cy + 32, cx - 22, cy + 36);
+      c.bezierCurveTo(cx - 32, cy + 36, cx - 30, cy + 22, cx - 26, cy + 10);
+      c.closePath();
+      c.fill(); c.stroke();
+
+      c.beginPath();
+      c.moveTo(cx + 20, cy - 26);
+      c.bezierCurveTo(cx + 14, cy - 8, cx + 32, cy - 4, cx + 20, cy + 8);
+      c.bezierCurveTo(cx + 14, cy + 18, cx + 32, cy + 22, cx + R, cy + 10);
+      c.bezierCurveTo(cx + R, cy - 20, cx + 32, cy - 30, cx + 20, cy - 26);
+      c.closePath();
+      c.fill(); c.stroke();
+
+      c.fillStyle = '#38bdf8';
+      c.beginPath();
+      c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
+      c.fill();
+
+      // Khuôn mặt đáng yêu
+      c.fillStyle = '#0f172a';
+      c.beginPath();
+      c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
+      c.arc(cx + 11, cy + 2, 2.8, 0, Math.PI * 2);
+      c.fill();
+
+      c.beginPath();
+      c.arc(cx, cy + 6, 4.0, 0.15 * Math.PI, 0.85 * Math.PI);
+      c.lineWidth = 2.4;
+      c.lineCap = 'round';
+      c.stroke();
+
+      c.fillStyle = '#f87171';
+      c.beginPath();
+      c.arc(cx - 19, cy + 9, 3.5, 0, Math.PI * 2);
+      c.arc(cx + 19, cy + 9, 3.5, 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+
+      c.beginPath();
+      c.arc(cx, cy, R, 0, Math.PI * 2);
+      c.lineWidth = 3.8;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+
+      // Mầm cây trên đầu
+      c.save();
+      c.translate(cx, cy - R);
+      c.strokeStyle = '#0f172a';
+      c.lineWidth = 6.5;
+      c.lineCap = 'round';
+      c.beginPath();
+      c.moveTo(0, 2); c.lineTo(0, -11);
+      c.stroke();
+
+      c.strokeStyle = '#78350f';
+      c.lineWidth = 4.2;
+      c.beginPath();
+      c.moveTo(0, 1); c.lineTo(0, -10);
+      c.stroke();
+
+      c.beginPath();
+      c.ellipse(-8, -13, 7.8, 5.0, -Math.PI / 5, 0, Math.PI * 2);
+      c.fillStyle = '#14532d';
+      c.fill();
+      c.lineWidth = 2.2;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+
+      c.beginPath();
+      c.ellipse(8, -13, 7.8, 5.0, Math.PI / 5, 0, Math.PI * 2);
+      c.fillStyle = '#14532d';
+      c.fill();
+      c.lineWidth = 2.2;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+      c.restore();
+
+      // 2 Lá bự 45 độ
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -315,6 +721,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             btnLogin.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
             btnLogin.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
           }});
+          btnLogin.addEventListener('mousedown', () => {{
+            btnLogin.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
+            btnLogin.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
+          }});
         }}
 
         const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
@@ -338,6 +748,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             btnMission.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
             btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
             btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
+          }});
+          btnMission.addEventListener('mousedown', () => {{
+            btnMission.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
+            btnMission.style.setProperty('box-shadow', '0 2px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4)', 'important');
           }});
         }}
       }} catch(e) {{}}
@@ -438,7 +852,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "vision_desc": "Phấn đấu tới năm 2050 phủ sạch tín chỉ carbon toàn cầu, kiến tạo thị trường giao dịch xanh minh bạch và bền vững.",
             "vision_badge": "Tiêu chuẩn Verra VCS",
             "flag_title": "NỀN TẢNG QUỐC GIA VIỆT NAM",
-            "flag_desc": "Vận hành theo Nghị định 06/2022/NĐ-CP & Đề án thị trường Carbon",
+            "flag_desc": "Vận hành theo Nghị định 06/2022/NĐ-CP<br>& Đề án thị trường Carbon",
             "news_lbl": "TIN MỚI NHẤT:", "news_txt": "Thị trường Tín chỉ Carbon Việt Nam chính thức bước vào giai đoạn vận hành thí điểm."
         },
         "English": {
@@ -460,7 +874,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "vision_desc": "Committed to global net-zero carbon credit coverage by 2050, fostering a transparent, sustainable marketplace.",
             "vision_badge": "Verra VCS Standard",
             "flag_title": "VIETNAM NATIONAL PLATFORM",
-            "flag_desc": "Operating under Decree 06/2022/ND-CP & National Carbon Market Project",
+            "flag_desc": "Operating under Decree 06/2022/ND-CP<br>& National Carbon Market Project",
             "news_lbl": "LATEST NEWS:", "news_txt": "Vietnam's Carbon Credit Market officially begins pilot operation."
         }
     }
@@ -468,6 +882,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
+        /* PHÔNG NỀN CHUYỂN DỊCH SẮC MÀU TV AMBIENT SÂU LẮNG */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -570,13 +985,13 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             pointer-events: none;
         }
 
-        /* KHỐI LÁ CỜ VIỆT NAM (KHÔNG GIAN RỘNG) VÀ BÓNG TO 6 GIÂY MỘT LẦN */
+        /* LÁ CỜ VIỆT NAM VÀ HIỆU ỨNG TỪ PHẢI QUA TRÁI - NỞ CHẬM RÃI */
         .vn-flag-card-expanded {
             background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
             border: 1.8px solid rgba(239, 68, 68, 0.65) !important;
             border-radius: 14px !important;
-            padding: 16px 20px !important;
+            padding: 12px 18px !important;
             margin-bottom: 0px !important;
             display: flex;
             align-items: center;
@@ -585,9 +1000,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transition: all 0.3s ease;
         }
 
-        @keyframes sweepGoldenGlowText {
-            0%, 15% { background-position: -200% 0; }
-            85%, 100% { background-position: 200% 0; }
+        /* HIỆU ỨNG QUÉT SÁNG TỪ PHẢI SANG TRÁI CHẬM RÃI MÀU VÀNG KIM */
+        @keyframes sweepGoldenGlowTextR2L {
+            0%, 10% { background-position: 200% 0; }
+            90%, 100% { background-position: -200% 0; }
         }
         .nation-title-sweeping {
             font-size: 0.98rem;
@@ -598,16 +1014,16 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.6));
-            animation: sweepGoldenGlowText 4s linear infinite;
+            animation: sweepGoldenGlowTextR2L 6s linear infinite;
         }
 
-        /* CHU KỲ 6 GIÂY: NỞ KHỐI TO NHẸ NHÀNG */
+        /* CHU KỲ 6 GIÂY: NỞ KHỐI TO ÊM ÁI CHẬM RÃI */
         @keyframes flagBreatheBloom {
-            0%, 90%, 100% {
+            0%, 100% {
                 transform: scale(1);
                 box-shadow: 0 0 12px rgba(218, 37, 29, 0.85);
             }
-            95% {
+            50% {
                 transform: scale(1.08);
                 box-shadow: 0 0 25px rgba(218, 37, 29, 1), 0 0 45px rgba(239, 68, 68, 0.8);
             }
@@ -621,16 +1037,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: flagBreatheBloom 6s infinite ease-in-out;
+            animation: flagBreatheBloom 6s ease-in-out infinite;
             flex-shrink: 0;
-            box-shadow: 0 0 12px rgba(218, 37, 29, 0.85);
         }
 
         .flag-star-svg {
             filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15);
         }
 
-        /* KHUNG CHỨA SLOGAN ĐƯỢC GIÃN KHOẢNG CÁCH RỘNG RÃI VỚI CÁC KHỐI BÊN DƯỚI */
         .slogan-fixed-anchor {
             text-align: center;
             padding-top: 14px;
@@ -727,7 +1141,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
         with tab_dang_nhap:
             with st.form("form_login"):
-                # DÒNG CHỮ TRUNG TÂM SẼ ĐƯỢC CHUYỂN MÀU QUA JAVASCRIPT ĐỂ KHÔNG BỊ GHI ĐÈ
                 st.markdown(f"""
                     <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px; transition: color 0.3s ease;">
                         {t["welcome_msg"]}
@@ -844,7 +1257,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-        # LÁ CỜ VIỆT NAM TỈ LỆ 3:2 CHUẨN - NGÔI SAO TRUNG TÂM PHÁT SÁNG VÀNG LÓA
         st.markdown(f"""
             <div class="vn-flag-card-expanded">
                 <div>
