@@ -3,26 +3,29 @@ import streamlit.components.v1 as components
 import re
 from mission_animation import hien_thi_hop_thoai_su_menh
 
-def get_particle_logo_html():
-    return """
+def get_particle_logo_html(lang="Tiếng Việt"):
+    is_en = (lang == "English")
+    text_slogan = "Vì một ngày mai tươi sáng!" if not is_en else "For a brighter tomorrow!"
+    
+    return f"""
     <!DOCTYPE html>
     <html>
     <head>
     <meta charset="utf-8">
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body {
+      * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+      body {{
         background: transparent;
         overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-      }
-      canvas {
+      }}
+      canvas {{
         display: block;
         background: transparent;
-      }
+      }}
     </style>
     </head>
     <body>
@@ -31,9 +34,8 @@ def get_particle_logo_html():
     const canvas = document.getElementById('logoCanvas');
     const ctx = canvas.getContext('2d');
 
-    // CẤU HÌNH HIGH-DPI RETINA ĐỂ HÌNH ẢNH MỊN MÀNG SẮC NÉT TUYỆT ĐỐI
     const logicalW = 420;
-    const logicalH = 175;
+    const logicalH = 150;
     const dpr = window.devicePixelRatio || 2;
     canvas.width = logicalW * dpr;
     canvas.height = logicalH * dpr;
@@ -42,11 +44,12 @@ def get_particle_logo_html():
     ctx.scale(dpr, dpr);
 
     const cx = logicalW / 2;
-    const cy = 88;
-    const R = 44; // PHÓNG TO LOGO KHÔNG CẦN KHUNG VIỀN
+    const cy = 72;
+    const R = 38;
+    const phrase = "{text_slogan}";
 
-    // HÀM VẼ LOGO VECTOR NGUYÊN BẢN (KHÔNG Ô PIXEL, KHÔNG RĂNG CƯA)
-    function renderVectorLogo(c, alpha = 1.0, scale = 1.0) {
+    // VẼ LOGO VECTOR NÉT CĂNG NGUYÊN BẢN (KHÔNG CÒN KHUNG VIỀN XÁM BAO NGOÀI)
+    function renderVectorLogo(c, alpha = 1.0, scale = 1.0) {{
       if (alpha <= 0.001) return;
       c.save();
       c.globalAlpha = alpha;
@@ -54,276 +57,273 @@ def get_particle_logo_html():
       c.scale(scale, scale);
       c.translate(-cx, -cy);
 
-      // 1. QUẢ CẦU TRÁI ĐẤT
+      // Quả cầu Trái Đất
       c.save();
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
       c.fillStyle = '#7dd3fc';
       c.fill();
-      c.lineWidth = 4.2;
+      c.lineWidth = 3.8;
       c.strokeStyle = '#0f172a';
       c.stroke();
       c.clip();
 
-      // CÁC MẢNG LỤC ĐỊA MỊN MÀNG
+      // Mảng lục địa
       c.fillStyle = '#4ade80';
       c.strokeStyle = '#0f172a';
-      c.lineWidth = 3.2;
+      c.lineWidth = 2.8;
 
-      // Lục địa đỉnh
       c.beginPath();
-      c.moveTo(cx - 10, cy - R);
-      c.bezierCurveTo(cx - 7, cy - 30, cx + 10, cy - 28, cx + 14, cy - R);
+      c.moveTo(cx - 9, cy - R);
+      c.bezierCurveTo(cx - 6, cy - 26, cx + 9, cy - 24, cx + 12, cy - R);
       c.closePath();
       c.fill(); c.stroke();
 
-      // Lục địa góc trên trái
       c.beginPath();
-      c.moveTo(cx - R, cy - 26);
-      c.bezierCurveTo(cx - 24, cy - 34, cx - 20, cy - 10, cx - 34, cy + 2);
-      c.bezierCurveTo(cx - 44, cy + 8, cx - R, cy + 10, cx - R, cy - 26);
+      c.moveTo(cx - R, cy - 22);
+      c.bezierCurveTo(cx - 20, cy - 28, cx - 18, cy - 8, cx - 30, cy + 2);
+      c.bezierCurveTo(cx - 38, cy + 6, cx - R, cy + 8, cx - R, cy - 22);
       c.closePath();
       c.fill(); c.stroke();
 
-      // Lục địa góc dưới trái
       c.beginPath();
-      c.moveTo(cx - 30, cy + 12);
-      c.bezierCurveTo(cx - 10, cy + 15, cx - 14, cy + 38, cx - 26, cy + 42);
-      c.bezierCurveTo(cx - 38, cy + 42, cx - 36, cy + 26, cx - 30, cy + 12);
+      c.moveTo(cx - 26, cy + 10);
+      c.bezierCurveTo(cx - 8, cy + 12, cx - 12, cy + 32, cx - 22, cy + 36);
+      c.bezierCurveTo(cx - 32, cy + 36, cx - 30, cy + 22, cx - 26, cy + 10);
       c.closePath();
       c.fill(); c.stroke();
 
-      // Lục địa góc phải
       c.beginPath();
-      c.moveTo(cx + 24, cy - 30);
-      c.bezierCurveTo(cx + 16, cy - 10, cx + 36, cy - 4, cx + 24, cy + 10);
-      c.bezierCurveTo(cx + 16, cy + 22, cx + 36, cy + 26, cx + R, cy + 12);
-      c.bezierCurveTo(cx + R, cy - 24, cx + 38, cy - 34, cx + 24, cy - 30);
+      c.moveTo(cx + 20, cy - 26);
+      c.bezierCurveTo(cx + 14, cy - 8, cx + 32, cy - 4, cx + 20, cy + 8);
+      c.bezierCurveTo(cx + 14, cy + 18, cx + 32, cy + 22, cx + R, cy + 10);
+      c.bezierCurveTo(cx + R, cy - 20, cx + 32, cy - 30, cx + 20, cy - 26);
       c.closePath();
       c.fill(); c.stroke();
 
-      // Vùng nước xanh đáy
       c.fillStyle = '#38bdf8';
       c.beginPath();
-      c.ellipse(cx + 12, cy + 33, 16, 7.5, 0, 0, Math.PI * 2);
+      c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // KHUÔN MẶT ĐÁNG YÊU
+      // Khuôn mặt đáng yêu
       c.fillStyle = '#0f172a';
       c.beginPath();
-      c.arc(cx - 13, cy + 2, 3.2, 0, Math.PI * 2);
-      c.arc(cx + 13, cy + 2, 3.2, 0, Math.PI * 2);
+      c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
+      c.arc(cx + 11, cy + 2, 2.8, 0, Math.PI * 2);
       c.fill();
 
       c.beginPath();
-      c.arc(cx, cy + 7, 4.6, 0.15 * Math.PI, 0.85 * Math.PI);
-      c.lineWidth = 2.6;
+      c.arc(cx, cy + 6, 4.0, 0.15 * Math.PI, 0.85 * Math.PI);
+      c.lineWidth = 2.4;
       c.lineCap = 'round';
       c.stroke();
 
-      // Má hồng
       c.fillStyle = '#f87171';
       c.beginPath();
-      c.arc(cx - 22, cy + 10, 4.0, 0, Math.PI * 2);
-      c.arc(cx + 22, cy + 10, 4.0, 0, Math.PI * 2);
+      c.arc(cx - 19, cy + 9, 3.5, 0, Math.PI * 2);
+      c.arc(cx + 19, cy + 9, 3.5, 0, Math.PI * 2);
       c.fill();
-
       c.restore();
 
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
-      c.lineWidth = 4.2;
+      c.lineWidth = 3.8;
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // 2. MẦM CÂY TRÊN ĐẦU: THÂN NÂU DÀY + LÁ MẦM XANH ĐẬM (KHÔNG BÓNG CHÓI)
+      // Mầm cây trên đầu (Thân nâu dày + 2 lá xanh đậm)
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
-      c.lineWidth = 7.5;
+      c.lineWidth = 6.5;
       c.lineCap = 'round';
       c.beginPath();
-      c.moveTo(0, 2); c.lineTo(0, -13);
+      c.moveTo(0, 2); c.lineTo(0, -11);
       c.stroke();
 
       c.strokeStyle = '#78350f';
-      c.lineWidth = 4.8;
+      c.lineWidth = 4.2;
       c.beginPath();
-      c.moveTo(0, 1); c.lineTo(0, -12);
+      c.moveTo(0, 1); c.lineTo(0, -10);
       c.stroke();
 
       c.beginPath();
-      c.ellipse(-9, -15, 9.0, 5.8, -Math.PI / 5, 0, Math.PI * 2);
+      c.ellipse(-8, -13, 7.8, 5.0, -Math.PI / 5, 0, Math.PI * 2);
       c.fillStyle = '#14532d';
       c.fill();
-      c.lineWidth = 2.5;
+      c.lineWidth = 2.2;
       c.strokeStyle = '#0f172a';
       c.stroke();
 
       c.beginPath();
-      c.ellipse(9, -15, 9.0, 5.8, Math.PI / 5, 0, Math.PI * 2);
+      c.ellipse(8, -13, 7.8, 5.0, Math.PI / 5, 0, Math.PI * 2);
       c.fillStyle = '#14532d';
       c.fill();
-      c.lineWidth = 2.5;
+      c.lineWidth = 2.2;
       c.strokeStyle = '#0f172a';
       c.stroke();
       c.restore();
 
-      // 3. HAI CHIẾC LÁ LỚN PHÍA TRƯỚC XÒE 45 ĐỘ (GÂN TRẮNG NỔI BẬT)
-      function drawBigLeaf(angle, isFlipped) {
+      // 2 Chiếc lá bự 45 độ nâng đỡ (gân lá trắng nổi bật)
+      function drawBigLeaf(angle, isFlipped) {{
         c.save();
-        c.translate(cx + (isFlipped ? 15 : -15), cy + 34);
+        c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
         c.rotate(angle);
         if (isFlipped) c.scale(-1, 1);
 
         c.beginPath();
         c.moveTo(0, 0);
-        c.bezierCurveTo(22, -15, 28, -48, 8, -60);
-        c.bezierCurveTo(-8, -48, -13, -15, 0, 0);
+        c.bezierCurveTo(19, -13, 24, -42, 7, -52);
+        c.bezierCurveTo(-7, -42, -11, -13, 0, 0);
         c.fillStyle = '#22c55e';
         c.fill();
         c.strokeStyle = '#0f172a';
-        c.lineWidth = 3.2;
+        c.lineWidth = 2.8;
         c.stroke();
 
-        // Gân lá chính màu trắng
         c.strokeStyle = '#ffffff';
-        c.lineWidth = 1.9;
+        c.lineWidth = 1.7;
         c.beginPath();
         c.moveTo(0, 0);
-        c.quadraticCurveTo(4, -28, 8, -57);
+        c.quadraticCurveTo(3, -25, 7, -50);
         c.stroke();
 
-        // Gân nhánh trắng
         c.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-        c.lineWidth = 1.2;
+        c.lineWidth = 1.1;
         c.beginPath();
-        c.moveTo(1, -14); c.lineTo(9, -21);
-        c.moveTo(3, -28); c.lineTo(13, -36);
-        c.moveTo(5, -42); c.lineTo(13, -48);
-        c.moveTo(1, -14); c.lineTo(-6, -19);
-        c.moveTo(3, -28); c.lineTo(-5, -33);
+        c.moveTo(1, -12); c.lineTo(8, -18);
+        c.moveTo(3, -24); c.lineTo(11, -31);
+        c.moveTo(5, -36); c.lineTo(11, -42);
+        c.moveTo(1, -12); c.lineTo(-5, -16);
+        c.moveTo(3, -24); c.lineTo(-4, -28);
         c.stroke();
-
         c.restore();
-      }
+      }}
 
       drawBigLeaf(-Math.PI / 4, false);
       drawBigLeaf(Math.PI / 4, true);
 
       c.restore();
-    }
+    }}
 
-    // 2. KHỞI TẠO CÁC TINH THỂ HẠT ÁNH SÁNG BAY VÒNG TRÒN (KHÔNG PHẢI Ô PIXEL VUÔNG)
+    // VẼ DÒNG CHỮ LƯỢN SÓNG TỪNG KÝ TỰ MÀU XANH LÁ
+    function renderWavingText(c, alpha = 1.0, time = 0) {{
+      if (alpha <= 0.001) return;
+      c.save();
+      c.globalAlpha = alpha;
+      c.font = "900 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+
+      const totalChars = phrase.length;
+      const metrics = c.measureText(phrase);
+      const startX = cx - (metrics.width / 2);
+      let currX = startX;
+
+      for (let i = 0; i < totalChars; i++) {{
+        const ch = phrase[i];
+        const w = c.measureText(ch).width;
+        const charCx = currX + w / 2;
+        const waveY = cy + Math.sin(time * 0.004 + i * 0.45) * 6;
+
+        c.fillStyle = '#4ade80';
+        c.shadowColor = 'rgba(74, 222, 128, 0.85)';
+        c.shadowBlur = 10;
+        c.fillText(ch, charCx, waveY);
+        currX += w;
+      }}
+      c.restore();
+    }}
+
     const NUM_PARTICLES = 160;
     const particles = [];
-    const colors = ['#4ade80', '#22c55e', '#38bdf8', '#7dd3fc', '#86efac', '#60a5fa'];
+    const colors = ['#4ade80', '#22c55e', '#38bdf8', '#7dd3fc', '#86efac', '#34d399'];
 
-    for (let i = 0; i < NUM_PARTICLES; i++) {
+    for (let i = 0; i < NUM_PARTICLES; i++) {{
       const baseAngle = (i / NUM_PARTICLES) * Math.PI * 2;
-      const targetRadius = 25 + Math.random() * 45; // Vị trí xuất phát từ các điểm trên logo
-      particles.push({
-        baseAngle: baseAngle,
+      particles.push({{
         currentAngle: baseAngle,
-        orbitRadius: 75 + Math.random() * 85, // Quỹ đạo bay vòng xung quanh logo
-        speed: (0.012 + Math.random() * 0.016) * (Math.random() < 0.5 ? 1 : -1),
-        targetX: cx + Math.cos(baseAngle) * targetRadius,
-        targetY: cy + Math.sin(baseAngle) * targetRadius * 0.85,
+        orbitRadius: 55 + Math.random() * 65,
+        speed: (0.012 + Math.random() * 0.018) * (Math.random() < 0.5 ? 1 : -1),
+        targetX: cx + (Math.random() - 0.5) * 220,
+        targetY: cy + (Math.random() - 0.5) * 40,
         x: cx,
         y: cy,
         size: 1.2 + Math.random() * 1.8,
-        color: colors[i % colors.length],
-        alpha: 0
-      });
-    }
+        color: colors[i % colors.length]
+      }});
+    }}
 
-    // 3. CHU KỲ CHUYỂN ĐỘNG CHẬM RÃI 16 GIÂY (16000ms):
-    // - 0s -> 6s (6 GIÂY): LOGO VECTOR NÉT CĂNG NGUYÊN BẢN (ĐỨNG YÊN HOÀN CHỈNH)
-    // - 6s -> 11s (5 GIÂY): TAN RÃ CHẬM RÃI, CÁC HẠT BAY TẠO VÒNG TRÒN QUANH LOGO
-    // - 11s -> 16s (5 GIÂY): CÁC HẠT TỪ TỪ HỘI TỤ VÀ TÁI HIỆN LẠI LOGO VECTOR BAN ĐẦU
-    const CYCLE = 16000;
+    // CHU KỲ CHUYỂN ĐỔI:
+    // 0s - 4.5s: LOGO HOÀN CHỈNH SẮC NÉT
+    // 4.5s - 7.5s: LOGO TAN RÃ, HẠT BAY TẠO VÒNG VÀ TỤ THÀNH DÒNG CHỮ
+    // 7.5s - 13s: DÒNG CHỮ "VÌ MỘT NGÀY MAI TƯƠI SÁNG!" LƯỢN SÓNG TỪNG CHỮ MÀU XANH LÁ
+    // 13s - 15.5s: DÒNG CHỮ TAN RÃ THÀNH HẠT BAY VÒNG
+    // 15.5s - 18s: HẠT TỤ LẠI TÁI HIỆN LOGO BAN ĐẦU
+    const CYCLE = 18000;
     const startTime = performance.now();
 
-    function animate() {
+    function animate() {{
       const now = performance.now();
       const elapsed = (now - startTime) % CYCLE;
       ctx.clearRect(0, 0, logicalW, logicalH);
 
-      if (elapsed < 6000) {
-        // GIAI ĐOẠN 1: LOGO HOÀN CHỈNH VECTOR MỊN MÀNG 100% (ĐỨNG YÊN 6 GIÂY)
+      if (elapsed < 4500) {{
         renderVectorLogo(ctx, 1.0, 1.0);
-      } else if (elapsed < 11000) {
-        // GIAI ĐOẠN 2: TAN RÃ CHẬM RÃI -> CÁC HẠT BAY TẠO VÒNG TRÒN XUNG QUANH
-        const disperseProg = (elapsed - 6000) / 5000;
-        const logoAlpha = Math.max(0, 1 - disperseProg * 2.2);
+      }} else if (elapsed < 7500) {{
+        const pProg = (elapsed - 4500) / 3000;
+        const logoAlpha = Math.max(0, 1 - pProg * 2.0);
+        if (logoAlpha > 0) renderVectorLogo(ctx, logoAlpha);
 
-        // Logo mờ dần
-        if (logoAlpha > 0) {
-          renderVectorLogo(ctx, logoAlpha, 1.0 + disperseProg * 0.05);
-        }
-
-        // Các hạt tỏa ra và bay vòng tròn xung quanh khu vực logo
-        for (let i = 0; i < NUM_PARTICLES; i++) {
+        for (let i = 0; i < NUM_PARTICLES; i++) {{
           const p = particles[i];
           p.currentAngle += p.speed;
-
-          // Bán kính nở dần ra tạo thành vòng xoay xung quanh
-          const currentR = p.orbitRadius * Math.min(1, disperseProg * 1.4);
-          p.x = cx + Math.cos(p.currentAngle) * currentR;
-          p.y = cy + Math.sin(p.currentAngle) * (currentR * 0.72); // Quỹ đạo hình elip mềm mại
-
-          p.alpha = Math.min(0.9, disperseProg * 1.8);
-
-          ctx.save();
+          const r = p.orbitRadius * Math.sin(pProg * Math.PI);
+          p.x = cx + Math.cos(p.currentAngle) * r;
+          p.y = cy + Math.sin(p.currentAngle) * (r * 0.6);
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
-          ctx.globalAlpha = p.alpha;
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 6;
+          ctx.globalAlpha = Math.sin(pProg * Math.PI);
           ctx.fill();
-          ctx.restore();
-        }
-      } else {
-        // GIAI ĐOẠN 3: TỪ TỪ HỘI TỤ LẠI TỪ CÁC VÒNG TRÒN VÀ TÁI HIỆN LOGO
-        const assembleProg = (elapsed - 11000) / 5000;
-        const easeIn = Math.pow(assembleProg, 2);
+        }}
+        ctx.globalAlpha = 1.0;
 
-        // Các hạt xoắn ốc thu nhỏ vòng bay và hút dần về tâm
-        for (let i = 0; i < NUM_PARTICLES; i++) {
+        if (pProg > 0.5) {{
+          renderWavingText(ctx, (pProg - 0.5) * 2, elapsed);
+        }}
+      }} else if (elapsed < 13000) {{
+        renderWavingText(ctx, 1.0, elapsed);
+      }} else if (elapsed < 15500) {{
+        const dProg = (elapsed - 13000) / 2500;
+        const textAlpha = Math.max(0, 1 - dProg * 2.0);
+        if (textAlpha > 0) renderWavingText(ctx, textAlpha, elapsed);
+
+        for (let i = 0; i < NUM_PARTICLES; i++) {{
           const p = particles[i];
-          p.currentAngle += p.speed * 0.7;
-
-          // Khoảng cách thu dần từ quỹ đạo về các điểm logo
-          const currentR = p.orbitRadius * (1 - easeIn);
-          const orbitX = cx + Math.cos(p.currentAngle) * currentR;
-          const orbitY = cy + Math.sin(p.currentAngle) * (currentR * 0.72);
-
-          // Nội suy mượt mà về vị trí đích
-          p.x = orbitX * (1 - easeIn) + p.targetX * easeIn;
-          p.y = orbitY * (1 - easeIn) + p.targetY * easeIn;
-          p.alpha = Math.max(0.1, 1 - assembleProg * 0.85);
-
-          ctx.save();
+          p.currentAngle += p.speed;
+          const r = p.orbitRadius * Math.sin(dProg * Math.PI);
+          p.x = cx + Math.cos(p.currentAngle) * r;
+          p.y = cy + Math.sin(p.currentAngle) * (r * 0.6);
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
-          ctx.globalAlpha = p.alpha;
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 4;
+          ctx.globalAlpha = Math.sin(dProg * Math.PI);
           ctx.fill();
-          ctx.restore();
-        }
+        }}
+        ctx.globalAlpha = 1.0;
 
-        // Logo vector nét căng xuất hiện dần trở lại khi các hạt hội tụ
-        if (assembleProg > 0.35) {
-          const appearAlpha = (assembleProg - 0.35) / 0.65;
-          renderVectorLogo(ctx, appearAlpha, 0.95 + appearAlpha * 0.05);
-        }
-      }
+        if (dProg > 0.6) {{
+          renderVectorLogo(ctx, (dProg - 0.6) * 2.5);
+        }}
+      }} else {{
+        const rProg = (elapsed - 15500) / 2500;
+        renderVectorLogo(ctx, 0.4 + rProg * 0.6);
+      }}
 
       requestAnimationFrame(animate);
-    }
+    }}
 
     animate();
     </script>
@@ -356,6 +356,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "vision_title": "TẦM NHÌN NET-ZERO 2050",
             "vision_desc": "Phấn đấu tới năm 2050 phủ sạch tín chỉ carbon toàn cầu, kiến tạo thị trường giao dịch xanh minh bạch và bền vững.",
             "vision_badge": "Tiêu chuẩn Verra VCS",
+            "flag_title": "NỀN TẢNG QUỐC GIA VIỆT NAM",
+            "flag_desc": "Vận hành theo Nghị định 06/2022/NĐ-CP & Đề án thị trường Carbon",
             "news_lbl": "TIN MỚI NHẤT:", "news_txt": "Thị trường Tín chỉ Carbon Việt Nam chính thức bước vào giai đoạn vận hành thí điểm."
         },
         "English": {
@@ -376,6 +378,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "vision_title": "NET-ZERO VISION 2050",
             "vision_desc": "Committed to global net-zero carbon credit coverage by 2050, fostering a transparent, sustainable marketplace.",
             "vision_badge": "Verra VCS Standard",
+            "flag_title": "VIETNAM NATIONAL PLATFORM",
+            "flag_desc": "Operating under Decree 06/2022/ND-CP & National Carbon Market Project",
             "news_lbl": "LATEST NEWS:", "news_txt": "Vietnam's Carbon Credit Market officially begins pilot operation."
         }
     }
@@ -408,8 +412,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             max-height: 100vh !important;
         }
 
+        /* KHUNG CHÍNH CỐ ĐỊNH KHOẢNG CÁCH CHUẨN ĐỈNH */
         .block-container {
-            padding-top: 1.6rem !important;
+            padding-top: 2.2rem !important;
             padding-bottom: 1.2rem !important;
             padding-left: 2rem !important;
             padding-right: 2rem !important;
@@ -466,13 +471,13 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* 3 KHỐI BÊN PHẢI PHỦ KÍNH MỜ */
+        /* CÁC KHỐI XANH BÊN PHẢI */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
             border: 2px solid #22c55e !important;
             border-radius: 14px !important;
-            padding: 10px 16px !important;
+            padding: 9px 15px !important;
             margin-bottom: 8px !important;
             position: relative !important;
             overflow: hidden !important;
@@ -498,6 +503,63 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
+        /* KHỐI LÁ CỜ VIỆT NAM TUNG BAY GÓC DƯỚI BÊN PHẢI */
+        .vn-flag-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(20, 30, 50, 0.86) 100%) !important;
+            backdrop-filter: blur(14px) !important;
+            border: 1.5px solid rgba(239, 68, 68, 0.5) !important;
+            border-radius: 14px !important;
+            padding: 8px 14px !important;
+            margin-bottom: 0px !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        .vn-flag-card:hover {
+            border-color: #ef4444 !important;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.35) !important;
+            transform: translateY(-2px);
+        }
+
+        @keyframes flagWaveSheen {
+            0% {
+                background-position: -200% 0;
+                transform: skewY(0deg) scaleY(1);
+            }
+            50% {
+                transform: skewY(1.8deg) scaleY(0.98);
+            }
+            100% {
+                background-position: 200% 0;
+                transform: skewY(0deg) scaleY(1);
+            }
+        }
+        .waving-flag-box {
+            width: 58px;
+            height: 38px;
+            background: #da251d;
+            border-radius: 5px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: flagWaveSheen 3.2s infinite ease-in-out;
+            flex-shrink: 0;
+        }
+        .waving-flag-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(115deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.35) 50%, rgba(0,0,0,0.2) 75%);
+            background-size: 200% 100%;
+            animation: flagWaveSheen 3.2s infinite linear;
+            pointer-events: none;
+        }
+
         button[kind="primary"],
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -518,9 +580,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
-        .slogan-wrapper {
+        /* KHUNG CHỨA SLOGAN ĐƯỢC CỐ ĐỊNH KHOẢNG CÁCH CHUẨN LÀM MỐC */
+        .slogan-fixed-anchor {
             text-align: center;
-            padding-top: 8px;
+            padding-top: 14px;
             padding-bottom: 2px;
             overflow: visible !important;
             white-space: nowrap;
@@ -577,6 +640,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             font-weight: 700;
         }
 
+        /* Thanh tin tức chân trang */
         .news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 18, 30, 0.95);
             border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 6px 20px;
@@ -588,7 +652,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    wave_html = '<div class="slogan-wrapper">'
+    # 1. SLOGAN LÀM MỐC CỐ ĐỊNH PHÍA TRÊN
+    wave_html = '<div class="slogan-fixed-anchor">'
     delay = 0.0
     for char in t["slogan"]:
         char_display = "&nbsp;" if char == " " else char
@@ -596,20 +661,23 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         delay += 0.1
     wave_html += '</div>'
     st.markdown(wave_html, unsafe_allow_html=True)
-    st.markdown(f'<div style="text-align:center; color:{text_sub}; font-size:0.86rem; margin-top:2px; margin-bottom:10px;">{t["subtitle"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align:center; color:{text_sub}; font-size:0.86rem; margin-top:2px; margin-bottom:12px;">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
     _, col_form, col_space, col_info, _ = st.columns([0.1, 1.25, 0.08, 1.25, 0.1])
     
+    # ================= CỘT TRÁI: KHỐI ĐĂNG NHẬP LIỀN MẠCH =================
     with col_form:
-        st.markdown(f"""
-            <div style="text-align:center; margin-bottom:4px; font-size:1.1rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
-                {t["welcome_msg"]}
-            </div>
-        """, unsafe_allow_html=True)
-
+        # BÓ CỤM TIÊU ĐỀ "XIN CHÀO QUÝ ĐỒNG HÀNH!" VÀO LIỀN KHỐI FORM
         tab_dang_nhap, tab_dang_ky = st.tabs([t["tab_login"], t["tab_reg"]])
         with tab_dang_nhap:
             with st.form("form_login"):
+                # Tiêu đề chào mừng nằm gọn gàng bên trong khối form
+                st.markdown(f"""
+                    <div style="text-align:center; margin-bottom:12px; font-size:1.15rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
+                        {t["welcome_msg"]}
+                    </div>
+                """, unsafe_allow_html=True)
+
                 u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
                 u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
                 
@@ -632,8 +700,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
             
-            # LOGO VECTOR MỊN MÀNG 100% NÉT CĂNG + HIỆU ỨNG HẠT ÁNH SÁNG BAY TẠO VÒNG & HỘI TỤ
-            components.html(get_particle_logo_html(), height=175, scrolling=False)
+            # HOẠT HỌA: LOGO SẮC NÉT -> TAN RÃ THÀNH HẠT -> "VÌ MỘT NGÀY MAI TƯƠI SÁNG!" LƯỢN SÓNG XANH LÁ -> TỤ LẠI THÀNH LOGO
+            components.html(get_particle_logo_html(lang), height=150, scrolling=False)
                         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
@@ -654,6 +722,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                     st.rerun()
             else:
                 with st.form("form_register", clear_on_submit=True):
+                    st.markdown(f"""
+                        <div style="text-align:center; margin-bottom:10px; font-size:1.1rem; font-weight:800; color:#48bb78; letter-spacing:0.8px;">
+                            {t["welcome_msg"]}
+                        </div>
+                    """, unsafe_allow_html=True)
                     new_user = st.text_input("Tên tài khoản mới" if lang=="Tiếng Việt" else "New Username")
                     new_pass = st.text_input("Mật khẩu" if lang=="Tiếng Việt" else "Password", type="password")
                     role_sel = st.selectbox(
@@ -678,6 +751,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
+    # ================= CỘT PHẢI: 3 KHỐI + LÁ CỜ VIỆT NAM TUNG BAY GÓC DƯỚI =================
     with col_info:
         st.markdown(f"""
             <div class="hardcore-green-card">
@@ -707,7 +781,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         """, unsafe_allow_html=True)
 
         st.markdown(f"""
-            <div class="hardcore-green-card" style="margin-bottom:0px;">
+            <div class="hardcore-green-card">
                 <div class="section-title-custom">{t["vision_title"]}</div>
                 <div class="project-desc-custom">{t["vision_desc"]}</div>
                 <div style="text-align:right;">
@@ -716,6 +790,23 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
+        # LÁ CỜ VIỆT NAM TUNG BAY NHẸ TRONG GIÓ TẠI GÓC DƯỚI BÊN PHẢI
+        st.markdown(f"""
+            <div class="vn-flag-card">
+                <div>
+                    <div style="font-size:0.88rem; font-weight:800; color:#ef4444; letter-spacing:0.5px;">{t["flag_title"]}</div>
+                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">{t["flag_desc"]}</div>
+                </div>
+                <div class="waving-flag-box" title="Cộng hòa Xã hội Chủ nghĩa Việt Nam">
+                    <svg viewBox="0 0 30 20" width="30" height="20">
+                        <rect width="30" height="20" fill="#da251d"/>
+                        <polygon points="15,4 17.06,10.34 23.73,10.34 18.33,14.26 20.4,20.6 15,16.67 9.6,20.6 11.67,14.26 6.27,10.34 12.94,10.34" fill="#ffff00"/>
+                    </svg>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # Thanh tin tức chân trang
     st.markdown(f"""
     <div class="news-ticker-container">
         <div style="font-weight:900; color:#fc8181; margin-right:15px; white-space:nowrap; text-transform:uppercase; font-size:0.8rem;">{t['news_lbl']}</div>
