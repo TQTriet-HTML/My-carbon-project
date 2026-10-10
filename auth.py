@@ -26,137 +26,210 @@ def get_particle_logo_html():
     </style>
     </head>
     <body>
-    <canvas id="particleCanvas" width="380" height="135"></canvas>
+    <canvas id="logoCanvas" width="400" height="155"></canvas>
     <script>
-    const canvas = document.getElementById('particleCanvas');
+    const canvas = document.getElementById('logoCanvas');
     const ctx = canvas.getContext('2d');
 
-    // 1. Vẽ logo mẫu lên canvas ảo để trích xuất các mảnh hạt
-    const off = document.createElement('canvas');
-    off.width = 380;
-    off.height = 135;
-    const octx = off.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    const cx = W / 2;
+    const cy = 76;
+    const R = 36;
 
-    const cx = 190;
-    const cy = 70;
-    const R = 30;
+    // 1. HÀM VẼ LOGO VECTOR NÉT CĂNG CHUẨN XÁC 100% THEO HÌNH SỨ MỆNH
+    function drawExactLogo(c, alpha = 1.0) {
+      if (alpha <= 0) return;
+      c.save();
+      c.globalAlpha = alpha;
 
-    // Viền xám mỏng bo góc quanh logo
-    octx.strokeStyle = "rgba(148, 163, 184, 0.45)";
-    octx.lineWidth = 1.3;
-    octx.beginPath();
-    const bx = cx - 52, by = cy - R - 18, bw = 104, bh = R * 2 + 36, rad = 14;
-    octx.moveTo(bx + rad, by);
-    octx.lineTo(bx + bw - rad, by);
-    octx.quadraticCurveTo(bx + bw, by, bx + bw, by + rad);
-    octx.lineTo(bx + bw, by + bh - rad);
-    octx.quadraticCurveTo(bx + bw, by + bh, bx + bw - rad, by + bh);
-    octx.lineTo(bx + rad, by + bh);
-    octx.quadraticCurveTo(bx, by + bh, bx, by + bh - rad);
-    octx.lineTo(bx, by + rad);
-    octx.quadraticCurveTo(bx, by, bx + rad, by);
-    octx.stroke();
+      // KHUNG VIỀN XÁM BO GÓC ÔM SÁT LOGO
+      c.strokeStyle = "rgba(148, 163, 184, 0.42)";
+      c.lineWidth = 1.4;
+      const bx = cx - 64, by = cy - R - 24, bw = 128, bh = R * 2 + 48, rad = 16;
+      c.beginPath();
+      c.moveTo(bx + rad, by);
+      c.lineTo(bx + bw - rad, by);
+      c.quadraticCurveTo(bx + bw, by, bx + bw, by + rad);
+      c.lineTo(bx + bw, by + bh - rad);
+      c.quadraticCurveTo(bx + bw, by + bh, bx + bw - rad, by + bh);
+      c.lineTo(bx + rad, by + bh);
+      c.quadraticCurveTo(bx, by + bh, bx, by + bh - rad);
+      c.lineTo(bx, by + rad);
+      c.quadraticCurveTo(bx, by, bx + rad, by);
+      c.stroke();
 
-    // Quả cầu Trái Đất
-    octx.beginPath();
-    octx.arc(cx, cy, R, 0, Math.PI * 2);
-    octx.fillStyle = '#7dd3fc';
-    octx.fill();
-    octx.lineWidth = 3;
-    octx.strokeStyle = '#0f172a';
-    octx.stroke();
+      // QUẢ CẦU TRÁI ĐẤT HOẠT HÌNH
+      c.save();
+      c.beginPath();
+      c.arc(cx, cy, R, 0, Math.PI * 2);
+      c.fillStyle = '#7dd3fc';
+      c.fill();
+      c.lineWidth = 3.6;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+      c.clip();
 
-    // Mảng lục địa
-    octx.save();
-    octx.beginPath();
-    octx.arc(cx, cy, R, 0, Math.PI * 2);
-    octx.clip();
-    octx.fillStyle = '#4ade80';
-    octx.beginPath();
-    octx.arc(cx - 14, cy - 10, 14, 0, Math.PI * 2);
-    octx.arc(cx + 14, cy - 8, 12, 0, Math.PI * 2);
-    octx.arc(cx - 6, cy + 17, 10, 0, Math.PI * 2);
-    octx.arc(cx + 11, cy + 15, 11, 0, Math.PI * 2);
-    octx.fill();
+      // CÁC MẢNG LỤC ĐỊA XANH LÁ
+      c.fillStyle = '#4ade80';
+      c.strokeStyle = '#0f172a';
+      c.lineWidth = 2.8;
 
-    // Mắt & Miệng hoạt hình
-    octx.fillStyle = '#0f172a';
-    octx.beginPath();
-    octx.arc(cx - 9, cy + 2, 2.2, 0, Math.PI * 2);
-    octx.arc(cx + 9, cy + 2, 2.2, 0, Math.PI * 2);
-    octx.fill();
-    octx.beginPath();
-    octx.arc(cx, cy + 5, 3.2, 0.15 * Math.PI, 0.85 * Math.PI);
-    octx.lineWidth = 1.8;
-    octx.stroke();
+      // Lục địa đỉnh
+      c.beginPath();
+      c.moveTo(cx - 8, cy - R);
+      c.bezierCurveTo(cx - 5, cy - 25, cx + 8, cy - 23, cx + 11, cy - R);
+      c.closePath();
+      c.fill(); c.stroke();
 
-    // Má hồng
-    octx.fillStyle = '#f87171';
-    octx.beginPath();
-    octx.arc(cx - 15, cy + 7, 2.8, 0, Math.PI * 2);
-    octx.arc(cx + 15, cy + 7, 2.8, 0, Math.PI * 2);
-    octx.fill();
-    octx.restore();
+      // Lục địa góc trên trái
+      c.beginPath();
+      c.moveTo(cx - R, cy - 22);
+      c.bezierCurveTo(cx - 20, cy - 28, cx - 18, cy - 8, cx - 28, cy);
+      c.bezierCurveTo(cx - 36, cy + 5, cx - R, cy + 7, cx - R, cy - 22);
+      c.closePath();
+      c.fill(); c.stroke();
 
-    // Mầm cây: Thân nâu dày dặn + lá mầm xanh đậm, không bóng chói
-    octx.strokeStyle = '#0f172a';
-    octx.lineWidth = 5.5;
-    octx.lineCap = 'round';
-    octx.beginPath();
-    octx.moveTo(cx, cy - R + 2);
-    octx.lineTo(cx, cy - R - 9);
-    octx.stroke();
-    octx.strokeStyle = '#78350f';
-    octx.lineWidth = 3.5;
-    octx.beginPath();
-    octx.moveTo(cx, cy - R + 1);
-    octx.lineTo(cx, cy - R - 8);
-    octx.stroke();
+      // Lục địa góc dưới trái
+      c.beginPath();
+      c.moveTo(cx - 25, cy + 10);
+      c.bezierCurveTo(cx - 10, cy + 12, cx - 12, cy + 32, cx - 22, cy + 36);
+      c.bezierCurveTo(cx - 32, cy + 36, cx - 30, cy + 22, cx - 25, cy + 10);
+      c.closePath();
+      c.fill(); c.stroke();
 
-    // 2 Lá mầm: Xanh lục rừng già (#14532d)
-    octx.fillStyle = '#14532d';
-    octx.strokeStyle = '#0f172a';
-    octx.lineWidth = 1.8;
-    octx.beginPath();
-    octx.ellipse(cx - 7, cy - R - 11, 6.2, 4, -Math.PI / 5, 0, Math.PI * 2);
-    octx.fill(); octx.stroke();
-    octx.beginPath();
-    octx.ellipse(cx + 7, cy - R - 11, 6.2, 4, Math.PI / 5, 0, Math.PI * 2);
-    octx.fill(); octx.stroke();
+      // Lục địa góc phải
+      c.beginPath();
+      c.moveTo(cx + 20, cy - 25);
+      c.bezierCurveTo(cx + 15, cy - 10, cx + 30, cy - 5, cx + 20, cy + 8);
+      c.bezierCurveTo(cx + 15, cy + 18, cx + 30, cy + 22, cx + R, cy + 10);
+      c.bezierCurveTo(cx + R, cy - 20, cx + 32, cy - 28, cx + 20, cy - 25);
+      c.closePath();
+      c.fill(); c.stroke();
 
-    // 2 Chiếc lá bự nâng đỡ 45 độ bên dưới (có gân lá)
-    function drawLeaf(ang, flip) {
-      octx.save();
-      octx.translate(cx + (flip ? 10 : -10), cy + 22);
-      octx.rotate(ang);
-      if (flip) octx.scale(-1, 1);
-      octx.beginPath();
-      octx.moveTo(0, 0);
-      octx.bezierCurveTo(15, -10, 19, -34, 6, -42);
-      octx.bezierCurveTo(-6, -34, -9, -10, 0, 0);
-      octx.fillStyle = '#22c55e';
-      octx.fill();
-      octx.strokeStyle = '#0f172a';
-      octx.lineWidth = 2;
-      octx.stroke();
-      octx.strokeStyle = '#ffffff';
-      octx.lineWidth = 1.2;
-      octx.beginPath();
-      octx.moveTo(0, 0);
-      octx.quadraticCurveTo(3, -20, 6, -40);
-      octx.stroke();
-      octx.restore();
+      // Vùng nước xanh đáy
+      c.fillStyle = '#38bdf8';
+      c.beginPath();
+      c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
+      c.fill();
+
+      // KHUÔN MẶT ĐÁNG YÊU
+      c.fillStyle = '#0f172a';
+      c.beginPath();
+      c.arc(cx - 11, cy + 2, 2.6, 0, Math.PI * 2);
+      c.arc(cx + 11, cy + 2, 2.6, 0, Math.PI * 2);
+      c.fill();
+
+      c.beginPath();
+      c.arc(cx, cy + 6, 3.8, 0.15 * Math.PI, 0.85 * Math.PI);
+      c.lineWidth = 2.2;
+      c.lineCap = 'round';
+      c.stroke();
+
+      c.fillStyle = '#f87171';
+      c.beginPath();
+      c.arc(cx - 19, cy + 9, 3.3, 0, Math.PI * 2);
+      c.arc(cx + 19, cy + 9, 3.3, 0, Math.PI * 2);
+      c.fill();
+
+      c.restore();
+
+      c.beginPath();
+      c.arc(cx, cy, R, 0, Math.PI * 2);
+      c.lineWidth = 3.6;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+
+      // MẦM CÂY TRÊN ĐẦU: THÂN NÂU DÀY + LÁ MẦM XANH ĐẬM (KHÔNG BÓNG CHÓI)
+      c.save();
+      c.translate(cx, cy - R);
+      c.strokeStyle = '#0f172a';
+      c.lineWidth = 6.5;
+      c.lineCap = 'round';
+      c.beginPath();
+      c.moveTo(0, 2); c.lineTo(0, -11);
+      c.stroke();
+
+      c.strokeStyle = '#78350f';
+      c.lineWidth = 4.2;
+      c.beginPath();
+      c.moveTo(0, 1); c.lineTo(0, -10);
+      c.stroke();
+
+      c.beginPath();
+      c.ellipse(-8, -13, 7.5, 5, -Math.PI / 5, 0, Math.PI * 2);
+      c.fillStyle = '#14532d';
+      c.fill();
+      c.lineWidth = 2.2;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+
+      c.beginPath();
+      c.ellipse(8, -13, 7.5, 5, Math.PI / 5, 0, Math.PI * 2);
+      c.fillStyle = '#14532d';
+      c.fill();
+      c.lineWidth = 2.2;
+      c.strokeStyle = '#0f172a';
+      c.stroke();
+      c.restore();
+
+      // 2 CHIẾC LÁ LỚN PHÍA TRƯỚC XÒE 45 ĐỘ NÂNG ĐỠ (GÂN LÁ RÕ NÉT)
+      function drawBigLeaf(angle, isFlipped) {
+        c.save();
+        c.translate(cx + (isFlipped ? 13 : -13), cy + 28);
+        c.rotate(angle);
+        if (isFlipped) c.scale(-1, 1);
+
+        c.beginPath();
+        c.moveTo(0, 0);
+        c.bezierCurveTo(18, -13, 23, -40, 7, -50);
+        c.bezierCurveTo(-7, -40, -11, -13, 0, 0);
+        c.fillStyle = '#22c55e';
+        c.fill();
+        c.strokeStyle = '#0f172a';
+        c.lineWidth = 2.6;
+        c.stroke();
+
+        c.strokeStyle = '#ffffff';
+        c.lineWidth = 1.6;
+        c.beginPath();
+        c.moveTo(0, 0);
+        c.quadraticCurveTo(3, -25, 7, -48);
+        c.stroke();
+
+        c.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+        c.lineWidth = 1.1;
+        c.beginPath();
+        c.moveTo(1, -12); c.lineTo(8, -18);
+        c.moveTo(3, -24); c.lineTo(11, -30);
+        c.moveTo(5, -36); c.lineTo(11, -41);
+        c.moveTo(1, -12); c.lineTo(-5, -16);
+        c.moveTo(3, -24); c.lineTo(-4, -28);
+        c.stroke();
+
+        c.restore();
+      }
+
+      drawBigLeaf(-Math.PI / 4, false);
+      drawBigLeaf(Math.PI / 4, true);
+
+      c.restore();
     }
-    drawLeaf(-Math.PI / 4, false);
-    drawLeaf(Math.PI / 4, true);
 
-    // 2. Trích xuất mảng các mảnh nhỏ
-    const imgData = octx.getImageData(0, 0, off.width, off.height).data;
+    // 2. KHỞI TẠO CÁC PHÂN TỬ HẠT NHỎ
+    const sampleCanvas = document.createElement('canvas');
+    sampleCanvas.width = W;
+    sampleCanvas.height = H;
+    const sctx = sampleCanvas.getContext('2d');
+    drawExactLogo(sctx, 1.0);
+
+    const imgData = sctx.getImageData(0, 0, W, H).data;
     const particles = [];
     const step = 3;
-    for (let y = 0; y < off.height; y += step) {
-      for (let x = 0; x < off.width; x += step) {
-        const idx = (y * off.width + x) * 4;
+
+    for (let y = 0; y < H; y += step) {
+      for (let x = 0; x < W; x += step) {
+        const idx = (y * W + x) * 4;
         const a = imgData[idx + 3];
         if (a > 60) {
           const r = imgData[idx];
@@ -165,69 +238,85 @@ def get_particle_logo_html():
           particles.push({
             tx: x,
             ty: y,
+            x: x - 180 + (Math.random() - 0.5) * 80,
+            y: y + (Math.random() - 0.5) * 60,
             color: `rgba(${r},${g},${b},${a/255})`,
-            x: Math.random() * off.width,
-            y: Math.random() * off.height,
-            size: 2.1,
-            randOffset: Math.random() * 200,
-            driftSpeed: 1.3 + Math.random() * 2.4,
-            waveFreq: 0.02 + Math.random() * 0.03
+            size: 1.8,
+            speed: 1.2 + Math.random() * 1.8,
+            offset: Math.random() * 100,
+            freq: 0.015 + Math.random() * 0.02
           });
         }
       }
     }
 
-    // 3. Chu kỳ chuyển động đúng 15 giây
+    // 3. VÒNG LẶP CHU KỲ 15 GIÂY (15000ms)
     const CYCLE = 15000;
     const startTime = performance.now();
 
-    function renderLoop() {
+    function animate() {
       const now = performance.now();
       const elapsed = (now - startTime) % CYCLE;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, W, H);
 
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
+      if (elapsed >= 3000 && elapsed < 8000) {
+        // GIAI ĐOẠN 2 (3s - 8s): THÀNH HÌNH TRỌN VẸN - HIỆN LOGO VECTOR NÉT CĂNG NGUYÊN BẢN TRONG 5 GIÂY
+        drawExactLogo(ctx, 1.0);
+      } else if (elapsed < 3000) {
+        // GIAI ĐOẠN 1 (0s - 3s): CÁC PHÂN TỬ TỤ LẠI VÀ RÁP NỐI TÁI HIỆN CẤU TRÚC LOGO
+        const prog = elapsed / 3000;
 
-        if (elapsed < 3500) {
-          // Giai đoạn 1 (0s -> 3.5s): Các mảnh nhỏ bay vào ráp nối thành logo
-          const prog = elapsed / 3500;
-          const easeOut = 1 - Math.pow(1 - Math.min(1, prog), 3);
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
           p.x += (p.tx - p.x) * 0.085;
           p.y += (p.ty - p.y) * 0.085;
-          ctx.globalAlpha = Math.min(1, 0.35 + easeOut * 0.65);
-        } else if (elapsed < 8500) {
-          // Giai đoạn 2 (3.5s -> 8.5s - ĐÚNG 5 GIÂY): Logo hoàn chỉnh giữ nguyên sắc nét
-          p.x = p.tx;
-          p.y = p.ty;
-          ctx.globalAlpha = 1.0;
-        } else if (elapsed < 12500) {
-          // Giai đoạn 3 (8.5s -> 12.5s): Tan rã, gió thổi cuốn các mảnh NGANG TỪ TRÁI SANG PHẢI
-          const disperseProg = (elapsed - 8500) / 4000;
-          p.x += (p.driftSpeed * 3.6) + (p.tx / canvas.width) * 1.6;
-          p.y += Math.sin((elapsed + p.randOffset) * p.waveFreq) * 0.75;
-          ctx.globalAlpha = Math.max(0.12, 1 - disperseProg * 0.88);
-        } else {
-          // Giai đoạn 4 (12.5s -> 15s): Các mảnh trôi dạt bay vòng về bên trái chuẩn bị tụ lại
-          const prepProg = (elapsed - 12500) / 2500;
-          if (p.x > canvas.width + 40) {
-            p.x = -30 - Math.random() * 90;
-            p.y = p.ty + (Math.random() - 0.5) * 50;
-          }
-          p.x += (p.tx - p.x) * 0.05;
-          p.y += (p.ty - p.y) * 0.05;
-          ctx.globalAlpha = 0.3 + prepProg * 0.7;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
         }
 
-        ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, p.size, p.size);
+        if (prog > 0.45) {
+          drawExactLogo(ctx, (prog - 0.45) / 0.55);
+        }
+      } else if (elapsed >= 8000 && elapsed < 12500) {
+        // GIAI ĐOẠN 3 (8s - 12.5s): TAN RÃ - CÁC PHÂN TỬ NHỎ BAY TỪ TỪ QUA PHẢI THEO CHIỀU GIÓ
+        const fadeOut = Math.max(0, 1 - (elapsed - 8000) / 1200);
+        if (fadeOut > 0) {
+          drawExactLogo(ctx, fadeOut);
+        }
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.speed * 2.8;
+          p.y += Math.sin((elapsed + p.offset) * p.freq) * 0.65;
+
+          const alpha = Math.max(0.12, 1 - ((elapsed - 8000) / 4500));
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        }
+        ctx.globalAlpha = 1.0;
+      } else {
+        // GIAI ĐOẠN 4 (12.5s - 15s): CÁC PHÂN TỬ TRÔI VÒNG LẠI TỪ BÊN TRÁI CHUẨN BỊ TỤ LẠI
+        const prepProg = (elapsed - 12500) / 2500;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          if (p.x > W + 20) {
+            p.x = -20 - Math.random() * 80;
+            p.y = p.ty + (Math.random() - 0.5) * 60;
+          }
+          p.x += (p.tx - p.x) * 0.06;
+          p.y += (p.ty - p.y) * 0.06;
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = 0.35 + prepProg * 0.65;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        }
+        ctx.globalAlpha = 1.0;
       }
 
-      ctx.globalAlpha = 1.0;
-      requestAnimationFrame(renderLoop);
+      requestAnimationFrame(animate);
     }
 
-    renderLoop();
+    animate();
     </script>
     </body>
     </html>
@@ -492,7 +581,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # KHUNG SLOGAN CHUẨN CỐ ĐỊNH PHÍA TRÊN
+    # KHUNG SLOGAN CỐ ĐỊNH PHÍA TRÊN
     wave_html = '<div class="slogan-wrapper">'
     delay = 0.0
     for char in t["slogan"]:
@@ -505,7 +594,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     _, col_form, col_space, col_info, _ = st.columns([0.1, 1.25, 0.08, 1.25, 0.1])
     
-    # CỘT TRÁI: FORM ĐĂNG NHẬP + LOGO HẠT HOẠT HỌA PHÍA DƯỚI
+    # CỘT TRÁI: FORM ĐĂNG NHẬP + HOẠT ẢNH LOGO NÉT CĂNG TỤ LẠI & TAN RÃ THEO GIÓ
     with col_form:
         st.markdown(f"""
             <div style="text-align:center; margin-bottom:4px; font-size:1.1rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
@@ -538,8 +627,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
             
-            # LOGO HẠT HOẠT HỌA ĐẶT NGAY BÊN DƯỚI FORM ĐĂNG NHẬP
-            components.html(get_particle_logo_html(), height=135, scrolling=False)
+            # HOẠT HỌA LOGO NÉT CĂNG TỤ LẠI, ĐỨNG YÊN 5S RỒI TAN RÃ BAY THEO GIÓ SANG PHẢI
+            components.html(get_particle_logo_html(), height=155, scrolling=False)
                         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
