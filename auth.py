@@ -53,7 +53,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     t = T.get(lang, T["Tiếng Việt"])
     text_sub = "#cbd5e1"
 
-    # CSS CỐ ĐỊNH 100VH - CÂN ĐỐI 2 BÊN VÀ KHÔNG CUỘN MÀN HÌNH
     st.markdown("""
         <style>
         html, body, [data-testid="stAppViewContainer"], .main {
@@ -62,9 +61,10 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             max-height: 100vh !important;
         }
 
+        /* TĂNG KHOẢNG ĐỆM ĐỈNH ĐỂ CHỮ SLOGAN LƯỚT SÓNG KHÔNG BỊ CẮT DẤU */
         .block-container {
-            padding-top: 1.2rem !important;
-            padding-bottom: 2.2rem !important;
+            padding-top: 2.4rem !important;
+            padding-bottom: 2rem !important;
             padding-left: 2rem !important;
             padding-right: 2rem !important;
             max-height: 100vh !important;
@@ -94,7 +94,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.94)) !important;
             border: 2px solid rgba(72, 187, 120, 0.6) !important;
             border-radius: 16px !important;
-            padding: 16px 20px !important;
+            padding: 14px 18px !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
             position: relative;
             overflow: hidden !important;
@@ -125,8 +125,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.96) 0%, rgba(10, 61, 35, 0.94) 100%) !important;
             border: 2px solid #22c55e !important;
             border-radius: 14px !important;
-            padding: 12px 18px !important;
-            margin-bottom: 11px !important;
+            padding: 10px 16px !important;
+            margin-bottom: 9px !important;
             position: relative !important;
             overflow: hidden !important;
             animation: greenBreathePulse 4s infinite ease-in-out !important;
@@ -162,8 +162,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-radius: 9px !important;
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.45) !important;
             transition: all 0.3s ease !important;
-            margin-top: 6px !important;
-            padding: 8px 16px !important;
+            margin-top: 4px !important;
+            padding: 7px 14px !important;
         }
         button[kind="primary"]:hover,
         div[data-testid="stFormSubmitButton"] button:hover {
@@ -172,7 +172,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
         }
 
-        /* NÚT SỨ MỆNH NỀN TẢNG THIẾT KẾ CẠNH NÚT ĐĂNG NHẬP */
+        /* NÚT SỨ MỆNH CẠNH NÚT ĐĂNG NHẬP */
         button[key="btn_inline_mission"] {
             background: linear-gradient(135deg, #0d5a30 0%, #15803d 50%, #22c55e 100%) !important;
             border: 1.5px solid #4ade80 !important;
@@ -182,8 +182,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-radius: 9px !important;
             letter-spacing: 0.8px !important;
             text-transform: uppercase !important;
-            margin-top: 6px !important;
-            padding: 8px 12px !important;
+            margin-top: 4px !important;
+            padding: 7px 12px !important;
             transition: all 0.3s ease !important;
             box-shadow: 0 4px 14px rgba(72, 187, 120, 0.4) !important;
         }
@@ -194,55 +194,70 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             color: #ffffff !important;
         }
 
+        /* KHUNG CHỨA SLOGAN LÀM CHUẨN: KHÔNG GIAN THOÁNG PHÍA TRÊN */
+        .slogan-wrapper {
+            text-align: center;
+            padding-top: 15px;
+            padding-bottom: 4px;
+            overflow: visible !important;
+            white-space: nowrap;
+        }
+
         @keyframes waveUp {
             0%, 20%, 100% { transform: translateY(0); text-shadow: none; }
             10% { transform: translateY(-10px); text-shadow: 0 0 20px rgba(72,187,120,1); }
         }
         .wave-char {
-            display: inline-block; position: relative; margin-right: 2px;
-            font-size: clamp(22px, 2.5vw, 32px) !important;
+            display: inline-block;
+            position: relative;
+            margin-right: 2px;
+            font-size: clamp(24px, 2.7vw, 36px) !important;
             font-weight: 900 !important;
             letter-spacing: 1.5px !important;
+            line-height: 1.35 !important;
             background: linear-gradient(90deg, #48bb78, #68d391, #319795);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: waveUp 10s infinite ease-in-out; animation-delay: var(--delay);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: waveUp 10s infinite ease-in-out;
+            animation-delay: var(--delay);
+            vertical-align: middle;
         }
 
         .section-title-custom {
             color: #ffffff;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             font-weight: 800;
             letter-spacing: 1.2px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             border-left: 4px solid #48bb78;
             padding-left: 8px;
             text-transform: uppercase;
         }
         .stat-value-custom {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 900;
             color: #63b3ed;
             margin-bottom: 2px;
             line-height: 1.1;
         }
-        .stat-label-custom { color: #cbd5e1; font-size: 0.82rem; font-weight: 500; }
-        .project-title-custom { color: #48bb78; font-weight: 700; font-size: 1.05rem; margin-bottom: 2px; }
-        .project-desc-custom { color: #cbd5e1; font-size: 0.82rem; margin-bottom: 6px; line-height: 1.35; }
+        .stat-label-custom { color: #cbd5e1; font-size: 0.8rem; font-weight: 500; }
+        .project-title-custom { color: #48bb78; font-weight: 700; font-size: 1.02rem; margin-bottom: 2px; }
+        .project-desc-custom { color: #cbd5e1; font-size: 0.8rem; margin-bottom: 4px; line-height: 1.3; }
         .verified-badge-custom {
             display: inline-block;
             background: rgba(72, 187, 120, 0.2);
             border: 1px solid #48bb78;
             color: #48bb78;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.72rem;
             font-weight: 700;
         }
 
         /* Thanh tin tức chân trang */
         .news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.98);
-            border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 7px 20px;
+            border-top: 1px solid rgba(72, 187, 120, 0.3); color: #e2e8f0; padding: 6px 20px;
             display: flex; align-items: center; z-index: 1000;
         }
         .news-marquee { overflow: hidden; white-space: nowrap; width: 100%; }
@@ -251,8 +266,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    # Tiêu đề Slogan phía trên
-    wave_html = '<div style="text-align: center; padding: 4px 0; white-space: nowrap;">'
+    # KHUNG SLOGAN LÀM CHUẨN CỐ ĐỊNH PHÍA TRÊN
+    wave_html = '<div class="slogan-wrapper">'
     delay = 0.0
     for char in t["slogan"]:
         char_display = "&nbsp;" if char == " " else char
@@ -260,14 +275,14 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         delay += 0.1
     wave_html += '</div>'
     st.markdown(wave_html, unsafe_allow_html=True)
-    st.markdown(f'<div style="text-align:center; color:{text_sub}; font-size:0.9rem; margin-bottom:14px;">{t["subtitle"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align:center; color:{text_sub}; font-size:0.88rem; margin-top:2px; margin-bottom:12px;">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
     _, col_form, col_space, col_info, _ = st.columns([0.1, 1.25, 0.08, 1.25, 0.1])
     
-    # ================= CỘT TRÁI: ĐĂNG NHẬP & SỨ MỆNH HỢP NHẤT =================
+    # CỘT TRÁI
     with col_form:
         st.markdown(f"""
-            <div style="text-align:center; margin-bottom:8px; font-size:1.15rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
+            <div style="text-align:center; margin-bottom:6px; font-size:1.12rem; font-weight:800; color:#48bb78; letter-spacing:0.8px; text-shadow:0 0 12px rgba(72,187,120,0.5);">
                 {t["welcome_msg"]}
             </div>
         """, unsafe_allow_html=True)
@@ -278,7 +293,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 u_name = st.text_input(t["user"], placeholder="admin, investor, buyer")
                 u_pass = st.text_input(t["pass"], type="password", placeholder="••••••")
                 
-                # SẮP XẾP LẠI: Nút Xác Thực và Nút Sứ Mệnh nằm song hành gọn gàng
                 col_btn_log, col_btn_mis = st.columns([0.55, 0.45])
                 with col_btn_log:
                     submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
@@ -341,13 +355,12 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-    # ================= CỘT PHẢI: 3 KHỐI CÂN ĐỐI 100% CHIỀU CAO =================
+    # CỘT PHẢI
     with col_info:
-        # Khối 1: Thành tựu nền tảng
         st.markdown(f"""
             <div class="hardcore-green-card">
                 <div class="section-title-custom">{t["achieve"]}</div>
-                <div style="display:flex; justify-content:space-around; align-items:center; margin-top:4px;">
+                <div style="display:flex; justify-content:space-around; align-items:center; margin-top:2px;">
                     <div style="text-align:center;">
                         <div class="stat-value-custom">{t["ach_1_val"]}</div>
                         <div class="stat-label-custom">{t["ach_1_lbl"]}</div>
@@ -360,7 +373,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-        # Khối 2: Dự án tiêu biểu
         st.markdown(f"""
             <div class="hardcore-green-card">
                 <div class="section-title-custom">{t["projects"]}</div>
@@ -372,7 +384,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-        # Khối 3 (Bổ sung để lấp kín phần chân cân đối): Tầm nhìn Net-Zero 2050
         st.markdown(f"""
             <div class="hardcore-green-card" style="margin-bottom:0px;">
                 <div class="section-title-custom">{t["vision_title"]}</div>
@@ -386,7 +397,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
     # Thanh tin tức chân trang
     st.markdown(f"""
     <div class="news-ticker-container">
-        <div style="font-weight:900; color:#fc8181; margin-right:15px; white-space:nowrap; text-transform:uppercase; font-size:0.82rem;">{t['news_lbl']}</div>
+        <div style="font-weight:900; color:#fc8181; margin-right:15px; white-space:nowrap; text-transform:uppercase; font-size:0.8rem;">{t['news_lbl']}</div>
         <div class="news-marquee">
             <span>{t['news_txt']} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {t['news_txt']}</span>
         </div>
