@@ -137,7 +137,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    // GIẢM 2 GIÂY ĐOẠN KẾT: TỔNG THỜI LƯỢNG ĐÚNG 27 GIÂY (27000ms)
+    // THỜI LƯỢNG ĐÚNG 27 GIÂY THEO YÊU CẦU
     const TOTAL_DURATION = 27000;
 
     let smokeParticles = [];
@@ -323,7 +323,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
             const R = 95;
 
-            // QUẢ ĐỊA CẦU THEO HÌNH MẪU
             ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, R, 0, Math.PI * 2);
@@ -398,10 +397,8 @@ def get_mission_animation_html(lang="Tiếng Việt"):
             ctx.strokeStyle = "#0f172a";
             ctx.stroke();
 
-            // MẦM CÂY TRÊN ĐẦU
             ctx.save();
             ctx.translate(0, -R);
-
             ctx.strokeStyle = "#0f172a";
             ctx.lineWidth = 14;
             ctx.lineCap = "round";
@@ -435,7 +432,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
             ctx.restore();
 
-            // HAI CHIẾC LÁ LỚN PHÓNG TO NÂNG ĐỠ DƯỚI ĐÁY
             ctx.save();
             ctx.translate(-32, 94);
             ctx.rotate(-Math.PI / 4);
