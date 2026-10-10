@@ -105,7 +105,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Khuôn mặt đáng yêu
+      // Khuôn mặt hoạt hình
       c.fillStyle = '#0f172a';
       c.beginPath();
       c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ
+      // 2 Lá bự 45 độ nâng đỡ
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,6 +206,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
+    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG XANH QUÉT
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -483,11 +484,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             z-index: 10;
             pointer-events: none;
         }
-        div[data-testid="stForm"]:hover {
-            transform: translateY(-3px) scale(1.015) !important;
-            box-shadow: 0 16px 40px rgba(72, 187, 120, 0.9) !important;
-            border-color: #48bb78 !important;
-        }
 
         /* ==========================================================================
            HIỆU ỨNG CHUYỂN MÀU TỪ TỪ XANH LÁ <-> XANH DƯƠNG CHO 'XIN CHÀO QUÝ ĐỒNG HÀNH!'
@@ -566,12 +562,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
 
         @keyframes sweepWhiteGlowText {
-            0%, 15% {
-                background-position: -200% 0;
-            }
-            85%, 100% {
-                background-position: 200% 0;
-            }
+            0%, 15% { background-position: -200% 0; }
+            85%, 100% { background-position: 200% 0; }
         }
         .nation-title-sweeping {
             font-size: 0.98rem;
@@ -609,58 +601,66 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         }
 
         @keyframes starYellowGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15);
-            }
-            50% {
-                filter: drop-shadow(0 0 8px #ffff00) drop-shadow(0 0 16px #eab308);
-            }
+            0%, 100% { filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15); }
+            50% { filter: drop-shadow(0 0 8px #ffff00) drop-shadow(0 0 16px #eab308); }
         }
         .flag-star-svg {
             animation: starYellowGlow 2.5s infinite ease-in-out;
         }
 
         /* ==========================================================================
-           NÚT 1: XÁC THỰC TRUY CẬP (MÀU XANH LÁ + HIỆU ỨNG KHỐI 3D CƠ HỌC)
+           NÚT 1: XÁC THỰC TRUY CẬP (ĐÈ TRỰC TIẾP KIND="PRIMARY" THÀNH XANH LÁ + KHỐI 3D)
            ========================================================================== */
-        div[data-testid="column"]:first-child button {
+        button[kind="primary"],
+        button[data-testid="stBaseButton-primary"],
+        div[data-testid="stForm"] button[kind="primary"] {
+            background-color: transparent !important;
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             letter-spacing: 0.8px !important;
             border-radius: 10px !important;
-            /* ĐỔ BÓNG TẠO HIỆU ỨNG KHỐI 3D DÀY DẶN */
             box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             margin-top: 2px !important;
             padding: 8px 14px !important;
             position: relative !important;
         }
-        div[data-testid="column"]:first-child button:hover {
+        button[kind="primary"] p,
+        button[kind="primary"] span {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+        button[kind="primary"]:hover,
+        button[data-testid="stBaseButton-primary"]:hover {
             background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
             transform: translateY(-2px) !important;
             box-shadow: 0 7px 0 #15803d, 0 12px 24px rgba(34, 197, 94, 0.65) !important;
         }
-        div[data-testid="column"]:first-child button:active {
+        button[kind="primary"]:active,
+        button[data-testid="stBaseButton-primary"]:active {
             transform: translateY(4px) !important;
             box-shadow: 0 1px 0 #15803d, 0 3px 10px rgba(34, 197, 94, 0.4) !important;
         }
 
         /* ==========================================================================
-           NÚT 2: KHÁM PHÁ SỨ MỆNH (MÀU XANH DƯƠNG CÔNG NGHỆ + HIỆU ỨNG NỔI BỔNG)
+           NÚT 2: KHÁM PHÁ SỨ MỆNH (ĐÈ TRỰC TIẾP KIND="SECONDARY" THÀNH XANH DƯƠNG + NỔI BỔNG)
            ========================================================================== */
         @keyframes blueMissionFloatingGlow {
             0%, 100% {
-                box-shadow: 0 0 14px rgba(14, 165, 233, 0.6), 0 5px 0 #0369a1;
+                box-shadow: 0 0 14px rgba(14, 165, 233, 0.6), 0 5px 0 #075985;
                 border-color: rgba(56, 189, 248, 0.75) !important;
             }
             50% {
-                box-shadow: 0 0 28px rgba(14, 165, 233, 0.95), 0 5px 0 #0369a1;
+                box-shadow: 0 0 28px rgba(14, 165, 233, 0.95), 0 5px 0 #075985;
                 border-color: #38bdf8 !important;
             }
         }
-        div[data-testid="column"]:last-child button {
+        button[kind="secondary"],
+        button[data-testid="stBaseButton-secondary"],
+        div[data-testid="stForm"] button[kind="secondary"] {
+            background-color: transparent !important;
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
             border: 1.8px solid #38bdf8 !important;
             color: #ffffff !important;
@@ -673,14 +673,21 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             margin-top: 2px !important;
             padding: 8px 14px !important;
         }
-        div[data-testid="column"]:last-child button:hover {
+        button[kind="secondary"] p,
+        button[kind="secondary"] span {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+        button[kind="secondary"]:hover,
+        button[data-testid="stBaseButton-secondary"]:hover {
             background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
             border-color: #7dd3fc !important;
-            transform: translateY(-3px) scale(1.02) !important; /* HIỆU ỨNG NHẤC BỔNG NỔI LÊN */
+            transform: translateY(-3px) scale(1.02) !important;
             box-shadow: 0 8px 0 #075985, 0 14px 30px rgba(56, 189, 248, 0.85) !important;
             color: #ffffff !important;
         }
-        div[data-testid="column"]:last-child button:active {
+        button[kind="secondary"]:active,
+        button[data-testid="stBaseButton-secondary"]:active {
             transform: translateY(4px) scale(0.99) !important;
             box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
         }
@@ -796,9 +803,11 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 
                 col_btn_log, col_btn_mis = st.columns([0.55, 0.45])
                 with col_btn_log:
+                    # NÚT XÁC THỰC TRUY CẬP (KIND="PRIMARY" -> XANH LÁ + KHỐI 3D)
                     submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
                 with col_btn_mis:
-                    open_mission = st.form_submit_button(t["btn_mission"], use_container_width=True)
+                    # NÚT KHÁM PHÁ SỨ MỆNH (KIND="SECONDARY" -> XANH DƯƠNG + NỔI BỔNG)
+                    open_mission = st.form_submit_button(t["btn_mission"], type="secondary", use_container_width=True)
                 
                 if submitted:
                     users = st.session_state.get("users_db", {})
