@@ -137,7 +137,6 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     waveContainer.innerHTML = waveHtml;
 
     let startTime = performance.now();
-    // THỜI LƯỢNG ĐÚNG 27 GIÂY THEO YÊU CẦU
     const TOTAL_DURATION = 27000;
 
     let smokeParticles = [];
@@ -399,6 +398,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
 
             ctx.save();
             ctx.translate(0, -R);
+
             ctx.strokeStyle = "#0f172a";
             ctx.lineWidth = 14;
             ctx.lineCap = "round";
@@ -494,14 +494,14 @@ def get_mission_animation_html(lang="Tiếng Việt"):
         ctx.fill();
         ctx.stroke();
 
-        ctx.strokeStyle = "#ffffff";
+        ctx.strokeStyle = "#78350f";
         ctx.lineWidth = 2.4;
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.quadraticCurveTo(8, -55, 16, -108);
         ctx.stroke();
 
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.strokeStyle = "rgba(120, 53, 15, 0.85)";
         ctx.lineWidth = 1.4;
         ctx.beginPath();
         ctx.moveTo(3, -25); ctx.lineTo(19, -38);
