@@ -26,24 +26,35 @@ def get_particle_logo_html():
     </style>
     </head>
     <body>
-    <canvas id="logoCanvas" width="420" height="170"></canvas>
+    <canvas id="logoCanvas"></canvas>
     <script>
     const canvas = document.getElementById('logoCanvas');
     const ctx = canvas.getContext('2d');
 
-    const W = canvas.width;
-    const H = canvas.height;
-    const cx = W / 2;
-    const cy = 84;
-    const R = 46; // PHÓNG TO LOGO TO HƠN KHUNG CŨ
+    // CẤU HÌNH HIGH-DPI RETINA ĐỂ HÌNH ẢNH MỊN MÀNG SẮC NÉT TUYỆT ĐỐI
+    const logicalW = 420;
+    const logicalH = 175;
+    const dpr = window.devicePixelRatio || 2;
+    canvas.width = logicalW * dpr;
+    canvas.height = logicalH * dpr;
+    canvas.style.width = logicalW + 'px';
+    canvas.style.height = logicalH + 'px';
+    ctx.scale(dpr, dpr);
 
-    // HÀM VẼ LOGO VECTOR NÉT CĂNG NGUYÊN BẢN (KHÔNG CÒN KHUNG VIỀN XÁM BAO NGOÀI)
-    function drawVectorLogo(c, alpha = 1.0) {
-      if (alpha <= 0) return;
+    const cx = logicalW / 2;
+    const cy = 88;
+    const R = 44; // PHÓNG TO LOGO KHÔNG CẦN KHUNG VIỀN
+
+    // HÀM VẼ LOGO VECTOR NGUYÊN BẢN (KHÔNG Ô PIXEL, KHÔNG RĂNG CƯA)
+    function renderVectorLogo(c, alpha = 1.0, scale = 1.0) {
+      if (alpha <= 0.001) return;
       c.save();
       c.globalAlpha = alpha;
+      c.translate(cx, cy);
+      c.scale(scale, scale);
+      c.translate(-cx, -cy);
 
-      // 1. QUẢ CẦU TRÁI ĐẤT HOẠT HÌNH
+      // 1. QUẢ CẦU TRÁI ĐẤT
       c.save();
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
@@ -54,7 +65,7 @@ def get_particle_logo_html():
       c.stroke();
       c.clip();
 
-      // CÁC MẢNG LỤC ĐỊA
+      // CÁC MẢNG LỤC ĐỊA MỊN MÀNG
       c.fillStyle = '#4ade80';
       c.strokeStyle = '#0f172a';
       c.lineWidth = 3.2;
@@ -62,50 +73,50 @@ def get_particle_logo_html():
       // Lục địa đỉnh
       c.beginPath();
       c.moveTo(cx - 10, cy - R);
-      c.bezierCurveTo(cx - 7, cy - 32, cx + 10, cy - 30, cx + 14, cy - R);
+      c.bezierCurveTo(cx - 7, cy - 30, cx + 10, cy - 28, cx + 14, cy - R);
       c.closePath();
       c.fill(); c.stroke();
 
       // Lục địa góc trên trái
       c.beginPath();
-      c.moveTo(cx - R, cy - 28);
-      c.bezierCurveTo(cx - 26, cy - 36, cx - 22, cy - 12, cx - 36, cy);
-      c.bezierCurveTo(cx - 46, cy + 6, cx - R, cy + 9, cx - R, cy - 28);
+      c.moveTo(cx - R, cy - 26);
+      c.bezierCurveTo(cx - 24, cy - 34, cx - 20, cy - 10, cx - 34, cy + 2);
+      c.bezierCurveTo(cx - 44, cy + 8, cx - R, cy + 10, cx - R, cy - 26);
       c.closePath();
       c.fill(); c.stroke();
 
       // Lục địa góc dưới trái
       c.beginPath();
-      c.moveTo(cx - 32, cy + 12);
-      c.bezierCurveTo(cx - 12, cy + 15, cx - 15, cy + 40, cx - 28, cy + 45);
-      c.bezierCurveTo(cx - 40, cy + 45, cx - 38, cy + 28, cx - 32, cy + 12);
+      c.moveTo(cx - 30, cy + 12);
+      c.bezierCurveTo(cx - 10, cy + 15, cx - 14, cy + 38, cx - 26, cy + 42);
+      c.bezierCurveTo(cx - 38, cy + 42, cx - 36, cy + 26, cx - 30, cy + 12);
       c.closePath();
       c.fill(); c.stroke();
 
       // Lục địa góc phải
       c.beginPath();
-      c.moveTo(cx + 25, cy - 32);
-      c.bezierCurveTo(cx + 18, cy - 12, cx + 38, cy - 6, cx + 25, cy + 10);
-      c.bezierCurveTo(cx + 18, cy + 22, cx + 38, cy + 28, cx + R, cy + 12);
-      c.bezierCurveTo(cx + R, cy - 25, cx + 40, cy - 36, cx + 25, cy - 32);
+      c.moveTo(cx + 24, cy - 30);
+      c.bezierCurveTo(cx + 16, cy - 10, cx + 36, cy - 4, cx + 24, cy + 10);
+      c.bezierCurveTo(cx + 16, cy + 22, cx + 36, cy + 26, cx + R, cy + 12);
+      c.bezierCurveTo(cx + R, cy - 24, cx + 38, cy - 34, cx + 24, cy - 30);
       c.closePath();
       c.fill(); c.stroke();
 
       // Vùng nước xanh đáy
       c.fillStyle = '#38bdf8';
       c.beginPath();
-      c.ellipse(cx + 12, cy + 35, 17, 8, 0, 0, Math.PI * 2);
+      c.ellipse(cx + 12, cy + 33, 16, 7.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Mắt & Miệng hoạt hình đáng yêu
+      // KHUÔN MẶT ĐÁNG YÊU
       c.fillStyle = '#0f172a';
       c.beginPath();
-      c.arc(cx - 14, cy + 2, 3.2, 0, Math.PI * 2);
-      c.arc(cx + 14, cy + 2, 3.2, 0, Math.PI * 2);
+      c.arc(cx - 13, cy + 2, 3.2, 0, Math.PI * 2);
+      c.arc(cx + 13, cy + 2, 3.2, 0, Math.PI * 2);
       c.fill();
 
       c.beginPath();
-      c.arc(cx, cy + 7, 4.8, 0.15 * Math.PI, 0.85 * Math.PI);
+      c.arc(cx, cy + 7, 4.6, 0.15 * Math.PI, 0.85 * Math.PI);
       c.lineWidth = 2.6;
       c.lineCap = 'round';
       c.stroke();
@@ -113,8 +124,8 @@ def get_particle_logo_html():
       // Má hồng
       c.fillStyle = '#f87171';
       c.beginPath();
-      c.arc(cx - 24, cy + 11, 4.2, 0, Math.PI * 2);
-      c.arc(cx + 24, cy + 11, 4.2, 0, Math.PI * 2);
+      c.arc(cx - 22, cy + 10, 4.0, 0, Math.PI * 2);
+      c.arc(cx + 22, cy + 10, 4.0, 0, Math.PI * 2);
       c.fill();
 
       c.restore();
@@ -129,70 +140,69 @@ def get_particle_logo_html():
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
-      c.lineWidth = 8;
+      c.lineWidth = 7.5;
       c.lineCap = 'round';
       c.beginPath();
-      c.moveTo(0, 2); c.lineTo(0, -14);
+      c.moveTo(0, 2); c.lineTo(0, -13);
       c.stroke();
 
       c.strokeStyle = '#78350f';
-      c.lineWidth = 5.2;
+      c.lineWidth = 4.8;
       c.beginPath();
-      c.moveTo(0, 1); c.lineTo(0, -13);
+      c.moveTo(0, 1); c.lineTo(0, -12);
       c.stroke();
 
-      // 2 Lá mầm xanh đậm rừng già (#14532d)
       c.beginPath();
-      c.ellipse(-10, -16, 9.5, 6.2, -Math.PI / 5, 0, Math.PI * 2);
+      c.ellipse(-9, -15, 9.0, 5.8, -Math.PI / 5, 0, Math.PI * 2);
       c.fillStyle = '#14532d';
       c.fill();
-      c.lineWidth = 2.6;
+      c.lineWidth = 2.5;
       c.strokeStyle = '#0f172a';
       c.stroke();
 
       c.beginPath();
-      c.ellipse(10, -16, 9.5, 6.2, Math.PI / 5, 0, Math.PI * 2);
+      c.ellipse(9, -15, 9.0, 5.8, Math.PI / 5, 0, Math.PI * 2);
       c.fillStyle = '#14532d';
       c.fill();
-      c.lineWidth = 2.6;
+      c.lineWidth = 2.5;
       c.strokeStyle = '#0f172a';
       c.stroke();
       c.restore();
 
-      // 3. HAI CHIẾC LÁ LỚN PHÍA TRƯỚC XÒE 45 ĐỘ NÂNG ĐỠ (GÂN LÁ TRẮNG NỔI BẬT)
+      // 3. HAI CHIẾC LÁ LỚN PHÍA TRƯỚC XÒE 45 ĐỘ (GÂN TRẮNG NỔI BẬT)
       function drawBigLeaf(angle, isFlipped) {
         c.save();
-        c.translate(cx + (isFlipped ? 16 : -16), cy + 35);
+        c.translate(cx + (isFlipped ? 15 : -15), cy + 34);
         c.rotate(angle);
         if (isFlipped) c.scale(-1, 1);
 
         c.beginPath();
         c.moveTo(0, 0);
-        c.bezierCurveTo(23, -16, 29, -50, 9, -62);
-        c.bezierCurveTo(-9, -50, -14, -16, 0, 0);
+        c.bezierCurveTo(22, -15, 28, -48, 8, -60);
+        c.bezierCurveTo(-8, -48, -13, -15, 0, 0);
         c.fillStyle = '#22c55e';
         c.fill();
         c.strokeStyle = '#0f172a';
         c.lineWidth = 3.2;
         c.stroke();
 
-        // Sống lá chính màu trắng
+        // Gân lá chính màu trắng
         c.strokeStyle = '#ffffff';
-        c.lineWidth = 2.0;
+        c.lineWidth = 1.9;
         c.beginPath();
         c.moveTo(0, 0);
-        c.quadraticCurveTo(4, -30, 9, -59);
+        c.quadraticCurveTo(4, -28, 8, -57);
         c.stroke();
 
         // Gân nhánh trắng
-        c.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        c.lineWidth = 1.3;
+        c.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        c.lineWidth = 1.2;
         c.beginPath();
-        c.moveTo(1, -15); c.lineTo(10, -22);
-        c.moveTo(4, -30); c.lineTo(14, -38);
-        c.moveTo(6, -45); c.lineTo(14, -51);
-        c.moveTo(1, -15); c.lineTo(-6, -20);
-        c.moveTo(4, -30); c.lineTo(-5, -35);
+        c.moveTo(1, -14); c.lineTo(9, -21);
+        c.moveTo(3, -28); c.lineTo(13, -36);
+        c.moveTo(5, -42); c.lineTo(13, -48);
+        c.moveTo(1, -14); c.lineTo(-6, -19);
+        c.moveTo(3, -28); c.lineTo(-5, -33);
         c.stroke();
 
         c.restore();
@@ -204,111 +214,112 @@ def get_particle_logo_html():
       c.restore();
     }
 
-    // LẤY MẪU HẠT SIÊU NHỎ (MICRO-PARTICLES: GIẢM ĐIỂM ẢNH ĐỂ ĐẠT ĐỘ MỊN NHUYỄN)
-    const sampleCanvas = document.createElement('canvas');
-    sampleCanvas.width = W;
-    sampleCanvas.height = H;
-    const sctx = sampleCanvas.getContext('2d');
-    drawVectorLogo(sctx, 1.0);
-
-    const imgData = sctx.getImageData(0, 0, W, H).data;
+    // 2. KHỞI TẠO CÁC TINH THỂ HẠT ÁNH SÁNG BAY VÒNG TRÒN (KHÔNG PHẢI Ô PIXEL VUÔNG)
+    const NUM_PARTICLES = 160;
     const particles = [];
-    const step = 2; // Bước nhảy nhuyễn, tạo hàng nghìn hạt phân tử li ti
+    const colors = ['#4ade80', '#22c55e', '#38bdf8', '#7dd3fc', '#86efac', '#60a5fa'];
 
-    for (let y = 0; y < H; y += step) {
-      for (let x = 0; x < W; x += step) {
-        const idx = (y * W + x) * 4;
-        const a = imgData[idx + 3];
-        if (a > 60) {
-          const r = imgData[idx];
-          const g = imgData[idx + 1];
-          const b = imgData[idx + 2];
-          particles.push({
-            tx: x,
-            ty: y,
-            x: x - 180 + (Math.random() - 0.5) * 60,
-            y: y + (Math.random() - 0.5) * 40,
-            color: `rgba(${r},${g},${b},${a/255})`,
-            radius: 0.9 + Math.random() * 0.4, // Phân tử siêu nhỏ tròn trịa
-            speed: 1.1 + Math.random() * 1.8,
-            offset: Math.random() * 100,
-            freq: 0.015 + Math.random() * 0.02
-          });
-        }
-      }
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      const baseAngle = (i / NUM_PARTICLES) * Math.PI * 2;
+      const targetRadius = 25 + Math.random() * 45; // Vị trí xuất phát từ các điểm trên logo
+      particles.push({
+        baseAngle: baseAngle,
+        currentAngle: baseAngle,
+        orbitRadius: 75 + Math.random() * 85, // Quỹ đạo bay vòng xung quanh logo
+        speed: (0.012 + Math.random() * 0.016) * (Math.random() < 0.5 ? 1 : -1),
+        targetX: cx + Math.cos(baseAngle) * targetRadius,
+        targetY: cy + Math.sin(baseAngle) * targetRadius * 0.85,
+        x: cx,
+        y: cy,
+        size: 1.2 + Math.random() * 1.8,
+        color: colors[i % colors.length],
+        alpha: 0
+      });
     }
 
-    // CHU KỲ CHUYỂN ĐỘNG 15 GIÂY (15000ms):
-    // 0s - 3s: TỤ LẠI TỪ TỪ
-    // 3s - 8s (5 GIÂY): THÀNH HÌNH LOGO VECTOR NÉT CĂNG 100%
-    // 8s - 12.5s: TAN RÃ VÀ BAY TỪ TỪ QUA PHẢI THEO CHIỀU GIÓ
-    // 12.5s - 15s: CÁC PHÂN TỬ VÒNG VỀ BÊN TRÁI ĐỂ CHUẨN BỊ TỤ
-    const CYCLE = 15000;
+    // 3. CHU KỲ CHUYỂN ĐỘNG CHẬM RÃI 16 GIÂY (16000ms):
+    // - 0s -> 6s (6 GIÂY): LOGO VECTOR NÉT CĂNG NGUYÊN BẢN (ĐỨNG YÊN HOÀN CHỈNH)
+    // - 6s -> 11s (5 GIÂY): TAN RÃ CHẬM RÃI, CÁC HẠT BAY TẠO VÒNG TRÒN QUANH LOGO
+    // - 11s -> 16s (5 GIÂY): CÁC HẠT TỪ TỪ HỘI TỤ VÀ TÁI HIỆN LẠI LOGO VECTOR BAN ĐẦU
+    const CYCLE = 16000;
     const startTime = performance.now();
 
     function animate() {
       const now = performance.now();
       const elapsed = (now - startTime) % CYCLE;
-      ctx.clearRect(0, 0, W, H);
+      ctx.clearRect(0, 0, logicalW, logicalH);
 
-      if (elapsed >= 3000 && elapsed < 8000) {
-        // GIAI ĐOẠN 2 (3s - 8s - ĐÚNG 5 GIÂY): LOGO VECTOR NGUYÊN BẢN SẮC NÉT HOÀN TOÀN
-        drawVectorLogo(ctx, 1.0);
-      } else if (elapsed < 3000) {
-        // GIAI ĐOẠN 1 (0s - 3s): CÁC PHÂN TỬ NHỎ TỤ LẠI TỪ TỪ
-        const prog = elapsed / 3000;
+      if (elapsed < 6000) {
+        // GIAI ĐOẠN 1: LOGO HOÀN CHỈNH VECTOR MỊN MÀNG 100% (ĐỨNG YÊN 6 GIÂY)
+        renderVectorLogo(ctx, 1.0, 1.0);
+      } else if (elapsed < 11000) {
+        // GIAI ĐOẠN 2: TAN RÃ CHẬM RÃI -> CÁC HẠT BAY TẠO VÒNG TRÒN XUNG QUANH
+        const disperseProg = (elapsed - 6000) / 5000;
+        const logoAlpha = Math.max(0, 1 - disperseProg * 2.2);
 
-        for (let i = 0; i < particles.length; i++) {
+        // Logo mờ dần
+        if (logoAlpha > 0) {
+          renderVectorLogo(ctx, logoAlpha, 1.0 + disperseProg * 0.05);
+        }
+
+        // Các hạt tỏa ra và bay vòng tròn xung quanh khu vực logo
+        for (let i = 0; i < NUM_PARTICLES; i++) {
           const p = particles[i];
-          p.x += (p.tx - p.x) * 0.09;
-          p.y += (p.ty - p.y) * 0.09;
+          p.currentAngle += p.speed;
+
+          // Bán kính nở dần ra tạo thành vòng xoay xung quanh
+          const currentR = p.orbitRadius * Math.min(1, disperseProg * 1.4);
+          p.x = cx + Math.cos(p.currentAngle) * currentR;
+          p.y = cy + Math.sin(p.currentAngle) * (currentR * 0.72); // Quỹ đạo hình elip mềm mại
+
+          p.alpha = Math.min(0.9, disperseProg * 1.8);
+
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
           ctx.fill();
+          ctx.restore();
         }
-
-        if (prog > 0.4) {
-          drawVectorLogo(ctx, (prog - 0.4) / 0.6);
-        }
-      } else if (elapsed >= 8000 && elapsed < 12500) {
-        // GIAI ĐOẠN 3 (8s - 12.5s): TAN RÃ THÀNH CÁC PHÂN TỬ NHỎ BAY TỪ TỪ QUA PHẢI
-        const fadeOut = Math.max(0, 1 - (elapsed - 8000) / 1000);
-        if (fadeOut > 0) {
-          drawVectorLogo(ctx, fadeOut);
-        }
-
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          p.x += p.speed * 2.5; // Bay từ từ qua phải
-          p.y += Math.sin((elapsed + p.offset) * p.freq) * 0.6;
-
-          const alpha = Math.max(0.1, 1 - ((elapsed - 8000) / 4500));
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.globalAlpha = alpha;
-          ctx.fill();
-        }
-        ctx.globalAlpha = 1.0;
       } else {
-        // GIAI ĐOẠN 4 (12.5s - 15s): CÁC PHÂN TỬ VÒNG VỀ BÊN TRÁI CHUẨN BỊ TỤ
-        const prepProg = (elapsed - 12500) / 2500;
-        for (let i = 0; i < particles.length; i++) {
+        // GIAI ĐOẠN 3: TỪ TỪ HỘI TỤ LẠI TỪ CÁC VÒNG TRÒN VÀ TÁI HIỆN LOGO
+        const assembleProg = (elapsed - 11000) / 5000;
+        const easeIn = Math.pow(assembleProg, 2);
+
+        // Các hạt xoắn ốc thu nhỏ vòng bay và hút dần về tâm
+        for (let i = 0; i < NUM_PARTICLES; i++) {
           const p = particles[i];
-          if (p.x > W + 20) {
-            p.x = -20 - Math.random() * 80;
-            p.y = p.ty + (Math.random() - 0.5) * 50;
-          }
-          p.x += (p.tx - p.x) * 0.06;
-          p.y += (p.ty - p.y) * 0.06;
+          p.currentAngle += p.speed * 0.7;
+
+          // Khoảng cách thu dần từ quỹ đạo về các điểm logo
+          const currentR = p.orbitRadius * (1 - easeIn);
+          const orbitX = cx + Math.cos(p.currentAngle) * currentR;
+          const orbitY = cy + Math.sin(p.currentAngle) * (currentR * 0.72);
+
+          // Nội suy mượt mà về vị trí đích
+          p.x = orbitX * (1 - easeIn) + p.targetX * easeIn;
+          p.y = orbitY * (1 - easeIn) + p.targetY * easeIn;
+          p.alpha = Math.max(0.1, 1 - assembleProg * 0.85);
+
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
-          ctx.globalAlpha = 0.35 + prepProg * 0.65;
+          ctx.globalAlpha = p.alpha;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 4;
           ctx.fill();
+          ctx.restore();
         }
-        ctx.globalAlpha = 1.0;
+
+        // Logo vector nét căng xuất hiện dần trở lại khi các hạt hội tụ
+        if (assembleProg > 0.35) {
+          const appearAlpha = (assembleProg - 0.35) / 0.65;
+          renderVectorLogo(ctx, appearAlpha, 0.95 + appearAlpha * 0.05);
+        }
       }
 
       requestAnimationFrame(animate);
@@ -621,8 +632,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 if open_mission:
                     hien_thi_hop_thoai_su_menh()
             
-            # HOẠT HỌA LOGO NÉT CĂNG NGUYÊN BẢN (KHÔNG KHUNG XÁM, HẠT SIÊU MỊN NHUYỄN)
-            components.html(get_particle_logo_html(), height=170, scrolling=False)
+            # LOGO VECTOR MỊN MÀNG 100% NÉT CĂNG + HIỆU ỨNG HẠT ÁNH SÁNG BAY TẠO VÒNG & HỘI TỤ
+            components.html(get_particle_logo_html(), height=175, scrolling=False)
                         
         with tab_dang_ky:
             if st.session_state["reg_success_data"]:
@@ -667,7 +678,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                                     st.session_state["reg_success_data"] = {"user": new_user, "role": role_sel}
                                     st.rerun()
 
-    # CỘT PHẢI: 3 KHỐI THÔNG TIN
     with col_info:
         st.markdown(f"""
             <div class="hardcore-green-card">
@@ -706,7 +716,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             </div>
         """, unsafe_allow_html=True)
 
-    # Thanh tin tức chân trang
     st.markdown(f"""
     <div class="news-ticker-container">
         <div style="font-weight:900; color:#fc8181; margin-right:15px; white-space:nowrap; text-transform:uppercase; font-size:0.8rem;">{t['news_lbl']}</div>
