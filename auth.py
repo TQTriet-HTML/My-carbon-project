@@ -105,7 +105,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Khuôn mặt hoạt hình
+      // Khuôn mặt đáng yêu
       c.fillStyle = '#0f172a';
       c.beginPath();
       c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
@@ -131,7 +131,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // Mầm cây trên đầu (Thân nâu dày dặn + 2 lá xanh đậm)
+      // Mầm cây trên đầu
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ nâng đỡ (gân lá trắng)
+      // 2 Lá bự 45 độ
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,7 +206,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // DÒNG CHỮ LƯỢN SÓNG ĐÚNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG XANH QUÉT
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -361,7 +360,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         "Tiếng Việt": {
             "slogan": "MỘT CÚ CHẠM - VẠN ĐIỀU XANH",
             "subtitle": "Chào mừng đến với Sàn giao dịch Tín chỉ Carbon tiên phong. Nơi công nghệ vệ tinh AI hội tụ cùng sứ mệnh bảo vệ Trái Đất.",
-            "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN", "tab_mission_tab": "SỨ MỆNH NỀN TẢNG",
+            "tab_login": "ĐĂNG NHẬP", "tab_reg": "TẠO TÀI KHOẢN",
             "welcome_msg": "XIN CHÀO QUÝ ĐỒNG HÀNH!",
             "user": "Tên đăng nhập", "pass": "Mật khẩu",
             "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
@@ -383,7 +382,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         "English": {
             "slogan": "ONE TOUCH - ONE GREEN WORLD",
             "subtitle": "Welcome to the pioneer Carbon Credit Exchange. AI satellite technology meets Earth protection mission.",
-            "tab_login": "LOGIN", "tab_reg": "REGISTER", "tab_mission_tab": "PLATFORM MISSION",
+            "tab_login": "LOGIN", "tab_reg": "REGISTER",
             "welcome_msg": "WELCOME PARTNER!",
             "user": "Username", "pass": "Password",
             "btn_login": "AUTHENTICATE", "btn_reg": "CREATE ACCOUNT",
@@ -544,7 +543,9 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* KHỐI LÁ CỜ VIỆT NAM MỞ RỘNG TO - PHÁT SÁNG ĐỎ & NGÔI SAO PHÁT SÁNG VÀNG */
+        /* ==========================================================================
+           LÁ CỜ VIỆT NAM VÀ HIỆU ỨNG CHỮ LÓA SÁNG TRẮNG CHẠY TỪNG CHỮ
+           ========================================================================== */
         .vn-flag-card-expanded {
             background: linear-gradient(135deg, rgba(20, 24, 38, 0.92) 0%, rgba(28, 36, 56, 0.9) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -564,12 +565,33 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
-        @keyframes flagRedPulseGlow {
+        @keyframes sweepWhiteGlowText {
+            0%, 15% {
+                background-position: -200% 0;
+            }
+            85%, 100% {
+                background-position: 200% 0;
+            }
+        }
+        .nation-title-sweeping {
+            font-size: 0.98rem;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            background: linear-gradient(90deg, #ef4444 0%, #ef4444 35%, #ffffff 50%, #ef4444 65%, #ef4444 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: sweepWhiteGlowText 3.8s linear infinite;
+        }
+
+        @keyframes flagBreatheBloom {
             0%, 100% {
+                transform: scale(1);
                 box-shadow: 0 0 14px rgba(218, 37, 29, 0.8), 0 0 28px rgba(239, 68, 68, 0.5);
             }
             50% {
-                box-shadow: 0 0 22px rgba(218, 37, 29, 0.95), 0 0 35px rgba(239, 68, 68, 0.75);
+                transform: scale(1.08); /* NỞ TO RA KHI ĐẾN LƯỢT */
+                box-shadow: 0 0 24px rgba(218, 37, 29, 1), 0 0 38px rgba(239, 68, 68, 0.85);
             }
         }
         .flag-box-glowing {
@@ -582,7 +604,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: flagRedPulseGlow 3s infinite ease-in-out;
+            animation: flagBreatheBloom 3.8s infinite ease-in-out;
             flex-shrink: 0;
         }
 
@@ -591,61 +613,76 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 filter: drop-shadow(0 0 4px #ffff00) drop-shadow(0 0 8px #facc15);
             }
             50% {
-                filter: drop-shadow(0 0 7px #ffff00) drop-shadow(0 0 14px #eab308);
+                filter: drop-shadow(0 0 8px #ffff00) drop-shadow(0 0 16px #eab308);
             }
         }
         .flag-star-svg {
             animation: starYellowGlow 2.5s infinite ease-in-out;
         }
 
-        /* NÚT 1: XÁC THỰC TRUY CẬP (CHUẨN MÀU XANH LÁ) */
-        div[data-testid="column"]:first-child div[data-testid="stFormSubmitButton"] button {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+        /* ==========================================================================
+           NÚT 1: XÁC THỰC TRUY CẬP (MÀU XANH LÁ + HIỆU ỨNG KHỐI 3D CƠ HỌC)
+           ========================================================================== */
+        div[data-testid="column"]:first-child button {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             letter-spacing: 0.8px !important;
-            border-radius: 9px !important;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.45) !important;
-            transition: all 0.3s ease !important;
+            border-radius: 10px !important;
+            /* ĐỔ BÓNG TẠO HIỆU ỨNG KHỐI 3D DÀY DẶN */
+            box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             margin-top: 2px !important;
             padding: 8px 14px !important;
+            position: relative !important;
         }
-        div[data-testid="column"]:first-child div[data-testid="stFormSubmitButton"] button:hover {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
-            transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.8) !important;
+        div[data-testid="column"]:first-child button:hover {
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 7px 0 #15803d, 0 12px 24px rgba(34, 197, 94, 0.65) !important;
+        }
+        div[data-testid="column"]:first-child button:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 1px 0 #15803d, 0 3px 10px rgba(34, 197, 94, 0.4) !important;
         }
 
-        /* NÚT 2: KHÁM PHÁ SỨ MỆNH (ĐỔI SANG MÀU XANH DƯƠNG CÔNG NGHỆ CHUẨN) */
-        @keyframes blueMissionGlow {
+        /* ==========================================================================
+           NÚT 2: KHÁM PHÁ SỨ MỆNH (MÀU XANH DƯƠNG CÔNG NGHỆ + HIỆU ỨNG NỔI BỔNG)
+           ========================================================================== */
+        @keyframes blueMissionFloatingGlow {
             0%, 100% {
-                box-shadow: 0 0 12px rgba(14, 165, 233, 0.5), inset 0 0 8px rgba(56, 189, 248, 0.2);
-                border-color: rgba(56, 189, 248, 0.7) !important;
+                box-shadow: 0 0 14px rgba(14, 165, 233, 0.6), 0 5px 0 #0369a1;
+                border-color: rgba(56, 189, 248, 0.75) !important;
             }
             50% {
-                box-shadow: 0 0 25px rgba(14, 165, 233, 0.85), inset 0 0 14px rgba(56, 189, 248, 0.4);
+                box-shadow: 0 0 28px rgba(14, 165, 233, 0.95), 0 5px 0 #0369a1;
                 border-color: #38bdf8 !important;
             }
         }
-        div[data-testid="column"]:last-child div[data-testid="stFormSubmitButton"] button {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%) !important;
+        div[data-testid="column"]:last-child button {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
             border: 1.8px solid #38bdf8 !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             letter-spacing: 0.8px !important;
-            border-radius: 9px !important;
-            animation: blueMissionGlow 3.5s infinite ease-in-out !important;
-            transition: all 0.3s ease !important;
+            border-radius: 10px !important;
+            box-shadow: 0 5px 0 #075985, 0 8px 20px rgba(14, 165, 233, 0.5) !important;
+            animation: blueMissionFloatingGlow 3.5s infinite ease-in-out !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             margin-top: 2px !important;
             padding: 8px 14px !important;
         }
-        div[data-testid="column"]:last-child div[data-testid="stFormSubmitButton"] button:hover {
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%) !important;
+        div[data-testid="column"]:last-child button:hover {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
             border-color: #7dd3fc !important;
-            transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.9) !important;
+            transform: translateY(-3px) scale(1.02) !important; /* HIỆU ỨNG NHẤC BỔNG NỔI LÊN */
+            box-shadow: 0 8px 0 #075985, 0 14px 30px rgba(56, 189, 248, 0.85) !important;
             color: #ffffff !important;
+        }
+        div[data-testid="column"]:last-child button:active {
+            transform: translateY(4px) scale(0.99) !important;
+            box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
         }
 
         /* KHUNG CHỨA SLOGAN ĐƯỢC GIÃN KHOẢNG CÁCH RỘNG RÃI VỚI CÁC KHỐI BÊN DƯỚI */
@@ -761,7 +798,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 with col_btn_log:
                     submitted = st.form_submit_button(t["btn_login"], type="primary", use_container_width=True)
                 with col_btn_mis:
-                    # NÚT KHÁM PHÁ SỨ MỆNH MÀU XANH DƯƠNG CÔNG NGHỆ
                     open_mission = st.form_submit_button(t["btn_mission"], use_container_width=True)
                 
                 if submitted:
@@ -871,7 +907,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         st.markdown(f"""
             <div class="vn-flag-card-expanded">
                 <div>
-                    <div style="font-size:0.95rem; font-weight:800; color:#ef4444; letter-spacing:0.5px;">{t["flag_title"]}</div>
+                    <div class="nation-title-sweeping">{t["flag_title"]}</div>
                     <div style="font-size:0.78rem; color:#cbd5e1; margin-top:3px; line-height:1.35;">{t["flag_desc"]}</div>
                 </div>
                 <div class="flag-box-glowing" title="Cộng hòa Xã hội Chủ nghĩa Việt Nam">
