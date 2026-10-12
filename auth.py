@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ (Gân lá màu nâu)
+      // 2 Lá bự 45 độ
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,6 +206,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
+    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN NHẸ NHÀNG KÈM ÁNH SÁNG XANH DƯƠNG
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -292,7 +293,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           style.innerHTML = `
             .st-key-btn_login_submit button,
             .st-key-btn_reg_submit button,
-            .st-key-btn_auto_login_key button {
+            .st-key-btn_auto_login_key button {{
                 background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
                 border: 1.5px solid #4ade80 !important;
                 color: #ffffff !important;
@@ -300,26 +301,26 @@ def get_particle_logo_html(lang="Tiếng Việt"):
                 border-radius: 10px !important;
                 box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
                 transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            }
+            }}
             .st-key-btn_login_submit button:hover,
             .st-key-btn_reg_submit button:hover,
-            .st-key-btn_auto_login_key button:hover {
+            .st-key-btn_auto_login_key button:hover {{
                 background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
                 transform: translateY(-4px) !important;
                 box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
                 color: #ffffff !important;
-            }
+            }}
             .st-key-btn_login_submit button:active,
             .st-key-btn_reg_submit button:active,
-            .st-key-btn_auto_login_key button:active {
+            .st-key-btn_auto_login_key button:active {{
                 transform: translateY(4px) !important;
                 box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
-            }
+            }}
             .st-key-btn_login_submit button p,
             .st-key-btn_reg_submit button p,
-            .st-key-btn_auto_login_key button p { color: #ffffff !important; }
+            .st-key-btn_auto_login_key button p {{ color: #ffffff !important; }}
 
-            .st-key-btn_mission_submit button {
+            .st-key-btn_mission_submit button {{
                 background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
                 border: 1.8px solid #38bdf8 !important;
                 color: #ffffff !important;
@@ -327,48 +328,48 @@ def get_particle_logo_html(lang="Tiếng Việt"):
                 border-radius: 10px !important;
                 box-shadow: 0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65) !important;
                 transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            }
-            .st-key-btn_mission_submit button:hover {
+            }}
+            .st-key-btn_mission_submit button:hover {{
                 background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
                 border-color: #7dd3fc !important;
                 transform: translateY(-4px) scale(1.02) !important;
                 box-shadow: 0 9px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95) !important;
                 color: #ffffff !important;
-            }
-            .st-key-btn_mission_submit button:active {
+            }}
+            .st-key-btn_mission_submit button:active {{
                 transform: translateY(4px) scale(0.98) !important;
                 box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
-            }
-            .st-key-btn_mission_submit button p { color: #ffffff !important; }
+            }}
+            .st-key-btn_mission_submit button p {{ color: #ffffff !important; }}
           `;
           doc.head.appendChild(style);
-        }
-      } catch(e) {}
-    }
+        }}
+      }} catch(e) {{}}
+    }}
 
-    function enforceRealDOMStyles() {
-      try {
+    function enforceRealDOMStyles() {{
+      try {{
         const doc = window.parent.document;
         const welcomeEls = [doc.getElementById('welcomeHeading'), doc.getElementById('welcomeHeadingReg')];
-        welcomeEls.forEach(el => {
-          if (el && !el.dataset.wrapped) {
+        welcomeEls.forEach(el => {{
+          if (el && !el.dataset.wrapped) {{
             const text = el.innerText.trim();
             el.innerHTML = '';
-            for (let i = 0; i < text.length; i++) {
+            for (let i = 0; i < text.length; i++) {{
               const span = doc.createElement('span');
               span.innerText = text[i] === ' ' ? '\\u00A0' : text[i];
               span.style.animation = `smoothLetterShift 6s ease-in-out infinite`;
-              span.style.animationDelay = `${i * 0.1}s`;
+              span.style.animationDelay = `${{i * 0.1}}s`;
               span.style.display = 'inline-block';
               el.appendChild(span);
-            }
+            }}
             el.dataset.wrapped = 'true';
-          }
-        });
-      } catch(e) {}
-    }
+          }}
+        }});
+      }} catch(e) {{}}
+    }}
 
-    function animate() {
+    function animate() {{
       const now = performance.now();
       const elapsed = (now - startTime) % CYCLE;
       ctx.clearRect(0, 0, logicalW, logicalH);
@@ -376,14 +377,14 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       injectPermanentHoverStyles();
       enforceRealDOMStyles();
 
-      if (elapsed < 4500) {
+      if (elapsed < 4500) {{
         renderVectorLogo(ctx, 1.0, 1.0);
-      } else if (elapsed < 7500) {
+      }} else if (elapsed < 7500) {{
         const pProg = (elapsed - 4500) / 3000;
         const logoAlpha = Math.max(0, 1 - pProg * 2.0);
         if (logoAlpha > 0) renderVectorLogo(ctx, logoAlpha);
 
-        for (let i = 0; i < NUM_PARTICLES; i++) {
+        for (let i = 0; i < NUM_PARTICLES; i++) {{
           const p = particles[i];
           p.currentAngle += p.speed;
           const r = p.orbitRadius * Math.sin(pProg * Math.PI);
@@ -394,20 +395,20 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           ctx.fillStyle = p.color;
           ctx.globalAlpha = Math.sin(pProg * Math.PI);
           ctx.fill();
-        }
+        }}
         ctx.globalAlpha = 1.0;
 
-        if (pProg > 0.5) {
+        if (pProg > 0.5) {{
           renderWavingTextOnce(ctx, (pProg - 0.5) * 2, elapsed);
-        }
-      } else if (elapsed < 13000) {
+        }}
+      }} else if (elapsed < 13000) {{
         renderWavingTextOnce(ctx, 1.0, elapsed);
-      } else if (elapsed < 15500) {
+      }} else if (elapsed < 15500) {{
         const dProg = (elapsed - 13000) / 2500;
         const textAlpha = Math.max(0, 1 - dProg * 2.0);
         if (textAlpha > 0) renderWavingTextOnce(ctx, textAlpha, elapsed);
 
-        for (let i = 0; i < NUM_PARTICLES; i++) {
+        for (let i = 0; i < NUM_PARTICLES; i++) {{
           const p = particles[i];
           p.currentAngle += p.speed;
           const r = p.orbitRadius * Math.sin(dProg * Math.PI);
@@ -418,19 +419,19 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           ctx.fillStyle = p.color;
           ctx.globalAlpha = Math.sin(dProg * Math.PI);
           ctx.fill();
-        }
+        }}
         ctx.globalAlpha = 1.0;
 
-        if (dProg > 0.6) {
+        if (dProg > 0.6) {{
           renderVectorLogo(ctx, (dProg - 0.6) * 2.5);
-        }
-      } else {
+        }}
+      }} else {{
         const rProg = (elapsed - 15500) / 2500;
         renderVectorLogo(ctx, 0.4 + rProg * 0.6);
-      }
+      }}
 
       requestAnimationFrame(animate);
-    }
+    }}
 
     animate();
     </script>
@@ -543,6 +544,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             92%, 100% { left: 220%; opacity: 0; }
         }
 
+        /* KHỐI FORM BÊN TRÁI HIỆU ỨNG NỔI LÊN KHI TRỎ CHUỘT VÀO */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
             backdrop-filter: blur(14px) !important;
@@ -574,6 +576,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
+        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI (CHUYỂN MƯỢT MÀ XANH LÁ -> XANH DƯƠNG) */
         @keyframes smoothLetterShift {
             0%, 100% {
                 color: #4ade80 !important;
@@ -585,6 +588,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
+        /* HIỆU ỨNG NỔI LÊN CỦA CÁC KHỐI KHI ĐƯỢC TRỎ CHUỘT VÀO */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -635,6 +639,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
+        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
         @keyframes sweepGoldenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -651,6 +656,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepGoldenGlowTextL2R 5.5s linear infinite;
         }
 
+        /* NỞ RA THU LẠI TỪ TỪ CHẬM RÃI MỖI 6 GIÂY (ÊM ÁI) */
         @keyframes flagBreatheBloom {
             0%, 100% {
                 transform: scale(1);
@@ -681,6 +687,8 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .flag-star-svg {
             animation: starYellowGlow 2.5s infinite ease-in-out;
         }
+
+        /* KHỐI NÚT ĐĂNG KÝ VÀ ĐĂNG NHẬP MẶC ĐỊNH SẼ ĐƯỢC CHÈN VÀO GHI ĐÈ BẰNG JAVASCRIPT */
 
         .slogan-fixed-anchor {
             text-align: center;
@@ -760,17 +768,17 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .news-marquee span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* HIỆU ỨNG LÓA SÁNG XANH LÁ QUÉT QUA CHỮ THÔNG BÁO TỪ TRÁI SANG PHẢI */
+        /* HIỆU ỨNG LÓA SÁNG XANH LÁ QUÉT QUA CHỮ THÔNG BÁO TỪ TRÁI SANG PHẢI TRÊN 1 DÒNG */
         @keyframes sweepGreenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
         .success-msg-sweeping {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
             font-weight: 800;
             letter-spacing: 0.5px;
             margin-bottom: 12px;
-            white-space: nowrap;
+            white-space: nowrap; /* Ép không xuống dòng */
             background: linear-gradient(90deg, #4ade80 0%, #4ade80 40%, #bbf7d0 50%, #ffffff 52%, #bbf7d0 54%, #4ade80 60%, #4ade80 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
