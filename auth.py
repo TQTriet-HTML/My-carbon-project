@@ -208,7 +208,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN DUY NHẤT KÈM ÁNH SÁNG LÓA
+    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN NHẸ NHÀNG KÈM ÁNH SÁNG XANH DƯƠNG
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -223,7 +223,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       let currX = startX;
 
       const waveStart = 7500;
-      const waveDuration = 2400;
+      const waveDuration = 3000; // Tăng thời gian để sóng lướt chậm và êm hơn
       const waveProg = (elapsed - waveStart) / waveDuration;
 
       for (let i = 0; i < totalChars; i++) {{
@@ -238,9 +238,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
 
         if (waveProg >= 0 && waveProg <= 1.25) {{
           const dist = Math.abs(waveProg - charNorm);
-          if (dist < 0.16) {{
-            const factor = 1 - (dist / 0.16);
-            waveY = cy - Math.sin(factor * Math.PI) * 9;
+          if (dist < 0.20) {{ // Khoảng quét rộng hơn chút để mượt mà
+            const factor = 1 - (dist / 0.20);
+            // Sóng lướt siêu nhẹ (đỉnh sóng thấp lại còn 5.5px)
+            waveY = cy - Math.sin(factor * Math.PI) * 5.5;
             sweepIntensity = Math.sin(factor * Math.PI);
             isSwept = true;
           }}
@@ -248,10 +249,12 @@ def get_particle_logo_html(lang="Tiếng Việt"):
 
         c.save();
         if (isSwept) {{
-          c.fillStyle = '#ffffff';
-          c.shadowColor = '#22c55e';
-          c.shadowBlur = 18 * sweepIntensity;
+          // Ánh sáng xanh dương nhẹ lướt qua theo con chữ đang gợn
+          c.fillStyle = '#bae6fd'; 
+          c.shadowColor = '#0ea5e9';
+          c.shadowBlur = 15 * sweepIntensity;
         }} else {{
+          // Chữ nằm yên tĩnh lặng màu xanh lá tươi mát
           c.fillStyle = '#4ade80';
           c.shadowColor = 'rgba(74, 222, 128, 0.45)';
           c.shadowBlur = 6;
@@ -290,7 +293,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       try {{
         const doc = window.parent.document;
         
-        // TIÊU ĐỀ LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI
+        // TIÊU ĐỀ LAN MÀU NHẸ NHÀNG TỪ TRÁI SANG PHẢI (KHOẢNG CÁCH THỜI GIAN NHỎ ĐỂ MƯỢT MÀ HƠN)
         const welcomeEls = [doc.getElementById('welcomeHeading'), doc.getElementById('welcomeHeadingReg')];
         welcomeEls.forEach(el => {{
           if (el && !el.dataset.wrapped) {{
@@ -299,9 +302,9 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             for (let i = 0; i < text.length; i++) {{
               const span = doc.createElement('span');
               span.innerText = text[i] === ' ' ? '\\u00A0' : text[i];
-              span.style.animation = `smoothLetterShift 4s ease-in-out infinite`;
-              // Tăng delay dần đều từ trái sang phải
-              span.style.animationDelay = `${{i * 0.12}}s`;
+              // Tăng chu kỳ lên 6s để chuyển động từ tốn, delay nhỏ để lan tỏa êm ái
+              span.style.animation = `smoothLetterShift 6s ease-in-out infinite`;
+              span.style.animationDelay = `${{i * 0.1}}s`;
               span.style.display = 'inline-block';
               el.appendChild(span);
             }}
@@ -309,11 +312,11 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           }}
         }});
 
-        // STYLE NÚT: XÁC THỰC TRUY CẬP, TẠO MỚI TÀI KHOẢN, ĐĂNG NHẬP NGAY (MÀU XANH LÁ + KHỐI 3D + ĐỒNG BỘ NỔI BỔNG)
+        // STYLE NÚT: XÁC THỰC TRUY CẬP, TẠO MỚI TÀI KHOẢN, ĐĂNG NHẬP NGAY
         const greenBtns = [
             doc.querySelector('.st-key-btn_login_submit button'), 
             doc.querySelector('.st-key-btn_reg_submit button'),
-            doc.querySelector('.st-key-btn_auto_login_key button') // BỔ SUNG NÚT ĐĂNG NHẬP NGAY
+            doc.querySelector('.st-key-btn_auto_login_key button')
         ];
         
         greenBtns.forEach(btn => {{
@@ -345,7 +348,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           }}
         }});
 
-        // STYLE NÚT: KHÁM PHÁ SỨ MỆNH (MÀU XANH DƯƠNG CÔNG NGHỆ)
+        // STYLE NÚT: KHÁM PHÁ SỨ MỆNH
         const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
         if (btnMission && !btnMission.dataset.customizedBlue) {{
           btnMission.dataset.customizedBlue = 'true';
@@ -584,7 +587,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI */
+        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI (CHUYỂN MƯỢT MÀ XANH LÁ -> XANH DƯƠNG) */
         @keyframes smoothLetterShift {
             0%, 100% {
                 color: #4ade80 !important;
@@ -596,7 +599,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
-        /* HIỆU ỨNG NỔI LÊN CỦA CÁC KHỐI KHI ĐƯỢC TRỎ CHUỘT VÀO */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -647,7 +649,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
-        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI QUA TỪNG CHỮ */
+        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
         @keyframes sweepGoldenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -695,8 +697,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .flag-star-svg {
             animation: starYellowGlow 2.5s infinite ease-in-out;
         }
-
-        /* KHỐI NÚT ĐĂNG KÝ VÀ ĐĂNG NHẬP MẶC ĐỊNH SẼ ĐƯỢC CHÈN VÀO GHI ĐÈ BẰNG JAVASCRIPT */
 
         .slogan-fixed-anchor {
             text-align: center;
@@ -828,7 +828,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             if st.session_state["reg_success_data"]:
                 registered_user = st.session_state['reg_success_data']['user']
                 account_txt = t["account_label"]
-                # Thêm khoảng trắng trống trải tách biệt hoàn toàn nút đăng nhập với khối thông báo
                 st.markdown(f"""
                     <div class="hardcore-green-card" style="text-align:center; padding: 20px 14px; margin-top: 10px; margin-bottom: 24px !important;">
                         <div style="color:#4ade80; font-weight:800; margin-bottom:8px; font-size:1.05rem; letter-spacing:0.5px;">{t['reg_success_line1']}<br/>{t['reg_success_line2']}</div>
@@ -837,7 +836,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                     <div style="margin-bottom: 30px;"></div>
                 """, unsafe_allow_html=True)
                 
-                # Cấp quyền primary cho nút để bắt class CSS
                 if st.button(t["btn_auto_login"], type="primary", key="btn_auto_login_key", use_container_width=True):
                     data = st.session_state["reg_success_data"]
                     st.session_state["logged_in"] = True
