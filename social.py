@@ -62,6 +62,7 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
+        /* TIÊU ĐỀ */
         .social-title-green {
             color: #48bb78 !important;
             font-size: clamp(24px, 2.7vw, 34px) !important;
@@ -78,6 +79,123 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
             font-size: 1rem;
             margin-bottom: 25px;
         }
+
+        /* 1. BIẾN 3 CHẤM RADIO THÀNH 3 KHỐI NÚT XANH DƯƠNG NỔI BỔNG */
+        div[data-testid="stRadio"] div[role="radiogroup"] label div:first-child {
+            display: none !important; /* Ẩn triệt để dấu chấm tròn */
+        }
+        div[data-testid="stRadio"] div[role="radiogroup"] label {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+            border: 1.5px solid #334155 !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 0 #020617, 0 6px 12px rgba(0,0,0,0.4) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            margin-right: 15px !important;
+            cursor: pointer !important;
+            margin-bottom: 10px !important;
+        }
+        div[data-testid="stRadio"] div[role="radiogroup"] label div {
+            color: #94a3b8 !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+        }
+        
+        /* Trỏ chuột vào -> Nhấc bổng, màu xanh dương */
+        div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+            border-color: #7dd3fc !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 8px 0 #075985, 0 12px 25px rgba(56, 189, 248, 0.6) !important;
+        }
+        div[data-testid="stRadio"] div[role="radiogroup"] label:hover div {
+            color: #ffffff !important;
+        }
+        
+        /* Khi được chọn (Đang ở phòng đó) -> Giữ nguyên lún màu xanh dương */
+        div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+            border-color: #38bdf8 !important;
+            transform: translateY(2px) !important;
+            box-shadow: 0 2px 0 #075985, 0 4px 10px rgba(2, 132, 199, 0.5) !important;
+        }
+        div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) div {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        /* 2. NÚT THÍCH MÀU XANH DƯƠNG NỔI BỔNG CƠ HỌC */
+        div[class*="st-key-btn_like_"] button {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+            border: 1.5px solid #38bdf8 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 5px 0 #075985, 0 8px 18px rgba(14, 165, 233, 0.45) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            padding: 6px 18px !important;
+        }
+        div[class*="st-key-btn_like_"] button p {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+        div[class*="st-key-btn_like_"] button:hover {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 9px 0 #075985, 0 14px 26px rgba(56, 189, 248, 0.75) !important;
+            border-color: #7dd3fc !important;
+        }
+        div[class*="st-key-btn_like_"] button:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
+        }
+
+        /* 3. ĐỒNG BỘ NÚT ĐĂNG BÀI LÊN XANH LÁ NỔI 3D CHUẨN */
+        div[data-testid="stFormSubmitButton"] button {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+            border: 1.5px solid #4ade80 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        div[data-testid="stFormSubmitButton"] button p {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+        div[data-testid="stFormSubmitButton"] button:hover {
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
+        }
+        div[data-testid="stFormSubmitButton"] button:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
+        }
+        
+        /* 4. ĐỒNG BỘ NÚT BÁO CÁO VI PHẠM (CHÌM XUỐNG - HOVER NỔI ĐỎ) */
+        div[class*="st-key-btn_rep_"] button {
+            background: linear-gradient(180deg, rgba(51, 65, 85, 0.8), rgba(30, 41, 59, 0.9)) !important;
+            border: 1px solid rgba(148, 163, 184, 0.3) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 0 rgba(15, 23, 42, 0.8), 0 5px 10px rgba(0,0,0,0.3) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        div[class*="st-key-btn_rep_"] button p {
+            color: #94a3b8 !important;
+            font-weight: 600 !important;
+        }
+        div[class*="st-key-btn_rep_"] button:hover {
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.4), rgba(185, 28, 28, 0.6)) !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 7px 0 rgba(153, 27, 27, 0.8), 0 10px 20px rgba(239, 68, 68, 0.4) !important;
+            border-color: rgba(248, 113, 113, 0.6) !important;
+        }
+        div[class*="st-key-btn_rep_"] button:hover p {
+            color: #fca5a5 !important;
+        }
+        div[class*="st-key-btn_rep_"] button:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 0px 0 rgba(153, 27, 27, 0.8), 0 2px 5px rgba(239, 68, 68, 0.2) !important;
+        }
+
         .social-card {
             background: rgba(15, 23, 42, 0.75);
             border: 1px solid rgba(72, 187, 120, 0.35);
@@ -111,48 +229,6 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
             font-weight: 700;
             margin-left: 8px;
         }
-        button[key^="btn_like_"] {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-            border: 1px solid #60a5fa !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
-            border-radius: 8px !important;
-            padding: 5px 16px !important;
-            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35) !important;
-            transition: all 0.25s ease !important;
-        }
-        button[key^="btn_like_"]:hover {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6) !important;
-            border-color: #93c5fd !important;
-        }
-        button[key^="btn_rep_"] {
-            background: rgba(51, 65, 85, 0.4) !important;
-            border: 1px solid rgba(148, 163, 184, 0.3) !important;
-            color: #94a3b8 !important;
-            font-weight: 600 !important;
-            border-radius: 8px !important;
-            padding: 5px 14px !important;
-            transition: all 0.25s ease !important;
-        }
-        button[key^="btn_rep_"]:hover {
-            background: rgba(239, 68, 68, 0.2) !important;
-            color: #fca5a5 !important;
-            border-color: rgba(239, 68, 68, 0.5) !important;
-        }
-        div[data-testid="stFormSubmitButton"] button {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-            border: 1.5px solid #4ade80 !important;
-            color: white !important;
-            font-weight: 800 !important;
-            border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-        }
-        div[data-testid="stFormSubmitButton"] button:hover {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
-            box-shadow: 0 0 20px rgba(72, 187, 120, 0.8) !important;
-        }
         .comment-thread {
             background: rgba(15, 23, 42, 0.55);
             border-left: 3px solid rgba(72, 187, 120, 0.6);
@@ -178,11 +254,16 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
     st.markdown(f'<div class="social-title-green">{t["title"]}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="social-sub">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
+    st.markdown(f"<div style='color: #cbd5e1; font-weight: 600; font-size: 0.95rem; margin-bottom: 15px;'>{t['area_lbl']}</div>", unsafe_allow_html=True)
+    
     phong_chon = st.radio(
-        t["area_lbl"],
+        "Khu vực thảo luận (ẩn)",
         [t["room_1"], t["room_2"], t["room_3"]],
-        horizontal=True
+        horizontal=True,
+        label_visibility="collapsed"
     )
+    
+    st.markdown("<br/>", unsafe_allow_html=True)
 
     if phong_chon == t["room_2"]:
         tinh_chon = st.selectbox(t["select_prov"], ["Cà Mau", "Quảng Bình", "Lâm Đồng", "Hà Tĩnh", "Sơn La", "TP. Hồ Chí Minh"])
