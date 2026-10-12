@@ -2,7 +2,6 @@ import streamlit as st
 import datetime
 
 def hien_thi_mang_xa_hoi(lang=None):
-    # Tự động lấy ngôn ngữ từ hệ thống nếu không được truyền vào
     if lang is None:
         lang = st.session_state.get("language", st.session_state.get("lang", st.session_state.get("current_lang", "Tiếng Việt")))
     
@@ -68,6 +67,41 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
+
+    # BỘ TỪ ĐIỂN DÀNH RIÊNG CHO CÁC BÀI ĐĂNG MẪU ĐỂ CHUYỂN ĐỔI CHỦ ĐỘNG THEO NGÔN NGỮ
+    MOCK_T = {
+        "Tiếng Việt": {
+            "p1_author": "Kỹ Sư Rừng Cà Mau",
+            "p1_role": "Chủ rừng / Kỹ sư MRV",
+            "p1_content": "Đợt đo kiểm viễn thám tháng này ghi nhận mật độ sinh khối ven biển tăng rất tốt, dữ liệu viễn thám đã khớp với chỉ số thực địa.",
+            "p1_c1_user": "Vinamilk Net-Zero",
+            "p1_c1_text": "Dự án rất triển vọng, bên mình đang quan tâm nguồn cung đợt tới.",
+            "p1_c2_user": "Nhà Đầu Tư Xanh",
+            "p1_c2_text": "Dữ liệu ảnh viễn thám rõ nét và minh bạch lắm.",
+            
+            "p2_author": "Quỹ Đầu Tư Xanh",
+            "p2_role": "Nhà đầu tư từ xa",
+            "p2_content": "Chúng tôi đang thẩm định thêm 3 dự án tại khu vực Bắc Trung Bộ. Nền tảng hiển thị minh bạch giúp rút ngắn rất nhiều thời gian giải ngân.",
+            "p2_c1_user": "Bộ NN&PTNT",
+            "p2_c1_text": "Rất mong được hợp tác phát triển bền vững cùng quý quỹ."
+        },
+        "English": {
+            "p1_author": "Ca Mau Forest Engineer",
+            "p1_role": "Forest Owner / MRV Engineer",
+            "p1_content": "This month's remote sensing survey recorded very good coastal biomass growth; the satellite data matches the field indices perfectly.",
+            "p1_c1_user": "Vinamilk Net-Zero",
+            "p1_c1_text": "Very promising project, we are highly interested in the next supply batch.",
+            "p1_c2_user": "Green Investor",
+            "p1_c2_text": "The remote sensing image data is very clear and highly transparent.",
+            
+            "p2_author": "Green Investment Fund",
+            "p2_role": "Remote Investor",
+            "p2_content": "We are appraising 3 additional projects in the North Central region. The transparent platform drastically shortens our disbursement time.",
+            "p2_c1_user": "MARD Vietnam",
+            "p2_c1_text": "We look forward to a sustainable development partnership with your fund."
+        }
+    }
+    mt = MOCK_T.get(lang, MOCK_T["Tiếng Việt"])
 
     st.markdown("""
         <style>
@@ -318,27 +352,27 @@ def hien_thi_mang_xa_hoi(lang=None):
         st.session_state["social_posts_mem"] = [
             {
                 "id": "p_default_1",
-                "author": "Kỹ Sư Rừng Cà Mau",
-                "role": "Forest Owner / MRV Engineer" if lang == "English" else "Chủ rừng / Kỹ sư MRV",
-                "content": "The remote sensing survey this month shows very good coastal biomass growth, matching field data perfectly." if lang == "English" else "Đợt đo kiểm viễn thám tháng này ghi nhận mật độ sinh khối ven biển tăng rất tốt, dữ liệu viễn thám đã khớp với chỉ số thực địa.",
+                "author": "mock_p1_author",
+                "role": "mock_p1_role",
+                "content": "mock_p1_content",
                 "time": "08/10/2026 14:20",
                 "room": t["world"],
                 "likes": 24,
                 "comments": [
-                    {"user": "Vinamilk Net-Zero", "text": "Very promising project, we are interested in the next supply batch." if lang == "English" else "Dự án rất triển vọng, bên mình đang quan tâm nguồn cung đợt tới."},
-                    {"user": "Nhà Đầu Tư Xanh", "text": "Satellite data is very clear and transparent." if lang == "English" else "Dữ liệu ảnh viễn thám rõ nét và minh bạch lắm."}
+                    {"user": "mock_p1_c1_user", "text": "mock_p1_c1_text"},
+                    {"user": "mock_p1_c2_user", "text": "mock_p1_c2_text"}
                 ]
             },
             {
                 "id": "p_default_2",
-                "author": "Quỹ Đầu Tư Xanh",
-                "role": "Remote Investor" if lang == "English" else "Nhà đầu tư từ xa",
-                "content": "We are appraising 3 more projects in the North Central region. The transparent platform significantly shortens disbursement time." if lang == "English" else "Chúng tôi đang thẩm định thêm 3 dự án tại khu vực Bắc Trung Bộ. Nền tảng hiển thị minh bạch giúp rút ngắn rất nhiều thời gian giải ngân.",
+                "author": "mock_p2_author",
+                "role": "mock_p2_role",
+                "content": "mock_p2_content",
                 "time": "07/10/2026 09:15",
                 "room": t["world"],
                 "likes": 18,
                 "comments": [
-                    {"user": "Bộ NN&PTNT", "text": "Looking forward to sustainable cooperation with your fund." if lang == "English" else "Rất mong được hợp tác phát triển bền vững cùng quý quỹ."}
+                    {"user": "mock_p2_c1_user", "text": "mock_p2_c1_text"}
                 ]
             }
         ]
@@ -349,17 +383,22 @@ def hien_thi_mang_xa_hoi(lang=None):
         return
 
     for idx, p in enumerate(posts):
+        # DỊCH THUẬT ĐỘNG DÀNH CHO BÀI ĐĂNG MẪU ĐỂ CHUYỂN ĐỔI CHỦ ĐỘNG THEO NGÔN NGỮ
+        display_author = mt[p["author"]] if p["author"].startswith("mock_") else p["author"]
+        display_role = mt[p["role"]] if p["role"].startswith("mock_") else p["role"]
+        display_content = mt[p["content"]] if p["content"].startswith("mock_") else p["content"]
+
         st.markdown(f"""
             <div class="social-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <span class="social-author">{p['author']}</span> 
-                        <span style="color:#94a3b8; font-size:0.85rem;">({p['role']})</span>
+                        <span class="social-author">{display_author}</span> 
+                        <span style="color:#94a3b8; font-size:0.85rem;">({display_role})</span>
                         <span class="badge-room">{p.get('room', t['world'])}</span>
                     </div>
                     <span class="social-meta">{p['time']}</span>
                 </div>
-                <div class="social-content">{p['content']}</div>
+                <div class="social-content">{display_content}</div>
                 <div style="color:#94a3b8; font-size:0.88rem; margin-bottom:12px;">
                     {t['likes']}: <b style="color:#38bdf8;">{p['likes']}</b> &nbsp;|&nbsp; 
                     {t['comments']}: <b style="color:#48bb78;">{len(p.get('comments', []))}</b>
@@ -378,18 +417,22 @@ def hien_thi_mang_xa_hoi(lang=None):
 
         comments_list = p.get("comments", [])
         
-        # HIỆN EXPANDER XEM BÌNH LUẬN GIỐNG FACEBOOK
+        # HIỆN EXPANDER XEM BÌNH LUẬN KIỂU FACEBOOK
         with st.expander(t["view_cmts"].replace("{count}", str(len(comments_list))), expanded=False):
             if comments_list:
                 st.markdown(f"<div style='margin-bottom:5px; font-weight:700; color:#94a3b8; font-size:0.88rem;'>{t['cmt_lbl']}</div>", unsafe_allow_html=True)
                 for cm in comments_list:
                     if isinstance(cm, dict):
-                        u_c = cm.get("user", "Member" if lang == "English" else "Thành viên")
-                        t_c = cm.get("text", "")
+                        raw_u = cm.get("user", "")
+                        raw_t = cm.get("text", "")
                     else:
                         parts = str(cm).split(":", 1)
-                        u_c = parts[0] if len(parts) > 1 else ("Member" if lang == "English" else "Thành viên")
-                        t_c = parts[1] if len(parts) > 1 else str(cm)
+                        raw_u = parts[0] if len(parts) > 1 else ""
+                        raw_t = parts[1] if len(parts) > 1 else str(cm)
+                    
+                    # Dịch thuật động cho bình luận mẫu
+                    u_c = mt[raw_u] if raw_u.startswith("mock_") else (raw_u if raw_u else ("Member" if lang == "English" else "Thành viên"))
+                    t_c = mt[raw_t] if raw_t.startswith("mock_") else raw_t
                         
                     st.markdown(f"""
                         <div class="comment-thread">
