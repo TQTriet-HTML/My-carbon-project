@@ -1,6 +1,56 @@
 import streamlit as st
 import datetime
 
+@st.dialog("BÁO CÁO VI PHẠM / REPORT VIOLATION", width="small")
+def hien_thi_hop_thoai_bao_cao(post_id, lang="Tiếng Việt"):
+    T = {
+        "Tiếng Việt": {
+            "rep_reason_lbl": "Chọn lý do báo cáo:",
+            "rep_r1": "Spam / Quảng cáo rác",
+            "rep_r2": "Thông tin sai lệch / Lừa đảo",
+            "rep_r3": "Ngôn từ kích động / Thù địch",
+            "rep_r4": "Nội dung không liên quan đến tín chỉ Carbon",
+            "rep_r5": "Vi phạm bản quyền / Quyền riêng tư",
+            "rep_r6": "Xúc phạm cá nhân / Tổ chức",
+            "rep_r7": "Khác...",
+            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
+            "btn_submit_rep": "GỬI BÁO CÁO",
+            "rep_msg": "Đã tiếp nhận báo cáo. Ban kiểm duyệt sẽ xử lý trong 24h.",
+            "btn_cancel": "HỦY"
+        },
+        "English": {
+            "rep_reason_lbl": "Select a reason for reporting:",
+            "rep_r1": "Spam / Junk advertising",
+            "rep_r2": "False information / Scam",
+            "rep_r3": "Hate speech / Harassment",
+            "rep_r4": "Content unrelated to Carbon credits",
+            "rep_r5": "Copyright / Privacy violation",
+            "rep_r6": "Insulting individuals / organizations",
+            "rep_r7": "Other...",
+            "rep_other_lbl": "Please specify the reason:",
+            "btn_submit_rep": "SUBMIT REPORT",
+            "rep_msg": "Report received. Moderation team will process within 24h.",
+            "btn_cancel": "CANCEL"
+        }
+    }
+    t = T.get(lang, T["Tiếng Việt"])
+
+    st.markdown(f"<b style='color:#ef4444;'>{t['rep_reason_lbl']}</b>", unsafe_allow_html=True)
+    rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
+    choice = st.radio("Lý do báo cáo", rep_reasons, label_visibility="collapsed", key=f"rad_rep_{post_id}")
+    
+    if choice == t["rep_r7"]:
+        st.text_input(t["rep_other_lbl"], key=f"txt_rep_{post_id}")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button(t["btn_cancel"], use_container_width=True):
+            st.rerun()
+    with c2:
+        if st.button(t["btn_submit_rep"], type="primary", use_container_width=True):
+            st.toast(t["rep_msg"])
+            st.rerun()
+
 def hien_thi_mang_xa_hoi(lang=None):
     if lang is None:
         lang = st.session_state.get("language", st.session_state.get("lang", st.session_state.get("current_lang", "Tiếng Việt")))
@@ -34,17 +84,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             "btn_like": "Thích",
             "btn_liked": "Đã thích",
             "btn_rep": "Báo cáo vi phạm",
-            "rep_reason_lbl": "Chọn lý do báo cáo:",
-            "rep_r1": "Spam / Quảng cáo rác",
-            "rep_r2": "Thông tin sai lệch / Lừa đảo",
-            "rep_r3": "Ngôn từ kích động / Thù địch",
-            "rep_r4": "Nội dung không liên quan đến tín chỉ Carbon",
-            "rep_r5": "Vi phạm bản quyền / Quyền riêng tư",
-            "rep_r6": "Xúc phạm cá nhân / Tổ chức",
-            "rep_r7": "Khác...",
-            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
-            "btn_submit_rep": "Gửi báo cáo",
-            "rep_msg": "Đã tiếp nhận báo cáo. Ban kiểm duyệt sẽ xử lý trong 24h.",
             "cmt_lbl": "BÌNH LUẬN NỘI BỘ:",
             "cmt_input": "Viết bình luận công khai...",
             "btn_send": "Gửi",
@@ -75,17 +114,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             "btn_like": "Like",
             "btn_liked": "Liked",
             "btn_rep": "Report Violation",
-            "rep_reason_lbl": "Select a reason for reporting:",
-            "rep_r1": "Spam / Junk advertising",
-            "rep_r2": "False information / Scam",
-            "rep_r3": "Hate speech / Harassment",
-            "rep_r4": "Content unrelated to Carbon credits",
-            "rep_r5": "Copyright / Privacy violation",
-            "rep_r6": "Insulting individuals / organizations",
-            "rep_r7": "Other...",
-            "rep_other_lbl": "Please specify the reason:",
-            "btn_submit_rep": "Submit Report",
-            "rep_msg": "Report received. Moderation team will process within 24h.",
             "cmt_lbl": "INTERNAL COMMENTS:",
             "cmt_input": "Write a public comment...",
             "btn_send": "Send",
@@ -103,7 +131,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             "mock_p1_c1_text": "Dự án rất triển vọng, bên mình đang quan tâm nguồn cung đợt tới.",
             "mock_p1_c2_user": "Nhà Đầu Tư Xanh",
             "mock_p1_c2_text": "Dữ liệu ảnh viễn thám rõ nét và minh bạch lắm.",
-            
             "mock_p2_author": "Quỹ Đầu Tư Xanh",
             "mock_p2_role": "Nhà đầu tư từ xa",
             "mock_p2_content": "Chúng tôi đang thẩm định thêm 3 dự án tại khu vực Bắc Trung Bộ. Nền tảng hiển thị minh bạch giúp rút ngắn rất nhiều thời gian giải ngân.",
@@ -119,7 +146,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             "mock_p1_c1_text": "Very promising project, we are highly interested in the next supply batch.",
             "mock_p1_c2_user": "Green Investor",
             "mock_p1_c2_text": "The remote sensing image data is very clear and highly transparent.",
-            
             "mock_p2_author": "Green Investment Fund",
             "mock_p2_role": "Remote Investor",
             "mock_p2_content": "We are appraising 3 additional projects in the North Central region. The transparent platform drastically shortens our disbursement time.",
@@ -262,7 +288,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             placeholder_text = t["post_placeholder"].replace("{room}", room_label)
             post_content = st.text_area(t["post_content"], placeholder=placeholder_text)
             
-            # Tính năng đính kèm tệp
             uploaded_file = st.file_uploader(t["upload_lbl"], accept_multiple_files=False)
             
             submitted = st.form_submit_button(t["btn_post"], use_container_width=True)
@@ -296,7 +321,6 @@ def hien_thi_mang_xa_hoi(lang=None):
 
     st.markdown(f'<div class="social-title-green" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px;">{t["news_feed"]}</div>', unsafe_allow_html=True)
 
-    # KHẮC PHỤC TRIỆT ĐỂ: Reset bộ nhớ nếu phát hiện bài viết cứng cũ bằng Tiếng Việt
     if "social_posts_mem" not in st.session_state or (st.session_state["social_posts_mem"] and st.session_state["social_posts_mem"][-1].get("author") == "Kỹ Sư Rừng Cà Mau"):
         st.session_state["social_posts_mem"] = [
             {
@@ -326,6 +350,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         
         file_html = f"<div class='upload-badge'>📎 {t['attached']}: <b>{p['file']}</b></div>" if p.get("file") else ""
 
+        # KHẮC PHỤC LỖI HIỂN THỊ HTML THÔ BẰNG CỜ UNSAFE_ALLOW_HTML=TRUE
         st.markdown(f"""
             <div class="social-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -345,7 +370,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             </div>
         """, unsafe_allow_html=True)
         
-        # KIỂM TRA TRẠNG THÁI LIKE
         liked_list = p.setdefault("liked_by", [])
         is_liked = cur_user in liked_list
 
@@ -363,27 +387,8 @@ def hien_thi_mang_xa_hoi(lang=None):
                     st.rerun()
         
         with c_rep:
-            # DÙNG EXPANDER CHO NÚT BÁO CÁO VI PHẠM ĐỂ CHỌN LÝ DO
-            if f"show_rep_{p['id']}" not in st.session_state:
-                st.session_state[f"show_rep_{p['id']}"] = False
-                
-            if st.button(t["btn_rep"], key=f"btn_rep_{p['id']}_{idx}"):
-                st.session_state[f"show_rep_{p['id']}"] = not st.session_state[f"show_rep_{p['id']}"]
-                st.rerun()
-
-        # HIỂN THỊ KHUNG BÁO CÁO (NẾU ĐƯỢC BẤM)
-        if st.session_state[f"show_rep_{p['id']}"]:
-            with st.container(border=True):
-                st.markdown(f"<b style='color:#ef4444;'>{t['rep_reason_lbl']}</b>", unsafe_allow_html=True)
-                rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
-                choice = st.radio("Lý do báo cáo", rep_reasons, label_visibility="collapsed", key=f"rad_rep_{p['id']}")
-                if choice == t["rep_r7"]:
-                    st.text_input(t["rep_other_lbl"], key=f"txt_rep_{p['id']}")
-                
-                if st.button(t["btn_submit_rep"], type="primary", key=f"sub_rep_{p['id']}"):
-                    st.toast(t["rep_msg"])
-                    st.session_state[f"show_rep_{p['id']}"] = False
-                    st.rerun()
+            if st.button(t["btn_rep"], key=f"btn_rep_open_{p['id']}_{idx}"):
+                hien_thi_hop_thoai_bao_cao(p['id'], lang)
 
         comments_list = p.get("comments", [])
         with st.expander(t["view_cmts"].replace("{count}", str(len(comments_list))), expanded=False):
