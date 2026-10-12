@@ -178,6 +178,7 @@ def hien_thi_mang_xa_hoi(lang=None):
             margin-bottom: 25px;
         }
 
+        /* 1. BIẾN 3 CHẤM RADIO THÀNH NÚT KHỐI XANH DƯƠNG */
         div[data-testid="stRadio"] div[role="radiogroup"] label div:first-child { display: none !important; }
         div[data-testid="stRadio"] div[role="radiogroup"] label {
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
@@ -200,6 +201,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) div { color: #ffffff !important; font-weight: 800 !important; }
 
+        /* 2. NÚT CHƯA THÍCH (XANH DƯƠNG) */
         div[class*="st-key-btn_like_"] button {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important; border: 1.5px solid #38bdf8 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #075985, 0 8px 18px rgba(14, 165, 233, 0.45) !important;
@@ -212,6 +214,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[class*="st-key-btn_like_"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important; }
 
+        /* NÚT ĐÃ THÍCH (XANH LÁ) */
         div[class*="st-key-btn_liked_"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
@@ -224,6 +227,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[class*="st-key-btn_liked_"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important; }
 
+        /* 3. NÚT ĐĂNG BÀI (XANH LÁ) */
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
@@ -236,6 +240,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[data-testid="stFormSubmitButton"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important; }
         
+        /* 4. NÚT BÁO CÁO VI PHẠM */
         div[class*="st-key-btn_rep_"] button {
             background: linear-gradient(180deg, rgba(51, 65, 85, 0.8), rgba(30, 41, 59, 0.9)) !important; border: 1px solid rgba(148, 163, 184, 0.3) !important;
             border-radius: 10px !important; box-shadow: 0 4px 0 rgba(15, 23, 42, 0.8), 0 5px 10px rgba(0,0,0,0.3) !important;
@@ -363,18 +368,9 @@ def hien_thi_mang_xa_hoi(lang=None):
         if p.get("file_name") and p.get("file_data"):
             f_type = str(p.get("file_type", ""))
             if f_type.startswith("image/"):
-                file_html = f"""
-                <div style="margin-top: 15px; margin-bottom: 5px; text-align: center;">
-                    <img src="data:{f_type};base64,{p['file_data']}" style="max-width: 100%; border-radius: 12px; border: 1.5px solid rgba(56, 189, 248, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
-                </div>
-                """
+                file_html = f"<div style='margin-top:15px; margin-bottom:5px; text-align:center;'><img src='data:{f_type};base64,{p['file_data']}' style='max-width:100%; border-radius:12px; border:1.5px solid rgba(56,189,248,0.4); box-shadow:0 4px 15px rgba(0,0,0,0.5);' /></div>"
             else:
-                file_html = f"""
-                <div class='upload-badge'>
-                    <div style="margin-bottom: 5px;">📎 {t['attached']}: <b style="color: #ffffff;">{p['file_name']}</b></div>
-                    <a href="data:{f_type};base64,{p['file_data']}" download="{p['file_name']}" class="btn-download-doc">📥 {t['download_doc']}</a>
-                </div>
-                """
+                file_html = f"<div class='upload-badge'><div style='margin-bottom:5px;'>📎 {t['attached']}: <b style='color:#ffffff;'>{p['file_name']}</b></div><a href='data:{f_type};base64,{p['file_data']}' download='{p['file_name']}' class='btn-download-doc'>📥 {t['download_doc']}</a></div>"
 
         html_card = f"""<div class="social-card">
 <div style="display:flex; justify-content:space-between; align-items:center;">
