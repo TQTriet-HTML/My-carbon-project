@@ -1,7 +1,14 @@
 import streamlit as st
 import datetime
 
-def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
+def hien_thi_mang_xa_hoi(lang=None):
+    # Tự động lấy ngôn ngữ từ hệ thống nếu không được truyền vào
+    if lang is None:
+        lang = st.session_state.get("language", st.session_state.get("lang", st.session_state.get("current_lang", "Tiếng Việt")))
+    
+    if lang not in ["Tiếng Việt", "English"]:
+        lang = "Tiếng Việt"
+
     T = {
         "Tiếng Việt": {
             "title": "MẠNG XÃ HỘI TÍN CHỈ CARBON",
@@ -83,7 +90,7 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
 
         /* 1. BIẾN 3 CHẤM RADIO THÀNH 3 KHỐI NÚT XANH DƯƠNG NỔI BỔNG */
         div[data-testid="stRadio"] div[role="radiogroup"] label div:first-child {
-            display: none !important; /* Ẩn triệt để dấu chấm tròn */
+            display: none !important;
         }
         div[data-testid="stRadio"] div[role="radiogroup"] label {
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
@@ -265,10 +272,12 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
     st.markdown("<br/>", unsafe_allow_html=True)
 
     if phong_chon == t["room_2"]:
-        tinh_chon = st.selectbox(t["select_prov"], ["Cà Mau", "Quảng Bình", "Lâm Đồng", "Hà Tĩnh", "Sơn La", "TP. Hồ Chí Minh"])
+        prov_list = ["Cà Mau", "Quảng Bình", "Lâm Đồng", "Hà Tĩnh", "Sơn La", "TP. Hồ Chí Minh"] if lang == "Tiếng Việt" else ["Ca Mau", "Quang Binh", "Lam Dong", "Ha Tinh", "Son La", "Ho Chi Minh City"]
+        tinh_chon = st.selectbox(t["select_prov"], prov_list)
         room_label = f"Tỉnh {tinh_chon}" if lang == "Tiếng Việt" else f"{tinh_chon} Province"
     elif phong_chon == t["room_3"]:
-        nhom_chon = st.selectbox(t["select_group"], ["Kỹ sư viễn thám & MRV", "Nhà đầu tư thị trường", "Chủ rừng ngập mặn"])
+        group_list = ["Kỹ sư viễn thám & MRV", "Nhà đầu tư thị trường", "Chủ rừng ngập mặn"] if lang == "Tiếng Việt" else ["Remote Sensing & MRV Engineers", "Market Investors", "Mangrove Forest Owners"]
+        nhom_chon = st.selectbox(t["select_group"], group_list)
         room_label = nhom_chon
     else:
         room_label = t["world"]
