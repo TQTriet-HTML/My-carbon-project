@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+import base64
 
 @st.dialog("BÁO CÁO VI PHẠM / REPORT VIOLATION", width="small")
 def hien_thi_hop_thoai_bao_cao(post_id, lang="Tiếng Việt"):
@@ -79,6 +80,7 @@ def hien_thi_mang_xa_hoi(lang=None):
             "no_post": "Chưa có bài viết nào.",
             "world": "Thế giới",
             "attached": "Tệp đính kèm",
+            "download_doc": "Tải tài liệu",
             "likes": "Lượt thích",
             "comments": "Bình luận",
             "btn_like": "Thích",
@@ -109,6 +111,7 @@ def hien_thi_mang_xa_hoi(lang=None):
             "no_post": "No posts yet.",
             "world": "Worldwide",
             "attached": "Attachment",
+            "download_doc": "Download Document",
             "likes": "Likes",
             "comments": "Comments",
             "btn_like": "Like",
@@ -175,7 +178,6 @@ def hien_thi_mang_xa_hoi(lang=None):
             margin-bottom: 25px;
         }
 
-        /* 1. BIẾN 3 CHẤM RADIO THÀNH NÚT KHỐI XANH DƯƠNG */
         div[data-testid="stRadio"] div[role="radiogroup"] label div:first-child { display: none !important; }
         div[data-testid="stRadio"] div[role="radiogroup"] label {
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
@@ -198,7 +200,6 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) div { color: #ffffff !important; font-weight: 800 !important; }
 
-        /* 2. NÚT CHƯA THÍCH (XANH DƯƠNG) */
         div[class*="st-key-btn_like_"] button {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important; border: 1.5px solid #38bdf8 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #075985, 0 8px 18px rgba(14, 165, 233, 0.45) !important;
@@ -211,7 +212,6 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[class*="st-key-btn_like_"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important; }
 
-        /* NÚT ĐÃ THÍCH (XANH LÁ) */
         div[class*="st-key-btn_liked_"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
@@ -224,7 +224,6 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[class*="st-key-btn_liked_"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important; }
 
-        /* 3. NÚT ĐĂNG BÀI (XANH LÁ) */
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
@@ -237,7 +236,6 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[data-testid="stFormSubmitButton"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important; }
         
-        /* 4. NÚT BÁO CÁO VI PHẠM (CHÌM XUỐNG - HOVER NỔI ĐỎ) */
         div[class*="st-key-btn_rep_"] button {
             background: linear-gradient(180deg, rgba(51, 65, 85, 0.8), rgba(30, 41, 59, 0.9)) !important; border: 1px solid rgba(148, 163, 184, 0.3) !important;
             border-radius: 10px !important; box-shadow: 0 4px 0 rgba(15, 23, 42, 0.8), 0 5px 10px rgba(0,0,0,0.3) !important;
@@ -259,7 +257,9 @@ def hien_thi_mang_xa_hoi(lang=None):
         .comment-thread { background: rgba(15, 23, 42, 0.55); border-left: 3px solid rgba(72, 187, 120, 0.6); border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 8px; margin-bottom: 8px; }
         .comment-user { color: #38bdf8; font-weight: 700; font-size: 0.88rem; margin-bottom: 2px; }
         .comment-body { color: #e2e8f0; font-size: 0.92rem; line-height: 1.45; }
-        .upload-badge { display: inline-block; margin-top: 8px; padding: 6px 14px; background: rgba(15, 23, 42, 0.6); border: 1.5px dashed #38bdf8; border-radius: 8px; color: #bae6fd; font-size: 0.9rem; }
+        .upload-badge { display: inline-block; margin-top: 8px; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1.5px dashed #38bdf8; border-radius: 8px; color: #bae6fd; font-size: 0.9rem; margin-bottom: 12px; width: 100%; text-align: center; }
+        .btn-download-doc { display: inline-block; background: #0ea5e9; color: white !important; font-weight: bold; text-decoration: none; padding: 6px 14px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
+        .btn-download-doc:hover { background: #38bdf8; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -292,11 +292,18 @@ def hien_thi_mang_xa_hoi(lang=None):
             
             submitted = st.form_submit_button(t["btn_post"], use_container_width=True)
             if submitted:
-                if post_content.strip():
+                if post_content.strip() or uploaded_file is not None:
                     if "social_posts_mem" not in st.session_state:
                         st.session_state["social_posts_mem"] = []
                     
-                    file_name = uploaded_file.name if uploaded_file else None
+                    file_name = None
+                    file_data = None
+                    file_type = None
+                    if uploaded_file:
+                        file_name = uploaded_file.name
+                        file_data = base64.b64encode(uploaded_file.getvalue()).decode()
+                        file_type = uploaded_file.type
+
                     now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
                     author = st.session_state.get("current_user", "Member" if lang == "English" else "Thành viên")
                     role = st.session_state.get("current_role", "Green Companion" if lang == "English" else "Đồng hành xanh")
@@ -308,7 +315,9 @@ def hien_thi_mang_xa_hoi(lang=None):
                         "content": post_content,
                         "time": now_str,
                         "room": room_label,
-                        "file": file_name,
+                        "file_name": file_name,
+                        "file_data": file_data,
+                        "file_type": file_type,
                         "likes": 0,
                         "liked_by": [],
                         "comments": []
@@ -325,12 +334,14 @@ def hien_thi_mang_xa_hoi(lang=None):
         st.session_state["social_posts_mem"] = [
             {
                 "id": "p_default_1", "author": "mock_p1_author", "role": "mock_p1_role", "content": "mock_p1_content",
-                "time": "08/10/2026 14:20", "room": "mock_world", "likes": 24, "liked_by": [], "file": None,
+                "time": "08/10/2026 14:20", "room": "mock_world", "likes": 24, "liked_by": [],
+                "file_name": None, "file_data": None, "file_type": None,
                 "comments": [{"user": "mock_p1_c1_user", "text": "mock_p1_c1_text"}, {"user": "mock_p1_c2_user", "text": "mock_p1_c2_text"}]
             },
             {
                 "id": "p_default_2", "author": "mock_p2_author", "role": "mock_p2_role", "content": "mock_p2_content",
-                "time": "07/10/2026 09:15", "room": "mock_world", "likes": 18, "liked_by": [], "file": None,
+                "time": "07/10/2026 09:15", "room": "mock_world", "likes": 18, "liked_by": [],
+                "file_name": None, "file_data": None, "file_type": None,
                 "comments": [{"user": "mock_p2_c1_user", "text": "mock_p2_c1_text"}]
             }
         ]
@@ -348,9 +359,23 @@ def hien_thi_mang_xa_hoi(lang=None):
         display_content = mt.get(p["content"], p["content"]) if p["content"].startswith("mock_") else p["content"]
         display_room = mt.get(p.get("room", ""), p.get("room", t["world"])) if p.get("room", "").startswith("mock_") else p.get("room", t["world"])
         
-        file_html = f"<div class='upload-badge'>📎 {t['attached']}: <b>{p['file']}</b></div>" if p.get("file") else ""
+        file_html = ""
+        if p.get("file_name") and p.get("file_data"):
+            f_type = str(p.get("file_type", ""))
+            if f_type.startswith("image/"):
+                file_html = f"""
+                <div style="margin-top: 15px; margin-bottom: 5px; text-align: center;">
+                    <img src="data:{f_type};base64,{p['file_data']}" style="max-width: 100%; border-radius: 12px; border: 1.5px solid rgba(56, 189, 248, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
+                </div>
+                """
+            else:
+                file_html = f"""
+                <div class='upload-badge'>
+                    <div style="margin-bottom: 5px;">📎 {t['attached']}: <b style="color: #ffffff;">{p['file_name']}</b></div>
+                    <a href="data:{f_type};base64,{p['file_data']}" download="{p['file_name']}" class="btn-download-doc">📥 {t['download_doc']}</a>
+                </div>
+                """
 
-        # ÉP TRÁI CODE HTML ĐỂ TRÁNH LỖI MARKDOWN STREAMLIT
         html_card = f"""<div class="social-card">
 <div style="display:flex; justify-content:space-between; align-items:center;">
 <div>
