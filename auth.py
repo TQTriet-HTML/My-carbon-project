@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ (Gân lá màu nâu)
+      // 2 Lá bự 45 độ (Gân nâu)
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -181,7 +181,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
         c.lineWidth = 2.8;
         c.stroke();
 
-        // Gân chính màu nâu
         c.strokeStyle = '#78350f';
         c.lineWidth = 2.0;
         c.beginPath();
@@ -189,7 +188,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
         c.quadraticCurveTo(3, -25, 7, -50);
         c.stroke();
 
-        // Gân nhánh màu nâu
         c.strokeStyle = 'rgba(120, 53, 15, 0.85)';
         c.lineWidth = 1.3;
         c.beginPath();
@@ -208,7 +206,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN NHẸ NHÀNG KÈM ÁNH SÁNG XANH DƯƠNG
+    // DÒNG CHỮ LƯỢN SÓNG KÈM ÁNH SÁNG XANH DƯƠNG
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -223,7 +221,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       let currX = startX;
 
       const waveStart = 7500;
-      const waveDuration = 3000; // Tăng thời gian để sóng lướt chậm và êm hơn
+      const waveDuration = 3000; 
       const waveProg = (elapsed - waveStart) / waveDuration;
 
       for (let i = 0; i < totalChars; i++) {{
@@ -238,9 +236,8 @@ def get_particle_logo_html(lang="Tiếng Việt"):
 
         if (waveProg >= 0 && waveProg <= 1.25) {{
           const dist = Math.abs(waveProg - charNorm);
-          if (dist < 0.20) {{ // Khoảng quét rộng hơn chút để mượt mà
+          if (dist < 0.20) {{
             const factor = 1 - (dist / 0.20);
-            // Sóng lướt siêu nhẹ (đỉnh sóng thấp lại còn 5.5px)
             waveY = cy - Math.sin(factor * Math.PI) * 5.5;
             sweepIntensity = Math.sin(factor * Math.PI);
             isSwept = true;
@@ -249,12 +246,10 @@ def get_particle_logo_html(lang="Tiếng Việt"):
 
         c.save();
         if (isSwept) {{
-          // Ánh sáng xanh dương nhẹ lướt qua theo con chữ đang gợn
           c.fillStyle = '#bae6fd'; 
           c.shadowColor = '#0ea5e9';
           c.shadowBlur = 15 * sweepIntensity;
         }} else {{
-          // Chữ nằm yên tĩnh lặng màu xanh lá tươi mát
           c.fillStyle = '#4ade80';
           c.shadowColor = 'rgba(74, 222, 128, 0.45)';
           c.shadowBlur = 6;
@@ -289,11 +284,72 @@ def get_particle_logo_html(lang="Tiếng Việt"):
     const CYCLE = 18000;
     const startTime = performance.now();
 
+    function injectPermanentHoverStyles() {{
+      try {{
+        const doc = window.parent.document;
+        if (!doc.getElementById('custom-hover-styles')) {{
+          const style = doc.createElement('style');
+          style.id = 'custom-hover-styles';
+          style.innerHTML = `
+            .st-key-btn_login_submit button,
+            .st-key-btn_reg_submit button,
+            .st-key-btn_auto_login_key button {
+                background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+                border: 1.5px solid #4ade80 !important;
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                border-radius: 10px !important;
+                box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            }
+            .st-key-btn_login_submit button:hover,
+            .st-key-btn_reg_submit button:hover,
+            .st-key-btn_auto_login_key button:hover {
+                background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+                transform: translateY(-4px) !important;
+                box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
+                color: #ffffff !important;
+            }
+            .st-key-btn_login_submit button:active,
+            .st-key-btn_reg_submit button:active,
+            .st-key-btn_auto_login_key button:active {
+                transform: translateY(4px) !important;
+                box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
+            }
+            .st-key-btn_login_submit button p,
+            .st-key-btn_reg_submit button p,
+            .st-key-btn_auto_login_key button p { color: #ffffff !important; }
+
+            .st-key-btn_mission_submit button {
+                background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+                border: 1.8px solid #38bdf8 !important;
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                border-radius: 10px !important;
+                box-shadow: 0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65) !important;
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            }
+            .st-key-btn_mission_submit button:hover {
+                background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+                border-color: #7dd3fc !important;
+                transform: translateY(-4px) scale(1.02) !important;
+                box-shadow: 0 9px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95) !important;
+                color: #ffffff !important;
+            }
+            .st-key-btn_mission_submit button:active {
+                transform: translateY(4px) scale(0.98) !important;
+                box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
+            }
+            .st-key-btn_mission_submit button p { color: #ffffff !important; }
+          `;
+          doc.head.appendChild(style);
+        }
+      }} catch(e) {{}}
+    }}
+
     function enforceRealDOMStyles() {{
       try {{
         const doc = window.parent.document;
-        
-        // TIÊU ĐỀ LAN MÀU NHẸ NHÀNG TỪ TRÁI SANG PHẢI (KHOẢNG CÁCH THỜI GIAN NHỎ ĐỂ MƯỢT MÀ HƠN)
         const welcomeEls = [doc.getElementById('welcomeHeading'), doc.getElementById('welcomeHeadingReg')];
         welcomeEls.forEach(el => {{
           if (el && !el.dataset.wrapped) {{
@@ -302,7 +358,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             for (let i = 0; i < text.length; i++) {{
               const span = doc.createElement('span');
               span.innerText = text[i] === ' ' ? '\\u00A0' : text[i];
-              // Tăng chu kỳ lên 6s để chuyển động từ tốn, delay nhỏ để lan tỏa êm ái
               span.style.animation = `smoothLetterShift 6s ease-in-out infinite`;
               span.style.animationDelay = `${{i * 0.1}}s`;
               span.style.display = 'inline-block';
@@ -311,71 +366,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             el.dataset.wrapped = 'true';
           }}
         }});
-
-        // STYLE NÚT: XÁC THỰC TRUY CẬP, TẠO MỚI TÀI KHOẢN, ĐĂNG NHẬP NGAY
-        const greenBtns = [
-            doc.querySelector('.st-key-btn_login_submit button'), 
-            doc.querySelector('.st-key-btn_reg_submit button'),
-            doc.querySelector('.st-key-btn_auto_login_key button')
-        ];
-        
-        greenBtns.forEach(btn => {{
-          if (btn && !btn.dataset.customizedGreen) {{
-            btn.dataset.customizedGreen = 'true';
-            btn.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
-            btn.style.setProperty('border', '1.5px solid #4ade80', 'important');
-            btn.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
-            btn.style.setProperty('border-radius', '10px', 'important');
-            btn.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
-
-            const texts = btn.querySelectorAll('*');
-            texts.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
-            
-            btn.addEventListener('mouseenter', () => {{
-              btn.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
-              btn.style.setProperty('box-shadow', '0 8px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75)', 'important');
-              btn.style.setProperty('background', 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)', 'important');
-            }});
-            btn.addEventListener('mouseleave', () => {{
-              btn.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
-              btn.style.setProperty('box-shadow', '0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45)', 'important');
-              btn.style.setProperty('background', 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', 'important');
-            }});
-            btn.addEventListener('mousedown', () => {{
-              btn.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-              btn.style.setProperty('box-shadow', '0 2px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4)', 'important');
-            }});
-          }}
-        }});
-
-        // STYLE NÚT: KHÁM PHÁ SỨ MỆNH
-        const btnMission = doc.querySelector('.st-key-btn_mission_submit button');
-        if (btnMission && !btnMission.dataset.customizedBlue) {{
-          btnMission.dataset.customizedBlue = 'true';
-          btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
-          btnMission.style.setProperty('border', '1.8px solid #38bdf8', 'important');
-          btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
-          btnMission.style.setProperty('border-radius', '10px', 'important');
-          btnMission.style.setProperty('transition', 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 'important');
-
-          const texts2 = btnMission.querySelectorAll('*');
-          texts2.forEach(t => t.style.setProperty('color', '#ffffff', 'important'));
-
-          btnMission.addEventListener('mouseenter', () => {{
-            btnMission.style.setProperty('transform', 'translateY(-3px) scale(1.02)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 8px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95)', 'important');
-            btnMission.style.setProperty('background', 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)', 'important');
-          }});
-          btnMission.addEventListener('mouseleave', () => {{
-            btnMission.style.setProperty('transform', 'translateY(0) scale(1)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65)', 'important');
-            btnMission.style.setProperty('background', 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)', 'important');
-          }});
-          btnMission.addEventListener('mousedown', () => {{
-            btnMission.style.setProperty('transform', 'translateY(3px) scale(0.98)', 'important');
-            btnMission.style.setProperty('box-shadow', '0 2px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4)', 'important');
-          }});
-        }}
       }} catch(e) {{}}
     }}
 
@@ -384,6 +374,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       const elapsed = (now - startTime) % CYCLE;
       ctx.clearRect(0, 0, logicalW, logicalH);
       
+      injectPermanentHoverStyles();
       enforceRealDOMStyles();
 
       if (elapsed < 4500) {{
@@ -464,8 +455,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "btn_login": "XÁC THỰC TRUY CẬP", "btn_reg": "TẠO MỚI TÀI KHOẢN",
             "btn_mission": "KHÁM PHÁ SỨ MỆNH",
             "pwd_error": "Mật khẩu phải từ 8-20 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.",
-            "reg_success_line1": "Bạn đã đặt bước chân đầu tiên",
-            "reg_success_line2": "trên chặng đường xanh!",
+            "reg_success_msg": "Bạn đã đặt bước chân đầu tiên trên chặng đường xanh!",
             "account_label": "Tài khoản",
             "btn_auto_login": "ĐĂNG NHẬP NGAY",
             "achieve": "THÀNH TỰU NỀN TẢNG", "ach_1_val": "2.5M+", "ach_1_lbl": "Tấn Carbon Giao Dịch", "ach_2_val": "15,000", "ach_2_lbl": "Hecta Rừng Được Bảo Vệ",
@@ -486,8 +476,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             "btn_login": "AUTHENTICATE", "btn_reg": "CREATE ACCOUNT",
             "btn_mission": "EXPLORE MISSION",
             "pwd_error": "Password must be 8-20 characters with uppercase, lowercase, number, and special character.",
-            "reg_success_line1": "You have taken your first step",
-            "reg_success_line2": "towards sustainability!",
+            "reg_success_msg": "You have taken your first step towards sustainability!",
             "account_label": "Account",
             "btn_auto_login": "LOGIN NOW",
             "achieve": "PLATFORM ACHIEVEMENTS", "ach_1_val": "2.5M+", "ach_1_lbl": "Tons Carbon Traded", "ach_2_val": "15,000", "ach_2_lbl": "Hectares Protected",
@@ -504,7 +493,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
-        /* PHÔNG NỀN ĐEN TUYỀN CÙNG CỰC QUANG XANH LÁ & XANH DƯƠNG XEN KẼ */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -555,7 +543,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             92%, 100% { left: 220%; opacity: 0; }
         }
 
-        /* KHỐI FORM BÊN TRÁI HIỆU ỨNG NỔI LÊN KHI TRỎ CHUỘT VÀO */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
             backdrop-filter: blur(14px) !important;
@@ -587,7 +574,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI (CHUYỂN MƯỢT MÀ XANH LÁ -> XANH DƯƠNG) */
         @keyframes smoothLetterShift {
             0%, 100% {
                 color: #4ade80 !important;
@@ -649,7 +635,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
-        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
         @keyframes sweepGoldenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -666,7 +651,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepGoldenGlowTextL2R 5.5s linear infinite;
         }
 
-        /* NỞ RA THU LẠI TỪ TỪ CHẬM RÃI MỖI 6 GIÂY (ÊM ÁI) */
         @keyframes flagBreatheBloom {
             0%, 100% {
                 transform: scale(1);
@@ -775,6 +759,41 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .news-marquee { overflow: hidden; white-space: nowrap; width: 100%; }
         .news-marquee span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        /* HIỆU ỨNG LÓA SÁNG XANH LÁ QUÉT QUA CHỮ THÔNG BÁO */
+        @keyframes sweepGreenGlowTextL2R {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .success-msg-sweeping {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, #4ade80 0%, #4ade80 40%, #bbf7d0 50%, #ffffff 52%, #bbf7d0 54%, #4ade80 60%, #4ade80 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4));
+            animation: sweepGreenGlowTextL2R 4s linear infinite;
+        }
+
+        /* HOẠT HỌA TRÁI ĐẤT BÀN TAY NÂNG ĐỠ */
+        @keyframes floatEarth {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes pulseHands {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(2px) scale(1.02); }
+        }
+        @keyframes auraPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+        .floating-earth { animation: floatEarth 3s ease-in-out infinite; transform-origin: 60px 45px; }
+        .support-hands { animation: pulseHands 3s ease-in-out infinite; transform-origin: 60px 85px; }
+        .earth-aura { animation: auraPulse 3s ease-in-out infinite; transform-origin: 60px 55px; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -795,7 +814,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         with tab_dang_nhap:
             with st.form("form_login"):
                 st.markdown(f"""
-                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px; transition: color 0.3s ease;">
+                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px;">
                         {t["welcome_msg"]}
                     </div>
                 """, unsafe_allow_html=True)
@@ -828,10 +847,35 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             if st.session_state["reg_success_data"]:
                 registered_user = st.session_state['reg_success_data']['user']
                 account_txt = t["account_label"]
+                
+                # KHỐI THÔNG BÁO VỚI HIỆU ỨNG CHỮ LÓA SÁNG VÀ HOẠT HỌA TRÁI ĐẤT SVG
                 st.markdown(f"""
-                    <div class="hardcore-green-card" style="text-align:center; padding: 20px 14px; margin-top: 10px; margin-bottom: 24px !important;">
-                        <div style="color:#4ade80; font-weight:800; margin-bottom:8px; font-size:1.05rem; letter-spacing:0.5px;">{t['reg_success_line1']}<br/>{t['reg_success_line2']}</div>
-                        <div style="color:#cbd5e1; margin-bottom: 0px; font-size:0.95rem;">{account_txt}: <b style="color:#38bdf8; font-size:1.1rem;">{registered_user}</b></div>
+                    <div class="hardcore-green-card" style="text-align:center; padding: 25px 14px; margin-top: 10px; margin-bottom: 24px !important;">
+                        <div class="success-msg-sweeping">{t['reg_success_msg']}</div>
+                        
+                        <div style="display: flex; justify-content: center; margin: 15px 0;">
+                            <svg viewBox="0 0 120 120" width="110" height="110">
+                                <circle cx="60" cy="55" r="35" fill="rgba(74, 222, 128, 0.15)" class="earth-aura" />
+                                <g class="support-hands">
+                                    <path d="M 15 70 C 25 95, 50 95, 55 85 C 50 82, 45 85, 35 75 C 25 65, 20 65, 15 70" fill="#fcd34d" stroke="#0f172a" stroke-width="2"/>
+                                    <path d="M 35 75 C 45 65, 55 75, 55 85" fill="none" stroke="#0f172a" stroke-width="2"/>
+                                    <path d="M 105 70 C 95 95, 70 95, 65 85 C 70 82, 75 85, 85 75 C 95 65, 100 65, 105 70" fill="#fcd34d" stroke="#0f172a" stroke-width="2"/>
+                                    <path d="M 85 75 C 75 65, 65 75, 65 85" fill="none" stroke="#0f172a" stroke-width="2"/>
+                                </g>
+                                <g class="floating-earth">
+                                    <circle cx="60" cy="45" r="24" fill="#7dd3fc" stroke="#0f172a" stroke-width="2.5"/>
+                                    <path d="M 42 32 C 55 20, 70 25, 75 35 C 80 45, 65 50, 55 45 C 45 40, 35 40, 42 32" fill="#4ade80" stroke="#0f172a" stroke-width="1.5"/>
+                                    <path d="M 40 60 C 50 65, 60 70, 75 62 C 80 55, 65 55, 60 60 C 50 65, 45 55, 40 60" fill="#4ade80" stroke="#0f172a" stroke-width="1.5"/>
+                                    <circle cx="53" cy="46" r="2" fill="#0f172a"/>
+                                    <circle cx="67" cy="46" r="2" fill="#0f172a"/>
+                                    <path d="M 57 51 Q 60 55 63 51" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="48" cy="50" r="2.5" fill="#f87171"/>
+                                    <circle cx="72" cy="50" r="2.5" fill="#f87171"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div style="color:#cbd5e1; margin-bottom: 0px; font-size:1rem;">{account_txt}: <b style="color:#38bdf8; font-size:1.15rem;">{registered_user}</b></div>
                     </div>
                     <div style="margin-bottom: 30px;"></div>
                 """, unsafe_allow_html=True)
