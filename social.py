@@ -78,7 +78,7 @@ def hien_thi_mang_xa_hoi(lang=None):
             "news_feed": "BẢNG TIN CỘNG ĐỒNG",
             "no_post": "Chưa có bài viết nào.",
             "world": "Thế giới",
-            "attached": "Đã đính kèm",
+            "attached": "Tệp đính kèm",
             "likes": "Lượt thích",
             "comments": "Bình luận",
             "btn_like": "Thích",
@@ -108,7 +108,7 @@ def hien_thi_mang_xa_hoi(lang=None):
             "news_feed": "COMMUNITY NEWS FEED",
             "no_post": "No posts yet.",
             "world": "Worldwide",
-            "attached": "Attached",
+            "attached": "Attachment",
             "likes": "Likes",
             "comments": "Comments",
             "btn_like": "Like",
@@ -224,7 +224,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[class*="st-key-btn_liked_"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important; }
 
-        /* 3. NÚT ĐĂNG BÀI & GỬI BÁO CÁO (XANH LÁ) */
+        /* 3. NÚT ĐĂNG BÀI (XANH LÁ) */
         div[data-testid="stFormSubmitButton"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
@@ -237,7 +237,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         }
         div[data-testid="stFormSubmitButton"] button:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important; }
         
-        /* 4. NÚT BÁO CÁO VI PHẠM */
+        /* 4. NÚT BÁO CÁO VI PHẠM (CHÌM XUỐNG - HOVER NỔI ĐỎ) */
         div[class*="st-key-btn_rep_"] button {
             background: linear-gradient(180deg, rgba(51, 65, 85, 0.8), rgba(30, 41, 59, 0.9)) !important; border: 1px solid rgba(148, 163, 184, 0.3) !important;
             border-radius: 10px !important; box-shadow: 0 4px 0 rgba(15, 23, 42, 0.8), 0 5px 10px rgba(0,0,0,0.3) !important;
@@ -259,7 +259,7 @@ def hien_thi_mang_xa_hoi(lang=None):
         .comment-thread { background: rgba(15, 23, 42, 0.55); border-left: 3px solid rgba(72, 187, 120, 0.6); border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 8px; margin-bottom: 8px; }
         .comment-user { color: #38bdf8; font-weight: 700; font-size: 0.88rem; margin-bottom: 2px; }
         .comment-body { color: #e2e8f0; font-size: 0.92rem; line-height: 1.45; }
-        .upload-badge { display: inline-block; margin-top: 8px; padding: 8px 12px; background: rgba(56, 189, 248, 0.1); border: 1px dashed #38bdf8; border-radius: 8px; color: #bae6fd; font-size: 0.9rem; }
+        .upload-badge { display: inline-block; margin-top: 8px; padding: 6px 14px; background: rgba(15, 23, 42, 0.6); border: 1.5px dashed #38bdf8; border-radius: 8px; color: #bae6fd; font-size: 0.9rem; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -350,25 +350,24 @@ def hien_thi_mang_xa_hoi(lang=None):
         
         file_html = f"<div class='upload-badge'>📎 {t['attached']}: <b>{p['file']}</b></div>" if p.get("file") else ""
 
-        # KHẮC PHỤC LỖI HIỂN THỊ HTML THÔ BẰNG CỜ UNSAFE_ALLOW_HTML=TRUE
-        st.markdown(f"""
-            <div class="social-card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span class="social-author">{display_author}</span> 
-                        <span style="color:#94a3b8; font-size:0.85rem;">({display_role})</span>
-                        <span class="badge-room">{display_room}</span>
-                    </div>
-                    <span class="social-meta">{p['time']}</span>
-                </div>
-                <div class="social-content">{display_content}</div>
-                {file_html}
-                <div style="color:#94a3b8; font-size:0.88rem; margin-top:12px; margin-bottom:12px;">
-                    {t['likes']}: <b style="color:#38bdf8;">{p['likes']}</b> &nbsp;|&nbsp; 
-                    {t['comments']}: <b style="color:#48bb78;">{len(p.get('comments', []))}</b>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        # ÉP TRÁI CODE HTML ĐỂ TRÁNH LỖI MARKDOWN STREAMLIT
+        html_card = f"""<div class="social-card">
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<div>
+<span class="social-author">{display_author}</span> 
+<span style="color:#94a3b8; font-size:0.85rem;">({display_role})</span>
+<span class="badge-room">{display_room}</span>
+</div>
+<span class="social-meta">{p['time']}</span>
+</div>
+<div class="social-content">{display_content}</div>
+{file_html}
+<div style="color:#94a3b8; font-size:0.88rem; margin-top:12px; margin-bottom:12px;">
+{t['likes']}: <b style="color:#38bdf8;">{p['likes']}</b> &nbsp;|&nbsp; 
+{t['comments']}: <b style="color:#48bb78;">{len(p.get('comments', []))}</b>
+</div>
+</div>"""
+        st.markdown(html_card, unsafe_allow_html=True)
         
         liked_list = p.setdefault("liked_by", [])
         is_liked = cur_user in liked_list
@@ -376,12 +375,12 @@ def hien_thi_mang_xa_hoi(lang=None):
         c_like, c_rep, _ = st.columns([0.22, 0.28, 0.5])
         with c_like:
             if is_liked:
-                if st.button(f"{t['btn_liked']} ({p['likes']})", key=f"btn_liked_{p['id']}_{idx}"):
+                if st.button(f"✅ {t['btn_liked']} ({p['likes']})", key=f"btn_liked_{p['id']}_{idx}"):
                     p["likes"] -= 1
                     p["liked_by"].remove(cur_user)
                     st.rerun()
             else:
-                if st.button(f"{t['btn_like']} ({p['likes']})", key=f"btn_like_{p['id']}_{idx}"):
+                if st.button(f"👍 {t['btn_like']} ({p['likes']})", key=f"btn_like_{p['id']}_{idx}"):
                     p["likes"] += 1
                     p["liked_by"].append(cur_user)
                     st.rerun()
@@ -406,12 +405,11 @@ def hien_thi_mang_xa_hoi(lang=None):
                     u_c = mt.get(raw_u, raw_u) if raw_u.startswith("mock_") else (raw_u if raw_u else ("Member" if lang == "English" else "Thành viên"))
                     t_c = mt.get(raw_t, raw_t) if raw_t.startswith("mock_") else raw_t
                         
-                    st.markdown(f"""
-                        <div class="comment-thread">
-                            <div class="comment-user">{u_c}</div>
-                            <div class="comment-body">{t_c}</div>
-                        </div>
-                    """, unsafe_allow_html=True)
+                    html_cmt = f"""<div class="comment-thread">
+<div class="comment-user">{u_c}</div>
+<div class="comment-body">{t_c}</div>
+</div>"""
+                    st.markdown(html_cmt, unsafe_allow_html=True)
             else:
                 st.caption(t["no_post"])
 
