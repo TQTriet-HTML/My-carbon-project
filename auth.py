@@ -56,7 +56,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.scale(scale, scale);
       c.translate(-cx, -cy);
 
-      // Quả cầu Trái Đất
       c.save();
       c.beginPath();
       c.arc(cx, cy, R, 0, Math.PI * 2);
@@ -67,7 +66,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.clip();
 
-      // Mảng lục địa
       c.fillStyle = '#4ade80';
       c.strokeStyle = '#0f172a';
       c.lineWidth = 2.8;
@@ -105,7 +103,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.ellipse(cx + 10, cy + 28, 14, 6.5, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Khuôn mặt đáng yêu
       c.fillStyle = '#0f172a';
       c.beginPath();
       c.arc(cx - 11, cy + 2, 2.8, 0, Math.PI * 2);
@@ -131,7 +128,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.strokeStyle = '#0f172a';
       c.stroke();
 
-      // Mầm cây trên đầu
       c.save();
       c.translate(cx, cy - R);
       c.strokeStyle = '#0f172a';
@@ -164,7 +160,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,7 +201,6 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN NHẸ NHÀNG KÈM ÁNH SÁNG XANH DƯƠNG
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -366,6 +360,21 @@ def get_particle_logo_html(lang="Tiếng Việt"):
             el.dataset.wrapped = 'true';
           }}
         }});
+
+        const successEl = doc.getElementById('successMsg');
+        if (successEl && !successEl.dataset.wrapped) {{
+            const text = successEl.innerText.trim();
+            successEl.innerHTML = '';
+            for (let i = 0; i < text.length; i++) {{
+                const span = doc.createElement('span');
+                span.innerText = text[i] === ' ' ? '\\u00A0' : text[i];
+                span.style.animation = `successLetterGlow 3s ease-in-out infinite`;
+                span.style.animationDelay = `${{i * 0.05}}s`;
+                span.style.display = 'inline-block';
+                successEl.appendChild(span);
+            }}
+            successEl.dataset.wrapped = 'true';
+        }}
       }} catch(e) {{}}
     }}
 
@@ -493,7 +502,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
-        /* PHÔNG NỀN ĐEN TUYỀN CÙNG CỰC QUANG XANH LÁ & XANH DƯƠNG XEN KẼ */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -544,7 +552,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             92%, 100% { left: 220%; opacity: 0; }
         }
 
-        /* KHỐI FORM BÊN TRÁI HIỆU ỨNG NỔI LÊN KHI TRỎ CHUỘT VÀO */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
             backdrop-filter: blur(14px) !important;
@@ -576,7 +583,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
-        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI (CHUYỂN MƯỢT MÀ XANH LÁ -> XANH DƯƠNG) */
         @keyframes smoothLetterShift {
             0%, 100% {
                 color: #4ade80 !important;
@@ -588,7 +594,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
-        /* HIỆU ỨNG NỔI LÊN CỦA CÁC KHỐI KHI ĐƯỢC TRỎ CHUỘT VÀO */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -639,7 +644,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
-        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
         @keyframes sweepGoldenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -656,7 +660,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepGoldenGlowTextL2R 5.5s linear infinite;
         }
 
-        /* NỞ RA THU LẠI TỪ TỪ CHẬM RÃI MỖI 6 GIÂY (ÊM ÁI) */
         @keyframes flagBreatheBloom {
             0%, 100% {
                 transform: scale(1);
@@ -687,8 +690,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .flag-star-svg {
             animation: starYellowGlow 2.5s infinite ease-in-out;
         }
-
-        /* KHỐI NÚT ĐĂNG KÝ VÀ ĐĂNG NHẬP MẶC ĐỊNH SẼ ĐƯỢC CHÈN VÀO GHI ĐÈ BẰNG JAVASCRIPT */
 
         .slogan-fixed-anchor {
             text-align: center;
@@ -768,41 +769,41 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .news-marquee span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* HIỆU ỨNG LÓA SÁNG XANH LÁ QUÉT QUA CHỮ THÔNG BÁO TỪ TRÁI SANG PHẢI TRÊN 1 DÒNG */
-        @keyframes sweepGreenGlowTextL2R {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .success-msg-sweeping {
-            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            white-space: nowrap; /* Ép không xuống dòng */
-            background: linear-gradient(90deg, #4ade80 0%, #4ade80 40%, #bbf7d0 50%, #ffffff 52%, #bbf7d0 54%, #4ade80 60%, #4ade80 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4));
-            animation: sweepGreenGlowTextL2R 4s linear infinite;
+        @keyframes successLetterGlow {
+            0%, 100% { color: #22c55e; text-shadow: 0 0 5px rgba(34,197,94,0.3); }
+            50% { color: #bbf7d0; text-shadow: 0 0 15px rgba(187,247,208,0.9), 0 0 5px rgba(74,222,128,0.8); }
         }
 
-        /* HOẠT HỌA BÀN TAY NÂNG ĐỠ TRÁI ĐẤT */
         @keyframes floatEarth {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
+            0%, 100% { transform: translateY(-12px); }
+            50% { transform: translateY(0px); }
         }
-        @keyframes pulseHands {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(2px) scale(1.02); }
+        @keyframes cradleLeft {
+            0%, 100% { transform: translate(-15px, 15px) rotate(-30deg); }
+            50% { transform: translate(5px, -2px) rotate(5deg); }
+        }
+        @keyframes cradleRight {
+            0%, 100% { transform: translate(15px, 15px) rotate(30deg); }
+            50% { transform: translate(-5px, -2px) rotate(-5deg); }
+        }
+        @keyframes faceNeutral {
+            0%, 30%, 70%, 100% { opacity: 1; }
+            40%, 60% { opacity: 0; }
+        }
+        @keyframes faceHappy {
+            0%, 30%, 70%, 100% { opacity: 0; }
+            40%, 60% { opacity: 1; }
         }
         @keyframes auraPulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
+            0%, 100% { transform: scale(1); opacity: 0.4; }
             50% { transform: scale(1.15); opacity: 1; }
         }
-        .floating-earth { animation: floatEarth 3s ease-in-out infinite; transform-origin: 60px 45px; }
-        .support-hands { animation: pulseHands 3s ease-in-out infinite; transform-origin: 60px 85px; }
-        .earth-aura { animation: auraPulse 3s ease-in-out infinite; transform-origin: 60px 55px; }
+        .floating-earth { animation: floatEarth 4s ease-in-out infinite; }
+        .hand-left { animation: cradleLeft 4s ease-in-out infinite; transform-origin: 35px 100px; }
+        .hand-right { animation: cradleRight 4s ease-in-out infinite; transform-origin: 125px 100px; }
+        .face-neutral { animation: faceNeutral 4s ease-in-out infinite; }
+        .face-happy { animation: faceHappy 4s ease-in-out infinite; }
+        .earth-aura { animation: auraPulse 4s ease-in-out infinite; transform-origin: 80px 65px; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -857,33 +858,47 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 registered_user = st.session_state['reg_success_data']['user']
                 account_txt = t["account_label"]
                 
-                st.markdown(f"""
-<div class="hardcore-green-card" style="text-align:center; padding: 25px 10px; margin-top: 10px; margin-bottom: 20px !important;">
-    <div class="success-msg-sweeping">{t['reg_success_msg']}</div>
-    <div style="color:#cbd5e1; margin-bottom: 0px; font-size:1rem; margin-top:8px;">{account_txt}: <b style="color:#38bdf8; font-size:1.15rem;">{registered_user}</b></div>
+                st.markdown(f"""<div class="hardcore-green-card" style="text-align:center; padding: 25px 10px; margin-top: 10px; margin-bottom: 20px !important;">
+<div id="successMsg" style="text-align:center; font-size:clamp(11px, 2.5vw, 17px); font-weight:800; letter-spacing:0.5px; margin-bottom:12px; white-space:nowrap; overflow:visible;">{t['reg_success_msg']}</div>
+<div style="color:#cbd5e1; margin-bottom: 0px; font-size:1rem; margin-top:8px;">{account_txt}: <b style="color:#38bdf8; font-size:1.15rem;">{registered_user}</b></div>
 </div>
 <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-    <svg viewBox="0 0 120 120" width="110" height="110">
-        <circle cx="60" cy="55" r="35" fill="rgba(74, 222, 128, 0.15)" class="earth-aura" />
-        <g class="support-hands">
-            <path d="M 15 70 C 25 95, 50 95, 55 85 C 50 82, 45 85, 35 75 C 25 65, 20 65, 15 70" fill="#fcd34d" stroke="#0f172a" stroke-width="2"/>
-            <path d="M 35 75 C 45 65, 55 75, 55 85" fill="none" stroke="#0f172a" stroke-width="2"/>
-            <path d="M 105 70 C 95 95, 70 95, 65 85 C 70 82, 75 85, 85 75 C 95 65, 100 65, 105 70" fill="#fcd34d" stroke="#0f172a" stroke-width="2"/>
-            <path d="M 85 75 C 75 65, 65 75, 65 85" fill="none" stroke="#0f172a" stroke-width="2"/>
-        </g>
-        <g class="floating-earth">
-            <circle cx="60" cy="45" r="24" fill="#7dd3fc" stroke="#0f172a" stroke-width="2.5"/>
-            <path d="M 42 32 C 55 20, 70 25, 75 35 C 80 45, 65 50, 55 45 C 45 40, 35 40, 42 32" fill="#4ade80" stroke="#0f172a" stroke-width="1.5"/>
-            <path d="M 40 60 C 50 65, 60 70, 75 62 C 80 55, 65 55, 60 60 C 50 65, 45 55, 40 60" fill="#4ade80" stroke="#0f172a" stroke-width="1.5"/>
-            <circle cx="53" cy="46" r="2" fill="#0f172a"/>
-            <circle cx="67" cy="46" r="2" fill="#0f172a"/>
-            <path d="M 57 51 Q 60 55 63 51" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="48" cy="50" r="2.5" fill="#f87171"/>
-            <circle cx="72" cy="50" r="2.5" fill="#f87171"/>
-        </g>
-    </svg>
+<svg viewBox="0 0 160 160" width="130" height="130">
+<circle cx="80" cy="65" r="50" fill="rgba(74, 222, 128, 0.15)" class="earth-aura" />
+<g class="hand-right">
+<ellipse cx="125" cy="100" rx="26" ry="14" transform="rotate(-30 125 100)" fill="#fcd34d" stroke="#0f172a" stroke-width="2.5"/>
+<path d="M 115 95 Q 120 100 125 95" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
+</g>
+<g class="floating-earth">
+<circle cx="80" cy="65" r="45" fill="#7dd3fc" stroke="#0f172a" stroke-width="3"/>
+<path d="M 80 20 L 80 5" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+<path d="M 80 15 Q 70 5 65 15 Q 75 25 80 15" fill="#4ade80" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 80 10 Q 90 0 95 10 Q 85 20 80 10" fill="#4ade80" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 45 45 C 65 25, 85 40, 80 55 C 75 70, 50 65, 45 45 Z" fill="#4ade80" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 105 85 C 125 100, 130 70, 115 60 C 100 50, 90 70, 105 85 Z" fill="#4ade80" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 45 90 C 65 110, 80 105, 75 85 C 70 65, 40 70, 45 90 Z" fill="#4ade80" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+<g class="face-neutral">
+<circle cx="68" cy="62" r="3" fill="#0f172a"/>
+<circle cx="92" cy="62" r="3" fill="#0f172a"/>
+<path d="M 75 68 Q 80 72 85 68" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="60" cy="68" r="3.5" fill="#f87171" opacity="0.6"/>
+<circle cx="100" cy="68" r="3.5" fill="#f87171" opacity="0.6"/>
+</g>
+<g class="face-happy">
+<path d="M 64 63 Q 68 57 72 63" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+<path d="M 88 63 Q 92 57 96 63" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+<path d="M 74 67 Q 80 82 86 67 Z" fill="#ef4444" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="58" cy="68" r="4.5" fill="#f87171" opacity="0.9"/>
+<circle cx="102" cy="68" r="4.5" fill="#f87171" opacity="0.9"/>
+</g>
+</g>
+<g class="hand-left">
+<ellipse cx="35" cy="100" rx="26" ry="14" transform="rotate(30 35 100)" fill="#fcd34d" stroke="#0f172a" stroke-width="2.5"/>
+<path d="M 45 95 Q 40 100 35 95" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
+</g>
+</svg>
 </div>
-                """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
                 
                 if st.button(t["btn_auto_login"], type="primary", key="btn_auto_login_key", use_container_width=True):
                     data = st.session_state["reg_success_data"]
