@@ -28,7 +28,8 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
             "rep_msg": "Đã tiếp nhận báo cáo vi phạm. Ban kiểm duyệt sẽ xử lý trong 24h.",
             "cmt_lbl": "BÌNH LUẬN NỘI BỘ:",
             "cmt_input": "Viết bình luận công khai...",
-            "btn_send": "Gửi"
+            "btn_send": "Gửi",
+            "view_cmts": "Xem bình luận ({count})"
         },
         "English": {
             "title": "CARBON CREDIT SOCIAL NETWORK",
@@ -55,14 +56,14 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
             "rep_msg": "Violation report received. The moderation team will process within 24h.",
             "cmt_lbl": "INTERNAL COMMENTS:",
             "cmt_input": "Write a public comment...",
-            "btn_send": "Send"
+            "btn_send": "Send",
+            "view_cmts": "View comments ({count})"
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
 
     st.markdown("""
         <style>
-        /* TIÊU ĐỀ */
         .social-title-green {
             color: #48bb78 !important;
             font-size: clamp(24px, 2.7vw, 34px) !important;
@@ -101,7 +102,6 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
             font-size: 0.95rem !important;
         }
         
-        /* Trỏ chuột vào -> Nhấc bổng, màu xanh dương */
         div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
             background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
             border-color: #7dd3fc !important;
@@ -112,7 +112,6 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
             color: #ffffff !important;
         }
         
-        /* Khi được chọn (Đang ở phòng đó) -> Giữ nguyên lún màu xanh dương */
         div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
             border-color: #38bdf8 !important;
@@ -369,34 +368,39 @@ def hien_thi_mang_xa_hoi(lang="Tiếng Việt"):
                 st.toast(t["rep_msg"])
 
         comments_list = p.get("comments", [])
-        if comments_list:
-            st.markdown(f"<div style='margin-top:10px; margin-bottom:5px; font-weight:700; color:#94a3b8; font-size:0.88rem;'>{t['cmt_lbl']}</div>", unsafe_allow_html=True)
-            for cm in comments_list:
-                if isinstance(cm, dict):
-                    u_c = cm.get("user", "Member" if lang == "English" else "Thành viên")
-                    t_c = cm.get("text", "")
-                else:
-                    parts = str(cm).split(":", 1)
-                    u_c = parts[0] if len(parts) > 1 else ("Member" if lang == "English" else "Thành viên")
-                    t_c = parts[1] if len(parts) > 1 else str(cm)
-                    
-                st.markdown(f"""
-                    <div class="comment-thread">
-                        <div class="comment-user">{u_c}</div>
-                        <div class="comment-body">{t_c}</div>
-                    </div>
-                """, unsafe_allow_html=True)
+        
+        # HIỆN EXPANDER XEM BÌNH LUẬN GIỐNG FACEBOOK
+        with st.expander(t["view_cmts"].replace("{count}", str(len(comments_list))), expanded=False):
+            if comments_list:
+                st.markdown(f"<div style='margin-bottom:5px; font-weight:700; color:#94a3b8; font-size:0.88rem;'>{t['cmt_lbl']}</div>", unsafe_allow_html=True)
+                for cm in comments_list:
+                    if isinstance(cm, dict):
+                        u_c = cm.get("user", "Member" if lang == "English" else "Thành viên")
+                        t_c = cm.get("text", "")
+                    else:
+                        parts = str(cm).split(":", 1)
+                        u_c = parts[0] if len(parts) > 1 else ("Member" if lang == "English" else "Thành viên")
+                        t_c = parts[1] if len(parts) > 1 else str(cm)
+                        
+                    st.markdown(f"""
+                        <div class="comment-thread">
+                            <div class="comment-user">{u_c}</div>
+                            <div class="comment-body">{t_c}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.caption(t["no_post"])
 
-        with st.form(f"form_quick_cmt_{p['id']}_{idx}", clear_on_submit=True):
-            col_in, col_btn = st.columns([0.82, 0.18])
-            with col_in:
-                new_c_txt = st.text_input(t["cmt_input"], placeholder=t["cmt_input"], label_visibility="collapsed")
-            with col_btn:
-                btn_send_c = st.form_submit_button(t["btn_send"], use_container_width=True)
-            
-            if btn_send_c and new_c_txt.strip():
-                cur_user = st.session_state.get("current_user", "Anonymous" if lang == "English" else "Ẩn danh")
-                p.setdefault("comments", []).append({"user": cur_user, "text": new_c_txt.strip()})
-                st.rerun()
+            with st.form(f"form_quick_cmt_{p['id']}_{idx}", clear_on_submit=True):
+                col_in, col_btn = st.columns([0.82, 0.18])
+                with col_in:
+                    new_c_txt = st.text_input(t["cmt_input"], placeholder=t["cmt_input"], label_visibility="collapsed")
+                with col_btn:
+                    btn_send_c = st.form_submit_button(t["btn_send"], use_container_width=True)
+                
+                if btn_send_c and new_c_txt.strip():
+                    cur_user = st.session_state.get("current_user", "Anonymous" if lang == "English" else "Ẩn danh")
+                    p.setdefault("comments", []).append({"user": cur_user, "text": new_c_txt.strip()})
+                    st.rerun()
 
         st.markdown("<div style='margin-bottom: 25px;'></div>", unsafe_allow_html=True)
