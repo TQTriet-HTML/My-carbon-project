@@ -5,7 +5,7 @@ def get_mission_animation_html(lang="Tiếng Việt"):
     is_en = (lang == "English")
     
     cap_1 = "1. KHỞI NGUYÊN: Những cánh rừng nguyên sinh bạt ngàn nuôi dưỡng hành tinh xanh" if not is_en else "1. PRIMORDIAL: Ancient primeval forests breathing life into our green planet"
-    cap_2 = "2. CÔNG NGHIỆP HÓA: Nhà máy mọc lên, xả khói khí nhà kính gây ô nhiễm môi trường" if not is_en else "2. INDUSTRIALIZATION: Factories emerge, emitting greenhouse gases and polluting nature"
+    cap_2 = "2. CÔNG NGHIỆP HÓA: Nhà máy mọc lên, xả khói khí thải nhà kính gây ô nhiễm môi trường" if not is_en else "2. INDUSTRIALIZATION: Factories emerge, emitting greenhouse gases and polluting nature"
     cap_3 = "3. TÍN CHỈ CARBON: Cầu nối cân bằng kinh tế và tái tạo rừng mà không kìm hãm công nghiệp" if not is_en else "3. CARBON CREDITS: Balancing economic growth and forest restoration sustainably"
     cap_4 = "4. PHÁT TRIỂN BỀN VỮNG: Con người và Trái Đất xanh cùng chung sống hòa hợp trọn vẹn" if not is_en else "4. SUSTAINABILITY: Humanity and our Living Earth coexisting in joyful harmony"
     slogan = "MỘT CÚ CHẠM - VẠN ĐIỀU XANH" if not is_en else "ONE TOUCH - ONE GREEN WORLD"
