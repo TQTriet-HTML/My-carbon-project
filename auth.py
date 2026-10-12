@@ -164,7 +164,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.stroke();
       c.restore();
 
-      // 2 Lá bự 45 độ (Gân nâu)
+      // 2 Lá bự 45 độ (Gân lá màu nâu)
       function drawBigLeaf(angle, isFlipped) {{
         c.save();
         c.translate(cx + (isFlipped ? 13 : -13), cy + 29);
@@ -206,7 +206,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
       c.restore();
     }}
 
-    // DÒNG CHỮ LƯỢN SÓNG KÈM ÁNH SÁNG XANH DƯƠNG
+    // DÒNG CHỮ LƯỢN SÓNG 1 LẦN NHẸ NHÀNG KÈM ÁNH SÁNG XANH DƯƠNG
     function renderWavingTextOnce(c, alpha = 1.0, elapsed = 0) {{
       if (alpha <= 0.001) return;
       c.save();
@@ -293,7 +293,7 @@ def get_particle_logo_html(lang="Tiếng Việt"):
           style.innerHTML = `
             .st-key-btn_login_submit button,
             .st-key-btn_reg_submit button,
-            .st-key-btn_auto_login_key button {
+            .st-key-btn_auto_login_key button {{
                 background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
                 border: 1.5px solid #4ade80 !important;
                 color: #ffffff !important;
@@ -301,26 +301,26 @@ def get_particle_logo_html(lang="Tiếng Việt"):
                 border-radius: 10px !important;
                 box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
                 transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            }
+            }}
             .st-key-btn_login_submit button:hover,
             .st-key-btn_reg_submit button:hover,
-            .st-key-btn_auto_login_key button:hover {
+            .st-key-btn_auto_login_key button:hover {{
                 background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
                 transform: translateY(-4px) !important;
                 box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
                 color: #ffffff !important;
-            }
+            }}
             .st-key-btn_login_submit button:active,
             .st-key-btn_reg_submit button:active,
-            .st-key-btn_auto_login_key button:active {
+            .st-key-btn_auto_login_key button:active {{
                 transform: translateY(4px) !important;
                 box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
-            }
+            }}
             .st-key-btn_login_submit button p,
             .st-key-btn_reg_submit button p,
-            .st-key-btn_auto_login_key button p { color: #ffffff !important; }
+            .st-key-btn_auto_login_key button p {{ color: #ffffff !important; }}
 
-            .st-key-btn_mission_submit button {
+            .st-key-btn_mission_submit button {{
                 background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
                 border: 1.8px solid #38bdf8 !important;
                 color: #ffffff !important;
@@ -328,22 +328,22 @@ def get_particle_logo_html(lang="Tiếng Việt"):
                 border-radius: 10px !important;
                 box-shadow: 0 5px 0 #075985, 0 0 18px rgba(56, 189, 248, 0.65) !important;
                 transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            }
-            .st-key-btn_mission_submit button:hover {
+            }}
+            .st-key-btn_mission_submit button:hover {{
                 background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
                 border-color: #7dd3fc !important;
                 transform: translateY(-4px) scale(1.02) !important;
                 box-shadow: 0 9px 0 #075985, 0 0 28px rgba(56, 189, 248, 0.95) !important;
                 color: #ffffff !important;
-            }
-            .st-key-btn_mission_submit button:active {
+            }}
+            .st-key-btn_mission_submit button:active {{
                 transform: translateY(4px) scale(0.98) !important;
                 box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(56, 189, 248, 0.4) !important;
-            }
-            .st-key-btn_mission_submit button p { color: #ffffff !important; }
+            }}
+            .st-key-btn_mission_submit button p {{ color: #ffffff !important; }}
           `;
           doc.head.appendChild(style);
-        }
+        }}
       }} catch(e) {{}}
     }}
 
@@ -493,6 +493,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
 
     st.markdown("""
         <style>
+        /* PHÔNG NỀN ĐEN TUYỀN CÙNG CỰC QUANG XANH LÁ & XANH DƯƠNG XEN KẼ */
         @keyframes gentleStreamFlow {
             0% { background-position: 0% 40%; }
             50% { background-position: 100% 60%; }
@@ -543,6 +544,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             92%, 100% { left: 220%; opacity: 0; }
         }
 
+        /* KHỐI FORM BÊN TRÁI HIỆU ỨNG NỔI LÊN KHI TRỎ CHUỘT VÀO */
         div[data-testid="stForm"] {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.88), rgba(18, 42, 77, 0.86)) !important;
             backdrop-filter: blur(14px) !important;
@@ -574,6 +576,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             border-color: #48bb78 !important;
         }
 
+        /* LƯỚT MÀU TỪNG CHỮ CÁI TỪ TRÁI SANG PHẢI (CHUYỂN MƯỢT MÀ XANH LÁ -> XANH DƯƠNG) */
         @keyframes smoothLetterShift {
             0%, 100% {
                 color: #4ade80 !important;
@@ -585,6 +588,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             }
         }
 
+        /* HIỆU ỨNG NỔI LÊN CỦA CÁC KHỐI KHI ĐƯỢC TRỎ CHUỘT VÀO */
         .hardcore-green-card {
             background: linear-gradient(135deg, rgba(6, 44, 25, 0.88) 0%, rgba(10, 61, 35, 0.86) 100%) !important;
             backdrop-filter: blur(14px) !important;
@@ -635,6 +639,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             transform: translateY(-2px);
         }
 
+        /* LÓA SÁNG QUÉT TỪ TRÁI SANG PHẢI */
         @keyframes sweepGoldenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -651,6 +656,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepGoldenGlowTextL2R 5.5s linear infinite;
         }
 
+        /* NỞ RA THU LẠI TỪ TỪ CHẬM RÃI MỖI 6 GIÂY (ÊM ÁI) */
         @keyframes flagBreatheBloom {
             0%, 100% {
                 transform: scale(1);
@@ -760,7 +766,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         .news-marquee span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* HIỆU ỨNG LÓA SÁNG XANH LÁ QUÉT QUA CHỮ THÔNG BÁO */
+        /* HIỆU ỨNG LÓA SÁNG XANH LÁ QUÉT QUA CHỮ THÔNG BÁO TỪ TRÁI SANG PHẢI */
         @keyframes sweepGreenGlowTextL2R {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -778,7 +784,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
             animation: sweepGreenGlowTextL2R 4s linear infinite;
         }
 
-        /* HOẠT HỌA TRÁI ĐẤT BÀN TAY NÂNG ĐỠ */
+        /* HOẠT HỌA BÀN TAY NÂNG ĐỠ TRÁI ĐẤT */
         @keyframes floatEarth {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-6px); }
@@ -814,7 +820,7 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
         with tab_dang_nhap:
             with st.form("form_login"):
                 st.markdown(f"""
-                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px;">
+                    <div id="welcomeHeading" style="text-align:center; margin-bottom:14px; font-size:1.22rem; font-weight:900; letter-spacing:1px; transition: color 0.3s ease;">
                         {t["welcome_msg"]}
                     </div>
                 """, unsafe_allow_html=True)
@@ -848,7 +854,6 @@ def hien_thi_cong_dang_nhap(lang="Tiếng Việt"):
                 registered_user = st.session_state['reg_success_data']['user']
                 account_txt = t["account_label"]
                 
-                # KHỐI THÔNG BÁO VỚI HIỆU ỨNG CHỮ LÓA SÁNG VÀ HOẠT HỌA TRÁI ĐẤT SVG
                 st.markdown(f"""
                     <div class="hardcore-green-card" style="text-align:center; padding: 25px 14px; margin-top: 10px; margin-bottom: 24px !important;">
                         <div class="success-msg-sweeping">{t['reg_success_msg']}</div>
