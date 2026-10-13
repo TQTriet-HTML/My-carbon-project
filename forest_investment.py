@@ -13,7 +13,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         "Tiếng Việt": {
             "title": "CỔNG ĐẦU TƯ TRỒNG RỪNG TỪ XA",
             "subtitle": "Nơi nguồn vốn xanh kiến tạo nên những cánh rừng nguyên sinh thế hệ mới.",
-            "guide_title": "📖 TIÊU CHUẨN PHÂN LOẠI & ĐỊNH GIÁ TÍN CHỈ CARBON",
+            "guide_title": "TIÊU CHUẨN PHÂN LOẠI & ĐỊNH GIÁ TÍN CHỈ CARBON",
             "tier_a": "Hạng A (Cao cấp)",
             "tier_a_desc": "Đa dạng sinh học cao, bảo tồn sinh thái lõi, xác thực chứng chỉ quốc tế (Verra/VCS).",
             "tier_a_price": "Giá tham chiếu: $25 - $35 / Tấn",
@@ -33,7 +33,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             "ai_success": "AI xác minh: Đạt chuẩn minh bạch ban đầu. Dự án đã được đăng!",
             "market_title": "DANH MỤC ĐẦU TƯ SINH THÁI ĐANG MỞ",
             "btn_invest": "ĐẦU TƯ NGAY",
-            "perk_title": "💡 ĐẶC QUYỀN CỦA BẠN:",
+            "perk_title": "ĐẶC QUYỀN CỦA BẠN:",
             "perk_buyer": "Nhận chiết khấu ưu đãi lên tới 15% khi thu mua tín chỉ carbon từ dự án này trong tương lai.",
             "perk_seller": "Đầu tư chéo & Đồng bảo trợ. Sử dụng uy tín tín chỉ Hạng A của bạn để làm giá tham chiếu (Reference Pricing) cho khu rừng này.",
             "perk_investor": "Nhận cổ tức bằng tín chỉ carbon hàng năm và báo cáo tăng trưởng sinh khối định kỳ qua vệ tinh."
@@ -41,7 +41,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         "English": {
             "title": "REMOTE FOREST INVESTMENT PORTAL",
             "subtitle": "Where green capital creates the next generation of primeval forests.",
-            "guide_title": "📖 CARBON CREDIT CLASSIFICATION & PRICING GUIDE",
+            "guide_title": "CARBON CREDIT CLASSIFICATION & PRICING GUIDE",
             "tier_a": "Tier A (Premium)",
             "tier_a_desc": "High biodiversity, core ecological conservation, international certification (Verra/VCS).",
             "tier_a_price": "Ref. Price: $25 - $35 / Ton",
@@ -61,7 +61,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             "ai_success": "AI Verified: Initial transparency met. Project published!",
             "market_title": "OPEN ECO-INVESTMENT PORTFOLIO",
             "btn_invest": "INVEST NOW",
-            "perk_title": "💡 YOUR PRIVILEGE:",
+            "perk_title": "YOUR PRIVILEGE:",
             "perk_buyer": "Receive up to 15% discount when purchasing future carbon credits from this project.",
             "perk_seller": "Cross-investment & Co-sponsorship. Leverage your Tier A reputation to set Reference Pricing for this new forest.",
             "perk_investor": "Receive annual carbon credit dividends and periodic satellite biomass growth reports."
@@ -87,29 +87,53 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             font-size: 1rem;
             margin-bottom: 30px;
         }
+
+        /* KHỐI ĐỘNG CÓ HIỆU ỨNG LÓA SÁNG XANH LÁ */
+        @keyframes greenGlowPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(72, 187, 120, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(72, 187, 120, 0.6); }
+        }
         .tier-card {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
-            border: 1px solid #334155;
+            border: 1px solid rgba(72, 187, 120, 0.3);
             border-radius: 12px;
             padding: 20px;
             height: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: greenGlowPulse 4s infinite ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .tier-card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.4), transparent);
+            transform: skewX(-25deg); transition: all 0.5s ease; z-index: 1; pointer-events: none;
+        }
+        .tier-card:hover::before {
+            animation: none;
+            left: 200%;
+            transition: left 0.7s ease-in-out;
         }
         .tier-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             border-color: #4ade80;
-            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2);
+            box-shadow: 0 15px 35px rgba(74, 222, 128, 0.5);
+            z-index: 5;
         }
         .tier-title {
             font-size: 1.15rem;
             font-weight: 800;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
         }
         .tier-desc {
             color: #cbd5e1;
             font-size: 0.9rem;
             line-height: 1.5;
             margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
         }
         .tier-price {
             font-size: 0.95rem;
@@ -117,7 +141,10 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             padding: 8px 12px;
             border-radius: 6px;
             display: inline-block;
+            position: relative;
+            z-index: 2;
         }
+
         .project-card {
             background: rgba(15, 23, 42, 0.65);
             border: 1.5px solid rgba(56, 189, 248, 0.3);
@@ -151,6 +178,8 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             margin-top: 15px;
             margin-bottom: 15px;
         }
+        
+        /* NÚT ĐẦU TƯ BỎ VIỀN ĐỎ MẶC ĐỊNH */
         div[data-testid="stFormSubmitButton"] button, div[class*="st-key-btn_invest_"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important;
@@ -164,10 +193,22 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
             transform: translateY(-4px) !important;
             box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
+            border-color: #6ee7b7 !important;
         }
         div[data-testid="stFormSubmitButton"] button:active, div[class*="st-key-btn_invest_"] button:active {
             transform: translateY(4px) !important;
             box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
+            border-color: #4ade80 !important;
+        }
+        
+        /* Triệt tiêu viền focus mặc định của Streamlit gây ra viền đỏ */
+        div[data-testid="stFormSubmitButton"] button:focus, div[class*="st-key-btn_invest_"] button:focus {
+            outline: none !important;
+            box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
+            color: #ffffff !important;
+        }
+        div[data-testid="stFormSubmitButton"] button:focus:hover, div[class*="st-key-btn_invest_"] button:focus:hover {
+            box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -175,13 +216,12 @@ def hien_thi_dau_tu_trong_rung(lang=None):
     st.markdown(f'<div class="invest-title-green">{t["title"]}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="invest-sub">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
-    # 1. BẢNG HƯỚNG DẪN PHÂN LOẠI TÍN CHỈ (Hiển thị cho tất cả người dùng)
     with st.expander(t["guide_title"], expanded=True):
         c1, c2, c3 = st.columns(3)
         with c1:
             st.markdown(f"""
                 <div class="tier-card">
-                    <div class="tier-title" style="color: #fbbf24;">🏆 {t["tier_a"]}</div>
+                    <div class="tier-title" style="color: #fbbf24;">{t["tier_a"]}</div>
                     <div class="tier-desc">{t["tier_a_desc"]}</div>
                     <div class="tier-price" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24;">{t["tier_a_price"]}</div>
                 </div>
@@ -189,7 +229,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         with c2:
             st.markdown(f"""
                 <div class="tier-card">
-                    <div class="tier-title" style="color: #38bdf8;">🌿 {t["tier_b"]}</div>
+                    <div class="tier-title" style="color: #38bdf8;">{t["tier_b"]}</div>
                     <div class="tier-desc">{t["tier_b_desc"]}</div>
                     <div class="tier-price" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8;">{t["tier_b_price"]}</div>
                 </div>
@@ -197,7 +237,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         with c3:
             st.markdown(f"""
                 <div class="tier-card">
-                    <div class="tier-title" style="color: #94a3b8;">🌱 {t["tier_c"]}</div>
+                    <div class="tier-title" style="color: #94a3b8;">{t["tier_c"]}</div>
                     <div class="tier-desc">{t["tier_c_desc"]}</div>
                     <div class="tier-price" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #94a3b8;">{t["tier_c_price"]}</div>
                 </div>
@@ -205,12 +245,10 @@ def hien_thi_dau_tu_trong_rung(lang=None):
     
     st.markdown("<br/>", unsafe_allow_html=True)
 
-    # Đọc vai trò người dùng hiện tại
     user_role = st.session_state.get("current_role", "Nhà đầu tư từ xa (Cổ đông)")
     is_seller = "Chủ rừng" in user_role or "MRV" in user_role or "Owner" in user_role
     is_buyer = "mua" in user_role.lower() or "buyer" in user_role.lower()
 
-    # 2. KHU VỰC TẠO DỰ ÁN (Chỉ Chủ Rừng/Bên Bán mới thấy form này)
     if is_seller:
         with st.container(border=True):
             st.markdown(f'<div style="color:#4ade80; font-weight:800; font-size:1.15rem; margin-bottom:15px; letter-spacing: 0.5px;">{t["create_proj_title"]}</div>', unsafe_allow_html=True)
@@ -237,7 +275,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
                         if "invest_projects" not in st.session_state:
                             st.session_state["invest_projects"] = []
                         
-                        # Mapping màu badge dựa theo Tier
                         badge_color = "#fbbf24" if "Hạng A" in p_type or "Tier A" in p_type else ("#38bdf8" if "Hạng B" in p_type or "Tier B" in p_type else "#94a3b8")
                         bg_color = "rgba(251, 191, 36, 0.15)" if "Hạng A" in p_type or "Tier A" in p_type else ("rgba(56, 189, 248, 0.15)" if "Hạng B" in p_type or "Tier B" in p_type else "rgba(148, 163, 184, 0.15)")
 
@@ -254,7 +291,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
                     else:
                         st.warning("Vui lòng nhập tên dự án.")
 
-    # MOCK DỮ LIỆU DỰ ÁN NẾU CHƯA CÓ
     if "invest_projects" not in st.session_state:
         st.session_state["invest_projects"] = [
             {
@@ -273,10 +309,8 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             }
         ]
 
-    # 3. DANH MỤC DỰ ÁN MỞ ĐẦU TƯ
     st.markdown(f'<div class="invest-title-green" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px;">{t["market_title"]}</div>', unsafe_allow_html=True)
     
-    # Xác định đặc quyền dựa trên vai trò
     if is_buyer:
         current_perk = t["perk_buyer"]
     elif is_seller:
@@ -285,26 +319,23 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         current_perk = t["perk_investor"]
 
     for idx, proj in enumerate(st.session_state["invest_projects"]):
-        st.markdown(f"""
-            <div class="project-card">
-                <div class="badge-tier" style="color: {proj['badge_color']}; border: 1px solid {proj['badge_color']}; background: {proj['bg_color']};">
-                    {proj['tier']}
-                </div>
-                <div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 120px;">
-                    {proj['name']}
-                </div>
-                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px;">
-                    Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục tiêu: <b style="color: #4ade80;">{proj['target']}</b>
-                </div>
-                
-                <div class="perk-box">
-                    <div style="font-weight: 800; color: #4ade80; font-size: 0.85rem; margin-bottom: 3px;">{t['perk_title']}</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem; line-height: 1.4;">{current_perk}</div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        html_card = f"""<div class="project-card">
+<div class="badge-tier" style="color: {proj['badge_color']}; border: 1px solid {proj['badge_color']}; background: {proj['bg_color']};">
+{proj['tier']}
+</div>
+<div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 120px;">
+{proj['name']}
+</div>
+<div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px;">
+Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục tiêu: <b style="color: #4ade80;">{proj['target']}</b>
+</div>
+<div class="perk-box">
+<div style="font-weight: 800; color: #4ade80; font-size: 0.85rem; margin-bottom: 3px;">{t['perk_title']}</div>
+<div style="color: #e2e8f0; font-size: 0.9rem; line-height: 1.4;">{current_perk}</div>
+</div>
+</div>"""
+        st.markdown(html_card, unsafe_allow_html=True)
         
-        # Nút đầu tư cho mỗi dự án
         col_btn, _ = st.columns([0.3, 0.7])
         with col_btn:
             if st.button(t["btn_invest"], key=f"btn_invest_{idx}", use_container_width=True):
