@@ -7,16 +7,21 @@ import random
 
 from i18n import t
 from auth import hien_thi_cong_dang_nhap
-from marketplace import hien_thi_san_giao_dich, hien_thi_cong_dau_tu, hien_thi_gioi_thieu_va_goi_von
+from marketplace import hien_thi_san_giao_dich, hien_thi_gioi_thieu_va_goi_von
 
 try:
-    from social import hien_thi_mang_xa_hoi
-    from community import hien_thi_vinh_danh_va_gop_y
-    from diary import hien_thi_nhat_ky_xanh
+    from forest_investment import hien_thi_dau_tu_trong_rung
 except ImportError:
-    def hien_thi_mang_xa_hoi(): st.info("Hệ thống đang bảo trì.")
-    def hien_thi_vinh_danh_va_gop_y(): st.info("Hệ thống đang bảo trì.")
-    def hien_thi_nhat_ky_xanh(): st.info("Hệ thống đang bảo trì.")
+    def hien_thi_dau_tu_trong_rung(lang=None): st.info("Hệ thống đang bảo trì Cổng đầu tư trồng rừng.")
+
+try:
+    from social_network import hien_thi_mang_xa_hoi
+    from leaderboard import hien_thi_vinh_danh_va_gop_y
+    from green_diary import hien_thi_nhat_ky_xanh
+except ImportError:
+    def hien_thi_mang_xa_hoi(lang=None): st.info("Hệ thống đang bảo trì Mạng xã hội.")
+    def hien_thi_vinh_danh_va_gop_y(lang=None): st.info("Hệ thống đang bảo trì Bảng Vàng.")
+    def hien_thi_nhat_ky_xanh(lang=None): st.info("Hệ thống đang bảo trì Nhật ký xanh.")
 
 # Khởi tạo CSDL SQLite tự động
 try:
@@ -196,7 +201,6 @@ def hop_thoai_dang_xuat():
         if st.button(t("Tiếp tục chặng đường"), use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
-# ================= HÀM HIỂN THỊ KẾT QUẢ MRV HOÀN THIỆN =================
 def render_mrv_results(nam_co_so, nam_so_sanh):
     seed = st.session_state["mrv_polygon_seed"]
     dien_tich_hecta = 8000.0 + (seed % 12000) 
@@ -493,8 +497,8 @@ def main_app():
                 st.warning(t("Đang chạy ở chế độ giả lập cục bộ do thiếu Token GEE hợp lệ."))
 
     with tab_market: hien_thi_san_giao_dich()
-    with tab_invest: hien_thi_cong_dau_tu()
-    with tab_social: hien_thi_mang_xa_hoi()
+    with tab_invest: hien_thi_dau_tu_trong_rung(st.session_state["current_lang"])
+    with tab_social: hien_thi_mang_xa_hoi(st.session_state["current_lang"])
     with tab_diary: hien_thi_nhat_ky_xanh()
     with tab_community: hien_thi_vinh_danh_va_gop_y()
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
