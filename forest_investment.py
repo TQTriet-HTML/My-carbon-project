@@ -1,0 +1,313 @@
+import streamlit as st
+import datetime
+import time
+
+def hien_thi_dau_tu_trong_rung(lang=None):
+    if lang is None:
+        lang = st.session_state.get("language", st.session_state.get("lang", st.session_state.get("current_lang", "Tiếng Việt")))
+    
+    if lang not in ["Tiếng Việt", "English"]:
+        lang = "Tiếng Việt"
+
+    T = {
+        "Tiếng Việt": {
+            "title": "CỔNG ĐẦU TƯ TRỒNG RỪNG TỪ XA",
+            "subtitle": "Nơi nguồn vốn xanh kiến tạo nên những cánh rừng nguyên sinh thế hệ mới.",
+            "guide_title": "📖 TIÊU CHUẨN PHÂN LOẠI & ĐỊNH GIÁ TÍN CHỈ CARBON",
+            "tier_a": "Hạng A (Cao cấp)",
+            "tier_a_desc": "Đa dạng sinh học cao, bảo tồn sinh thái lõi, xác thực chứng chỉ quốc tế (Verra/VCS).",
+            "tier_a_price": "Giá tham chiếu: $25 - $35 / Tấn",
+            "tier_b": "Hạng B (Tiêu chuẩn)",
+            "tier_b_desc": "Rừng trồng mới công nghiệp, đạt chuẩn đo lường viễn thám MRV cơ bản.",
+            "tier_b_price": "Giá tham chiếu: $10 - $18 / Tấn",
+            "tier_c": "Hạng C (Ươm mầm)",
+            "tier_c_desc": "Khu vực đang phục hồi, sinh khối chưa ổn định, chờ AI giám sát định kỳ.",
+            "tier_c_price": "Giá tham chiếu: $5 - $8 / Tấn",
+            "create_proj_title": "TẠO DỰ ÁN KÊU GỌI VỐN (Dành cho Chủ Rừng)",
+            "proj_name": "Tên dự án sinh thái:",
+            "proj_target": "Mục tiêu gọi vốn ($):",
+            "proj_tier": "Loại tín chỉ dự kiến cung cấp:",
+            "ai_verify": "Yêu cầu AI phân tích dữ liệu vệ tinh sơ bộ để minh bạch hóa dự án",
+            "btn_create": "ĐĂNG DỰ ÁN",
+            "ai_processing": "AI đang đối chiếu tọa độ vệ tinh & lịch sử sinh khối...",
+            "ai_success": "AI xác minh: Đạt chuẩn minh bạch ban đầu. Dự án đã được đăng!",
+            "market_title": "DANH MỤC ĐẦU TƯ SINH THÁI ĐANG MỞ",
+            "btn_invest": "ĐẦU TƯ NGAY",
+            "perk_title": "💡 ĐẶC QUYỀN CỦA BẠN:",
+            "perk_buyer": "Nhận chiết khấu ưu đãi lên tới 15% khi thu mua tín chỉ carbon từ dự án này trong tương lai.",
+            "perk_seller": "Đầu tư chéo & Đồng bảo trợ. Sử dụng uy tín tín chỉ Hạng A của bạn để làm giá tham chiếu (Reference Pricing) cho khu rừng này.",
+            "perk_investor": "Nhận cổ tức bằng tín chỉ carbon hàng năm và báo cáo tăng trưởng sinh khối định kỳ qua vệ tinh."
+        },
+        "English": {
+            "title": "REMOTE FOREST INVESTMENT PORTAL",
+            "subtitle": "Where green capital creates the next generation of primeval forests.",
+            "guide_title": "📖 CARBON CREDIT CLASSIFICATION & PRICING GUIDE",
+            "tier_a": "Tier A (Premium)",
+            "tier_a_desc": "High biodiversity, core ecological conservation, international certification (Verra/VCS).",
+            "tier_a_price": "Ref. Price: $25 - $35 / Ton",
+            "tier_b": "Tier B (Standard)",
+            "tier_b_desc": "Newly planted commercial forests, meeting basic MRV remote sensing standards.",
+            "tier_b_price": "Ref. Price: $10 - $18 / Ton",
+            "tier_c": "Tier C (Seedling/Pending)",
+            "tier_c_desc": "Recovering areas, unstable biomass, pending periodic AI monitoring.",
+            "tier_c_price": "Ref. Price: $5 - $8 / Ton",
+            "create_proj_title": "CREATE FUNDING PROJECT (For Forest Owners)",
+            "proj_name": "Eco Project Name:",
+            "proj_target": "Funding Target ($):",
+            "proj_tier": "Expected Credit Type:",
+            "ai_verify": "Request AI preliminary satellite analysis for project transparency",
+            "btn_create": "PUBLISH PROJECT",
+            "ai_processing": "AI is cross-referencing satellite coordinates & biomass history...",
+            "ai_success": "AI Verified: Initial transparency met. Project published!",
+            "market_title": "OPEN ECO-INVESTMENT PORTFOLIO",
+            "btn_invest": "INVEST NOW",
+            "perk_title": "💡 YOUR PRIVILEGE:",
+            "perk_buyer": "Receive up to 15% discount when purchasing future carbon credits from this project.",
+            "perk_seller": "Cross-investment & Co-sponsorship. Leverage your Tier A reputation to set Reference Pricing for this new forest.",
+            "perk_investor": "Receive annual carbon credit dividends and periodic satellite biomass growth reports."
+        }
+    }
+    t = T.get(lang, T["Tiếng Việt"])
+
+    st.markdown("""
+        <style>
+        .invest-title-green {
+            color: #48bb78 !important;
+            font-size: clamp(24px, 2.7vw, 34px) !important;
+            font-weight: 900 !important;
+            text-align: center;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
+        }
+        .invest-sub {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+        .tier-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        .tier-card:hover {
+            transform: translateY(-5px);
+            border-color: #4ade80;
+            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2);
+        }
+        .tier-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .tier-desc {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .tier-price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .project-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1.5px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .project-card:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 8px 30px rgba(56, 189, 248, 0.25);
+            transform: translateY(-3px);
+        }
+        .badge-tier {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .perk-box {
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        div[data-testid="stFormSubmitButton"] button, div[class*="st-key-btn_invest_"] button {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+            border: 1.5px solid #4ade80 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+        div[data-testid="stFormSubmitButton"] button:hover, div[class*="st-key-btn_invest_"] button:hover {
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 9px 0 #15803d, 0 14px 26px rgba(34, 197, 94, 0.75) !important;
+        }
+        div[data-testid="stFormSubmitButton"] button:active, div[class*="st-key-btn_invest_"] button:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 1px 0 #15803d, 0 4px 10px rgba(34, 197, 94, 0.4) !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f'<div class="invest-title-green">{t["title"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="invest-sub">{t["subtitle"]}</div>', unsafe_allow_html=True)
+
+    # 1. BẢNG HƯỚNG DẪN PHÂN LOẠI TÍN CHỈ (Hiển thị cho tất cả người dùng)
+    with st.expander(t["guide_title"], expanded=True):
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.markdown(f"""
+                <div class="tier-card">
+                    <div class="tier-title" style="color: #fbbf24;">🏆 {t["tier_a"]}</div>
+                    <div class="tier-desc">{t["tier_a_desc"]}</div>
+                    <div class="tier-price" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24;">{t["tier_a_price"]}</div>
+                </div>
+            """, unsafe_allow_html=True)
+        with c2:
+            st.markdown(f"""
+                <div class="tier-card">
+                    <div class="tier-title" style="color: #38bdf8;">🌿 {t["tier_b"]}</div>
+                    <div class="tier-desc">{t["tier_b_desc"]}</div>
+                    <div class="tier-price" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8;">{t["tier_b_price"]}</div>
+                </div>
+            """, unsafe_allow_html=True)
+        with c3:
+            st.markdown(f"""
+                <div class="tier-card">
+                    <div class="tier-title" style="color: #94a3b8;">🌱 {t["tier_c"]}</div>
+                    <div class="tier-desc">{t["tier_c_desc"]}</div>
+                    <div class="tier-price" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #94a3b8;">{t["tier_c_price"]}</div>
+                </div>
+            """, unsafe_allow_html=True)
+    
+    st.markdown("<br/>", unsafe_allow_html=True)
+
+    # Đọc vai trò người dùng hiện tại
+    user_role = st.session_state.get("current_role", "Nhà đầu tư từ xa (Cổ đông)")
+    is_seller = "Chủ rừng" in user_role or "MRV" in user_role or "Owner" in user_role
+    is_buyer = "mua" in user_role.lower() or "buyer" in user_role.lower()
+
+    # 2. KHU VỰC TẠO DỰ ÁN (Chỉ Chủ Rừng/Bên Bán mới thấy form này)
+    if is_seller:
+        with st.container(border=True):
+            st.markdown(f'<div style="color:#4ade80; font-weight:800; font-size:1.15rem; margin-bottom:15px; letter-spacing: 0.5px;">{t["create_proj_title"]}</div>', unsafe_allow_html=True)
+            with st.form("form_create_project", clear_on_submit=True):
+                p_name = st.text_input(t["proj_name"])
+                c_vol, c_tier = st.columns(2)
+                with c_vol:
+                    p_target = st.number_input(t["proj_target"], min_value=1000, step=5000)
+                with c_tier:
+                    p_type = st.selectbox(t["proj_tier"], [t["tier_a"], t["tier_b"], t["tier_c"]])
+                
+                ai_check = st.checkbox(t["ai_verify"], value=True)
+                
+                submitted_proj = st.form_submit_button(t["btn_create"], use_container_width=True)
+                if submitted_proj:
+                    if p_name.strip():
+                        if ai_check:
+                            with st.spinner(t["ai_processing"]):
+                                time.sleep(2)
+                            st.success(t["ai_success"])
+                        else:
+                            st.success("Dự án đã được lưu vào hệ thống chờ duyệt tay.")
+                        
+                        if "invest_projects" not in st.session_state:
+                            st.session_state["invest_projects"] = []
+                        
+                        # Mapping màu badge dựa theo Tier
+                        badge_color = "#fbbf24" if "Hạng A" in p_type or "Tier A" in p_type else ("#38bdf8" if "Hạng B" in p_type or "Tier B" in p_type else "#94a3b8")
+                        bg_color = "rgba(251, 191, 36, 0.15)" if "Hạng A" in p_type or "Tier A" in p_type else ("rgba(56, 189, 248, 0.15)" if "Hạng B" in p_type or "Tier B" in p_type else "rgba(148, 163, 184, 0.15)")
+
+                        st.session_state["invest_projects"].insert(0, {
+                            "name": p_name,
+                            "target": f"${p_target:,.0f}",
+                            "tier": p_type,
+                            "badge_color": badge_color,
+                            "bg_color": bg_color,
+                            "owner": st.session_state.get("current_user", "Unknown")
+                        })
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.warning("Vui lòng nhập tên dự án.")
+
+    # MOCK DỮ LIỆU DỰ ÁN NẾU CHƯA CÓ
+    if "invest_projects" not in st.session_state:
+        st.session_state["invest_projects"] = [
+            {
+                "name": "Dự án Rừng Khộp Tây Nguyên" if lang == "Tiếng Việt" else "Central Highlands Dipterocarp Project",
+                "target": "$150,000",
+                "tier": t["tier_c"],
+                "badge_color": "#94a3b8", "bg_color": "rgba(148, 163, 184, 0.15)",
+                "owner": "Hợp tác xã Nông Lâm"
+            },
+            {
+                "name": "Phục hồi Sinh thái Ngập mặn Đồng bằng Sông Cửu Long" if lang == "Tiếng Việt" else "Mekong Delta Mangrove Ecological Restoration",
+                "target": "$500,000",
+                "tier": t["tier_b"],
+                "badge_color": "#38bdf8", "bg_color": "rgba(56, 189, 248, 0.15)",
+                "owner": "Tập đoàn Phát triển Rừng Ven Biển"
+            }
+        ]
+
+    # 3. DANH MỤC DỰ ÁN MỞ ĐẦU TƯ
+    st.markdown(f'<div class="invest-title-green" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px;">{t["market_title"]}</div>', unsafe_allow_html=True)
+    
+    # Xác định đặc quyền dựa trên vai trò
+    if is_buyer:
+        current_perk = t["perk_buyer"]
+    elif is_seller:
+        current_perk = t["perk_seller"]
+    else:
+        current_perk = t["perk_investor"]
+
+    for idx, proj in enumerate(st.session_state["invest_projects"]):
+        st.markdown(f"""
+            <div class="project-card">
+                <div class="badge-tier" style="color: {proj['badge_color']}; border: 1px solid {proj['badge_color']}; background: {proj['bg_color']};">
+                    {proj['tier']}
+                </div>
+                <div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 120px;">
+                    {proj['name']}
+                </div>
+                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px;">
+                    Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục tiêu: <b style="color: #4ade80;">{proj['target']}</b>
+                </div>
+                
+                <div class="perk-box">
+                    <div style="font-weight: 800; color: #4ade80; font-size: 0.85rem; margin-bottom: 3px;">{t['perk_title']}</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem; line-height: 1.4;">{current_perk}</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Nút đầu tư cho mỗi dự án
+        col_btn, _ = st.columns([0.3, 0.7])
+        with col_btn:
+            if st.button(t["btn_invest"], key=f"btn_invest_{idx}", use_container_width=True):
+                st.toast(f"Đang chuyển hướng đến cổng thanh toán cho {proj['name']}..." if lang == "Tiếng Việt" else f"Redirecting to payment gateway for {proj['name']}...")
+                time.sleep(1)
+        st.markdown("<div style='margin-bottom: 15px;'></div>", unsafe_allow_html=True)
