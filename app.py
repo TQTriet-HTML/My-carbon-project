@@ -16,11 +16,17 @@ except ImportError:
 
 try:
     from social_network import hien_thi_mang_xa_hoi
-    from leaderboard import hien_thi_vinh_danh_va_gop_y
-    from green_diary import hien_thi_nhat_ky_xanh
 except ImportError:
     def hien_thi_mang_xa_hoi(lang=None): st.info("Hệ thống đang bảo trì Mạng xã hội.")
+
+try:
+    from leaderboard import hien_thi_vinh_danh_va_gop_y
+except ImportError:
     def hien_thi_vinh_danh_va_gop_y(lang=None): st.info("Hệ thống đang bảo trì Bảng Vàng.")
+
+try:
+    from green_diary import hien_thi_nhat_ky_xanh
+except ImportError:
     def hien_thi_nhat_ky_xanh(lang=None): st.info("Hệ thống đang bảo trì Nhật ký xanh.")
 
 # Khởi tạo CSDL SQLite tự động
@@ -201,6 +207,7 @@ def hop_thoai_dang_xuat():
         if st.button(t("Tiếp tục chặng đường"), use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
+# ================= HÀM HIỂN THỊ KẾT QUẢ MRV HOÀN THIỆN =================
 def render_mrv_results(nam_co_so, nam_so_sanh):
     seed = st.session_state["mrv_polygon_seed"]
     dien_tich_hecta = 8000.0 + (seed % 12000) 
@@ -498,9 +505,25 @@ def main_app():
 
     with tab_market: hien_thi_san_giao_dich()
     with tab_invest: hien_thi_dau_tu_trong_rung(st.session_state["current_lang"])
-    with tab_social: hien_thi_mang_xa_hoi(st.session_state["current_lang"])
-    with tab_diary: hien_thi_nhat_ky_xanh()
-    with tab_community: hien_thi_vinh_danh_va_gop_y()
+    
+    with tab_social:
+        try:
+            hien_thi_mang_xa_hoi(st.session_state["current_lang"])
+        except Exception as e:
+            st.info(f"{t('Hệ thống đang bảo trì Mạng xã hội.')} ({str(e)})")
+
+    with tab_diary:
+        try:
+            hien_thi_nhat_ky_xanh(st.session_state["current_lang"])
+        except Exception:
+            st.info(t("Hệ thống đang bảo trì Nhật ký xanh."))
+
+    with tab_community:
+        try:
+            hien_thi_vinh_danh_va_gop_y(st.session_state["current_lang"])
+        except Exception:
+            st.info(t("Hệ thống đang bảo trì Bảng Vàng."))
+
     with tab_about: hien_thi_gioi_thieu_va_goi_von()
 
 if not st.session_state["logged_in"]:
