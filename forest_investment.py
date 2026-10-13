@@ -140,7 +140,6 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             letter-spacing: 0.5px;
         }
         
-        /* Chỉnh style nút bấm */
         div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important; color: #ffffff !important; font-weight: 800 !important;
@@ -364,12 +363,13 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         .tier-desc { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2; }
         .tier-price { font-size: 0.95rem; font-weight: 700; padding: 8px 12px; border-radius: 6px; display: inline-block; position: relative; z-index: 2; }
 
-        /* SHIELD BADGES */
+        /* KHẮC PHỤC: KHIÊN ĐƯỢC BO TRÒN TRỊA THEO ĐÚNG Ý BẠN */
         .shield-badge {
             display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 32px;
-            clip-path: polygon(50% 0%, 100% 0, 100% 75%, 50% 100%, 0 75%, 0 0);
+            border-radius: 4px 4px 16px 16px;
             color: #1e293b; font-weight: 900; font-size: 0.85rem; font-family: sans-serif;
             text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         .shield-a { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
         .shield-b { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
@@ -511,7 +511,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
     for idx, proj in enumerate(st.session_state["invest_projects"]):
         file_rendered = proj.get("file_html", "")
         
-        # Safe `.get()` access for older session_state items
+        # Dùng .get() để chống sập nếu bộ nhớ cũ chưa có khiên (Khắc phục lỗi KeyError: shield_class)
         badge_c = proj.get('badge_color', '#cbd5e1')
         bg_c = proj.get('bg_color', 'rgba(148, 163, 184, 0.15)')
         s_class = proj.get('shield_class', 'shield-c')
