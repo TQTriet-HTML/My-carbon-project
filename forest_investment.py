@@ -3,6 +3,58 @@ import datetime
 import time
 import base64
 
+@st.dialog("BÁO CÁO DỰ ÁN LỪA ĐẢO / REPORT SCAM PROJECT", width="small")
+def hop_thoai_bao_cao_du_an(proj_idx, lang="Tiếng Việt"):
+    proj = st.session_state["invest_projects"][proj_idx]
+    
+    T = {
+        "Tiếng Việt": {
+            "rep_reason_lbl": "Lý do báo cáo dự án:",
+            "rep_r1": "Dự án ảo / Khống sinh khối",
+            "rep_r2": "Chủ rừng mạo danh / Không có thật",
+            "rep_r3": "Giấy tờ pháp lý giả mạo",
+            "rep_r4": "Mục tiêu gọi vốn bất thường",
+            "rep_r5": "Đã nhận vốn nhưng không triển khai",
+            "rep_r6": "Xâm phạm quy chuẩn cộng đồng MRV",
+            "rep_r7": "Lý do khác...",
+            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
+            "btn_submit_rep": "GỬI BÁO CÁO",
+            "rep_msg": "Hệ thống đang xác minh dự án này. Thời gian thẩm định từ 3-4 ngày. Nếu báo cáo chính xác, bạn sẽ nhận được Điểm Cống hiến quy đổi tín chỉ.",
+            "btn_cancel": "HỦY"
+        },
+        "English": {
+            "rep_reason_lbl": "Reason for reporting:",
+            "rep_r1": "Fake project / Phantom biomass",
+            "rep_r2": "Impersonated / Non-existent owner",
+            "rep_r3": "Forged legal documents",
+            "rep_r4": "Suspicious funding target",
+            "rep_r5": "Funds received but no deployment",
+            "rep_r6": "Violation of MRV community standards",
+            "rep_r7": "Other reason...",
+            "rep_other_lbl": "Please specify:",
+            "btn_submit_rep": "SUBMIT REPORT",
+            "rep_msg": "System is verifying this project. Evaluation takes 3-4 days. If accurate, you will earn Contribution Points for credits.",
+            "btn_cancel": "CANCEL"
+        }
+    }
+    t = T.get(lang, T["Tiếng Việt"])
+
+    st.markdown(f"<b style='color:#ef4444; font-size:1.05rem;'>{t['rep_reason_lbl']}</b>", unsafe_allow_html=True)
+    rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
+    choice = st.radio("Lý do báo cáo dự án", rep_reasons, label_visibility="collapsed", key=f"rad_rep_proj_{proj_idx}")
+    
+    if choice == t["rep_r7"]:
+        st.text_input(t["rep_other_lbl"], key=f"txt_rep_proj_{proj_idx}")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button(t["btn_cancel"], use_container_width=True, key=f"ccl_rep_{proj_idx}"):
+            st.rerun()
+    with c2:
+        if st.button(t["btn_submit_rep"], type="primary", use_container_width=True, key=f"sub_rep_proj_{proj_idx}"):
+            st.toast(t["rep_msg"], icon="✅")
+            st.rerun()
+
 @st.dialog("CỔNG THANH TOÁN & ĐẦU TƯ / INVESTMENT GATEWAY", width="large")
 def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
     proj = st.session_state["invest_projects"][proj_idx]
@@ -17,6 +69,8 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "tier_3": "Góp vốn > 30%: Chiết khấu 15% mua tín chỉ + Lãi suất 6%/năm + Quyền đặt giá tham chiếu",
             "invest_amt": "Nhập số tiền đầu tư ($):",
             "btn_confirm": "XÁC NHẬN THANH TOÁN",
+            "btn_contact": "LIÊN HỆ CHỦ QUẢN",
+            "btn_report": "BÁO CÁO DỰ ÁN",
             "success_msg": "Giao dịch thành công! Bạn đã góp phần kiến tạo mảng xanh mới.",
             "progress_msg": "Hệ thống đang xử lý giao dịch qua Vietcombank Escrow..."
         },
@@ -29,20 +83,95 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "tier_3": "Funding > 30%: 15% Credit Discount + 6% Annual Yield + Reference Pricing Rights",
             "invest_amt": "Enter investment amount ($):",
             "btn_confirm": "CONFIRM PAYMENT",
+            "btn_contact": "CONTACT OWNER",
+            "btn_report": "REPORT PROJECT",
             "success_msg": "Transaction successful! You have contributed to a new green legacy.",
             "progress_msg": "Processing transaction via Vietcombank Escrow..."
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
 
+    st.markdown("""
+        <style>
+        @keyframes blockGlowPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(72, 187, 120, 0.15); border-color: rgba(72, 187, 120, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(72, 187, 120, 0.5); border-color: #48bb78; }
+        }
+        
+        .animated-info-block {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(72, 187, 120, 0.4);
+            border-left: 5px solid #10b981;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: blockGlowPulse 4s infinite ease-in-out;
+        }
+        .animated-info-block:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 12px 30px rgba(72, 187, 120, 0.6);
+            border-color: #4ade80;
+            border-left: 5px solid #34d399;
+        }
+
+        .animated-discount-block {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-left: 5px solid #0ea5e9;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: blockGlowPulse 4s infinite ease-in-out;
+            animation-delay: 2s;
+        }
+        .animated-discount-block:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.6);
+            border-color: #7dd3fc;
+            border-left: 5px solid #38bdf8;
+        }
+        
+        .animated-title-text {
+            font-weight: 900;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Chỉnh style nút bấm */
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+            border: 1.5px solid #4ade80 !important; color: #ffffff !important; font-weight: 800 !important;
+            border-radius: 8px !important; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4) !important; transition: all 0.3s ease !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(34, 197, 94, 0.7) !important; }
+        
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+            border: 1.5px solid #38bdf8 !important; color: #ffffff !important; font-weight: 800 !important;
+            border-radius: 8px !important; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4) !important; transition: all 0.3s ease !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.7) !important; }
+        
+        div[data-testid="stHorizontalBlock"] > div:nth-child(3) button {
+            background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%) !important;
+            border: 1.5px solid #f87171 !important; color: #ffffff !important; font-weight: 800 !important;
+            border-radius: 8px !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; transition: all 0.3s ease !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(3) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(239, 68, 68, 0.7) !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
     st.markdown(f"""
-        <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 20px;">
-            <div style="font-weight: 800; color: #10b981; font-size: 1.05rem; margin-bottom: 5px;">🛡️ {t['pledge_title']}</div>
+        <div class="animated-info-block">
+            <div class="animated-title-text" style="color: #10b981;">{t['pledge_title']}</div>
             <div style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">{t['pledge_desc']}</div>
         </div>
         
-        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
-            <div style="font-weight: 800; color: #38bdf8; font-size: 1.05rem; margin-bottom: 10px;">💎 {t['discount_title']}</div>
+        <div class="animated-discount-block">
+            <div class="animated-title-text" style="color: #38bdf8;">{t['discount_title']}</div>
             <ul style="color: #e2e8f0; font-size: 0.95rem; margin-bottom: 0;">
                 <li>{t['tier_1']}</li>
                 <li style="margin-top: 5px;">{t['tier_2']}</li>
@@ -53,35 +182,43 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
 
     amt = st.number_input(t["invest_amt"], min_value=100, step=1000)
     
-    if st.button(t["btn_confirm"], type="primary", use_container_width=True):
-        with st.spinner(t["progress_msg"]):
-            time.sleep(2)
-        
-        if "my_investments" not in st.session_state:
-            st.session_state["my_investments"] = []
-        
-        target_val = float(proj['target'].replace('$', '').replace(',', ''))
-        ratio = (amt / target_val) * 100 if target_val > 0 else 0
-        
-        discount = "5%" if ratio < 10 else ("10%" if ratio <= 30 else "15%")
-        yield_pct = "2%" if ratio < 10 else ("4%" if ratio <= 30 else "6%")
-        
-        st.session_state["my_investments"].append({
-            "name": proj["name"],
-            "amount": amt,
-            "ratio": ratio,
-            "discount": discount,
-            "yield": yield_pct,
-            "time": datetime.datetime.now().strftime("%d/%m/%Y"),
-            "owner": proj["owner"]
-        })
-        
-        if "green_points" not in st.session_state: st.session_state["green_points"] = 0
-        st.session_state["green_points"] += int(amt / 10)
-        
-        st.success(t["success_msg"])
-        time.sleep(1)
-        st.rerun()
+    st.markdown("<br/>", unsafe_allow_html=True)
+    c1, c2, c3 = st.columns([0.45, 0.3, 0.25])
+    
+    with c1:
+        if st.button(t["btn_confirm"], use_container_width=True, key=f"pay_{proj_idx}"):
+            with st.spinner(t["progress_msg"]):
+                time.sleep(2)
+            
+            if "my_investments" not in st.session_state: st.session_state["my_investments"] = []
+            
+            target_val = float(proj['target'].replace('$', '').replace(',', ''))
+            ratio = (amt / target_val) * 100 if target_val > 0 else 0
+            
+            discount = "5%" if ratio < 10 else ("10%" if ratio <= 30 else "15%")
+            yield_pct = "2%" if ratio < 10 else ("4%" if ratio <= 30 else "6%")
+            
+            st.session_state["my_investments"].append({
+                "name": proj["name"], "amount": amt, "ratio": ratio,
+                "discount": discount, "yield": yield_pct,
+                "time": datetime.datetime.now().strftime("%d/%m/%Y"), "owner": proj["owner"]
+            })
+            
+            if "green_points" not in st.session_state: st.session_state["green_points"] = 0
+            st.session_state["green_points"] += int(amt / 10)
+            
+            st.success(t["success_msg"])
+            time.sleep(1)
+            st.rerun()
+            
+    with c2:
+        if st.button(t["btn_contact"], use_container_width=True, key=f"cnt_{proj_idx}"):
+            st.toast(f"Email: {proj.get('contact', 'contact@eco.vn')}")
+            
+    with c3:
+        if st.button(t["btn_report"], use_container_width=True, key=f"rpt_{proj_idx}"):
+            hop_thoai_bao_cao_du_an(proj_idx, lang)
+
 
 def hien_thi_dau_tu_trong_rung(lang=None):
     if lang is None:
@@ -161,18 +298,51 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 
     st.markdown("""
         <style>
-        .invest-title-green {
-            color: #48bb78 !important;
+        /* Tittle: Green -> Header Blue Sweep */
+        @keyframes greenToBlueSweep {
+            0%, 100% { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
+            50% { color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.8); }
+        }
+        
+        .invest-title-sweep {
             font-size: clamp(24px, 2.7vw, 34px) !important;
             font-weight: 900 !important;
             text-align: center;
             letter-spacing: 1.5px;
             margin-bottom: 8px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
+            animation: greenToBlueSweep 6s infinite ease-in-out;
         }
-        .invest-sub { text-align: center; color: #94a3b8; font-size: 1rem; margin-bottom: 30px; }
+
+        /* Subtitle: Blue -> Green sweep every 5s */
+        @keyframes blueSubSweep {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .invest-sub-sweep {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #38bdf8 0%, #38bdf8 40%, #4ade80 50%, #38bdf8 60%, #38bdf8 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: blueSubSweep 5s linear infinite;
+        }
         
+        /* Section Titles Sweep */
+        .section-sweep {
+            color: #4ade80;
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            animation: greenToBlueSweep 5s infinite ease-in-out;
+        }
+
+        /* KHỐI ĐỘNG CÓ HIỆU ỨNG LÓA SÁNG XANH LÁ */
         @keyframes greenGlowPulse {
             0%, 100% { box-shadow: 0 0 15px rgba(72, 187, 120, 0.2); }
             50% { box-shadow: 0 0 25px rgba(72, 187, 120, 0.6); }
@@ -189,16 +359,28 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         }
         .tier-card:hover::before { animation: none; left: 200%; transition: left 0.7s ease-in-out; }
         .tier-card:hover { transform: translateY(-8px) scale(1.02); border-color: #4ade80; box-shadow: 0 15px 35px rgba(74, 222, 128, 0.5); z-index: 5; }
-        .tier-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; position: relative; z-index: 2; }
+        
+        .tier-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; position: relative; z-index: 2; display: flex; align-items: center; gap: 8px; }
         .tier-desc { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2; }
         .tier-price { font-size: 0.95rem; font-weight: 700; padding: 8px 12px; border-radius: 6px; display: inline-block; position: relative; z-index: 2; }
+
+        /* SHIELD BADGES */
+        .shield-badge {
+            display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 32px;
+            clip-path: polygon(50% 0%, 100% 0, 100% 75%, 50% 100%, 0 75%, 0 0);
+            color: #1e293b; font-weight: 900; font-size: 0.85rem; font-family: sans-serif;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+        }
+        .shield-a { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+        .shield-b { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        .shield-c { background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%); box-shadow: 0 0 10px rgba(148, 163, 184, 0.5); }
 
         .project-card {
             background: rgba(15, 23, 42, 0.65); border: 1.5px solid rgba(56, 189, 248, 0.3); border-radius: 14px;
             padding: 22px; margin-bottom: 25px; position: relative; overflow: hidden; transition: all 0.3s ease;
         }
         .project-card:hover { border-color: #38bdf8; box-shadow: 0 8px 30px rgba(56, 189, 248, 0.25); transform: translateY(-3px); }
-        .badge-tier { position: absolute; top: 20px; right: 20px; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
+        .badge-tier-proj { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
         
         div[data-testid="stFormSubmitButton"] button, div[class*="st-key-btn_invest_"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
@@ -227,17 +409,29 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown(f'<div class="invest-title-green">{t["title"]}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="invest-sub">{t["subtitle"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="invest-title-sweep">{t["title"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="invest-sub-sweep">{t["subtitle"]}</div>', unsafe_allow_html=True)
 
     with st.expander(t["guide_title"], expanded=True):
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.markdown(f"""<div class="tier-card"><div class="tier-title" style="color: #fbbf24;">{t["tier_a"]}</div><div class="tier-desc">{t["tier_a_desc"]}</div><div class="tier-price" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24;">{t["tier_a_price"]}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="tier-card">
+            <div class="tier-title" style="color: #fbbf24;"><div class="shield-badge shield-a">I</div>{t["tier_a"]}</div>
+            <div class="tier-desc">{t["tier_a_desc"]}</div>
+            <div class="tier-price" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24;">{t["tier_a_price"]}</div>
+            </div>""", unsafe_allow_html=True)
         with c2:
-            st.markdown(f"""<div class="tier-card"><div class="tier-title" style="color: #38bdf8;">{t["tier_b"]}</div><div class="tier-desc">{t["tier_b_desc"]}</div><div class="tier-price" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8;">{t["tier_b_price"]}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="tier-card">
+            <div class="tier-title" style="color: #38bdf8;"><div class="shield-badge shield-b">II</div>{t["tier_b"]}</div>
+            <div class="tier-desc">{t["tier_b_desc"]}</div>
+            <div class="tier-price" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8;">{t["tier_b_price"]}</div>
+            </div>""", unsafe_allow_html=True)
         with c3:
-            st.markdown(f"""<div class="tier-card"><div class="tier-title" style="color: #94a3b8;">{t["tier_c"]}</div><div class="tier-desc">{t["tier_c_desc"]}</div><div class="tier-price" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #94a3b8;">{t["tier_c_price"]}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="tier-card">
+            <div class="tier-title" style="color: #94a3b8;"><div class="shield-badge shield-c">III</div>{t["tier_c"]}</div>
+            <div class="tier-desc">{t["tier_c_desc"]}</div>
+            <div class="tier-price" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #94a3b8;">{t["tier_c_price"]}</div>
+            </div>""", unsafe_allow_html=True)
     
     st.markdown("<br/>", unsafe_allow_html=True)
 
@@ -246,7 +440,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 
     if is_seller:
         with st.container(border=True):
-            st.markdown(f'<div style="color:#4ade80; font-weight:800; font-size:1.15rem; margin-bottom:15px; letter-spacing: 0.5px;">{t["create_proj_title"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="section-sweep">{t["create_proj_title"]}</div>', unsafe_allow_html=True)
             with st.form("form_create_project", clear_on_submit=True):
                 p_name = st.text_input(t["proj_name"])
                 c_vol, c_tier = st.columns(2)
@@ -271,9 +465,11 @@ def hien_thi_dau_tu_trong_rung(lang=None):
                         
                         if "invest_projects" not in st.session_state: st.session_state["invest_projects"] = []
                         
-                        badge_color = "#fbbf24" if "Hạng A" in p_type or "Tier A" in p_type else ("#38bdf8" if "Hạng B" in p_type or "Tier B" in p_type else "#94a3b8")
+                        badge_color = "#fbbf24" if "Hạng A" in p_type or "Tier A" in p_type else ("#38bdf8" if "Hạng B" in p_type or "Tier B" in p_type else "#cbd5e1")
                         bg_color = "rgba(251, 191, 36, 0.15)" if "Hạng A" in p_type or "Tier A" in p_type else ("rgba(56, 189, 248, 0.15)" if "Hạng B" in p_type or "Tier B" in p_type else "rgba(148, 163, 184, 0.15)")
-                        
+                        shield_class = "shield-a" if "Hạng A" in p_type or "Tier A" in p_type else ("shield-b" if "Hạng B" in p_type or "Tier B" in p_type else "shield-c")
+                        shield_text = "I" if "Hạng A" in p_type or "Tier A" in p_type else ("II" if "Hạng B" in p_type or "Tier B" in p_type else "III")
+
                         file_data_html = ""
                         if p_file is not None:
                             if p_file.type.startswith("image/"):
@@ -284,7 +480,9 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 
                         st.session_state["invest_projects"].insert(0, {
                             "name": p_name, "target": f"${p_target:,.0f}", "tier": p_type,
-                            "badge_color": badge_color, "bg_color": bg_color, "owner": st.session_state.get("current_user", "Unknown"),
+                            "badge_color": badge_color, "bg_color": bg_color, 
+                            "shield_class": shield_class, "shield_text": shield_text,
+                            "owner": st.session_state.get("current_user", "Unknown"),
                             "contact": p_contact, "file_html": file_data_html
                         })
                         time.sleep(1)
@@ -296,34 +494,34 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         st.session_state["invest_projects"] = [
             {
                 "name": "Dự án Rừng Khộp Tây Nguyên" if lang == "Tiếng Việt" else "Central Highlands Dipterocarp Project",
-                "target": "$150,000", "tier": t["tier_c"], "badge_color": "#94a3b8", "bg_color": "rgba(148, 163, 184, 0.15)",
+                "target": "$150,000", "tier": t["tier_c"], "badge_color": "#cbd5e1", "bg_color": "rgba(148, 163, 184, 0.15)",
+                "shield_class": "shield-c", "shield_text": "III",
                 "owner": "Hợp tác xã Nông Lâm", "contact": "htxnonglam@eco.vn", "file_html": ""
             },
             {
                 "name": "Phục hồi Sinh thái Ngập mặn Đồng bằng Sông Cửu Long" if lang == "Tiếng Việt" else "Mekong Delta Mangrove Ecological Restoration",
                 "target": "$500,000", "tier": t["tier_b"], "badge_color": "#38bdf8", "bg_color": "rgba(56, 189, 248, 0.15)",
+                "shield_class": "shield-b", "shield_text": "II",
                 "owner": "Tập đoàn Phát triển Rừng Ven Biển", "contact": "+84 909 123 456", "file_html": ""
             }
         ]
 
-    st.markdown(f'<div class="invest-title-green" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px;">{t["market_title"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-sweep" style="font-size:1.4rem; margin-top:35px; margin-bottom:20px; text-align:center;">{t["market_title"]}</div>', unsafe_allow_html=True)
 
     for idx, proj in enumerate(st.session_state["invest_projects"]):
-        contact_html = f"<div class='contact-chip'>📞 {t['contact_lbl']} {proj.get('contact', 'N/A')}</div>" if proj.get('contact') else ""
         file_rendered = proj.get("file_html", "")
 
         html_card = f"""<div class="project-card">
-<div class="badge-tier" style="color: {proj['badge_color']}; border: 1px solid {proj['badge_color']}; background: {proj['bg_color']};">
-{proj['tier']}
+<div class="badge-tier-proj" style="color: {proj['badge_color']}; border: 1px solid {proj['badge_color']}; background: {proj['bg_color']}; padding: 4px 12px; border-radius: 20px;">
+<div class="shield-badge {proj['shield_class']}">{proj['shield_text']}</div> {proj['tier']}
 </div>
-<div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 120px;">
+<div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 180px;">
 {proj['name']}
 </div>
 <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px;">
 Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục tiêu: <b style="color: #4ade80;">{proj['target']}</b>
 </div>
 {file_rendered}
-{contact_html}
 </div>"""
         st.markdown(html_card, unsafe_allow_html=True)
         
@@ -333,7 +531,8 @@ Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục
                 hop_thoai_thanh_toan_dau_tu(idx, lang)
         st.markdown("<div style='margin-bottom: 15px;'></div>", unsafe_allow_html=True)
 
-    st.markdown(f'<div class="invest-title-green" style="font-size:1.4rem; margin-top:40px; margin-bottom:20px;">{t["my_invest_title"]}</div>', unsafe_allow_html=True)
+    # DANH MỤC ĐÃ ĐẦU TƯ CỦA TÔI
+    st.markdown(f'<div class="section-sweep" style="font-size:1.4rem; margin-top:40px; margin-bottom:20px; text-align:center;">{t["my_invest_title"]}</div>', unsafe_allow_html=True)
     
     my_invs = st.session_state.get("my_investments", [])
     green_pts = st.session_state.get("green_points", 0)
@@ -347,17 +546,20 @@ Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục
         st.info(t["no_invest"])
     else:
         for inv in my_invs:
-            html_my_inv = f"""<div class="my-invest-card">
-<div style="font-size: 1.1rem; font-weight: 800; color: #f8fafc; margin-bottom: 5px;">{inv['name']}</div>
-<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 12px;">Ngày đầu tư: {inv['time']} &nbsp;|&nbsp; Số tiền: <b style="color:#4ade80;">${inv['amount']:,.0f}</b></div>
-<div style="color: #e2e8f0; font-size: 0.9rem; margin-bottom: 5px;">{t['ratio_lbl']} <b style="color:#38bdf8;">{inv['ratio']:.2f}%</b> tổng vốn</div>
-<div class="prog-bar-bg"><div class="prog-bar-fill" style="width: {min(100, inv['ratio'])}%;"></div></div>
-<div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
-<div style="color: #fbbf24; font-size: 0.85rem; font-weight: 800; margin-bottom: 4px;">{t['benefit_lbl']}</div>
-<ul style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 0;">
-<li>Được giảm giá <b>{inv['discount']}</b> khi mua tín chỉ tương lai.</li>
-<li>Lợi suất sinh thái cố định: <b>{inv['yield']}</b>.</li>
-</ul>
-</div>
-</div>"""
-            st.markdown(html_my_inv, unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="my-invest-card">
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #f8fafc; margin-bottom: 5px;">{inv['name']}</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 12px;">Ngày đầu tư: {inv['time']} &nbsp;|&nbsp; Số tiền: <b style="color:#4ade80;">${inv['amount']:,.0f}</b></div>
+                    
+                    <div style="color: #e2e8f0; font-size: 0.9rem; margin-bottom: 5px;">{t['ratio_lbl']} <b style="color:#38bdf8;">{inv['ratio']:.2f}%</b> tổng vốn</div>
+                    <div class="prog-bar-bg"><div class="prog-bar-fill" style="width: {min(100, inv['ratio'])}%;"></div></div>
+                    
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <div style="color: #fbbf24; font-size: 0.85rem; font-weight: 800; margin-bottom: 4px;">{t['benefit_lbl']}</div>
+                        <ul style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 0;">
+                            <li>Được giảm giá <b>{inv['discount']}</b> khi mua tín chỉ tương lai.</li>
+                            <li>Lợi suất sinh thái cố định: <b>{inv['yield']}</b>.</li>
+                        </ul>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
