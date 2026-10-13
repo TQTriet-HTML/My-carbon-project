@@ -363,7 +363,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         .tier-desc { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2; }
         .tier-price { font-size: 0.95rem; font-weight: 700; padding: 8px 12px; border-radius: 6px; display: inline-block; position: relative; z-index: 2; }
 
-        /* KHẮC PHỤC: KHIÊN ĐƯỢC BO TRÒN TRỊA THEO ĐÚNG Ý BẠN */
+        /* SHIELD BADGES ĐÃ BO TRÒN */
         .shield-badge {
             display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 32px;
             border-radius: 4px 4px 16px 16px;
@@ -511,12 +511,17 @@ def hien_thi_dau_tu_trong_rung(lang=None):
     for idx, proj in enumerate(st.session_state["invest_projects"]):
         file_rendered = proj.get("file_html", "")
         
-        # Dùng .get() để chống sập nếu bộ nhớ cũ chưa có khiên (Khắc phục lỗi KeyError: shield_class)
-        badge_c = proj.get('badge_color', '#cbd5e1')
-        bg_c = proj.get('bg_color', 'rgba(148, 163, 184, 0.15)')
-        s_class = proj.get('shield_class', 'shield-c')
-        s_text = proj.get('shield_text', 'III')
+        # Tự động gán/khôi phục khiên đồng bộ với chữ Hạng nếu dự án cũ chưa có.
         p_tier = proj.get('tier', t['tier_c'])
+        default_badge_c = "#fbbf24" if "A" in p_tier else ("#38bdf8" if "B" in p_tier else "#cbd5e1")
+        default_bg_c = "rgba(251, 191, 36, 0.15)" if "A" in p_tier else ("rgba(56, 189, 248, 0.15)" if "B" in p_tier else "rgba(148, 163, 184, 0.15)")
+        default_s_class = "shield-a" if "A" in p_tier else ("shield-b" if "B" in p_tier else "shield-c")
+        default_s_text = "I" if "A" in p_tier else ("II" if "B" in p_tier else "III")
+
+        badge_c = proj.get('badge_color', default_badge_c)
+        bg_c = proj.get('bg_color', default_bg_c)
+        s_class = proj.get('shield_class', default_s_class)
+        s_text = proj.get('shield_text', default_s_text)
 
         html_card = f"""<div class="project-card">
 <div class="badge-tier-proj" style="color: {badge_c}; border: 1px solid {badge_c}; background: {bg_c}; padding: 4px 12px; border-radius: 20px;">
