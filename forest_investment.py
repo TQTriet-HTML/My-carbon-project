@@ -510,10 +510,17 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 
     for idx, proj in enumerate(st.session_state["invest_projects"]):
         file_rendered = proj.get("file_html", "")
+        
+        # Safe `.get()` access for older session_state items
+        badge_c = proj.get('badge_color', '#cbd5e1')
+        bg_c = proj.get('bg_color', 'rgba(148, 163, 184, 0.15)')
+        s_class = proj.get('shield_class', 'shield-c')
+        s_text = proj.get('shield_text', 'III')
+        p_tier = proj.get('tier', t['tier_c'])
 
         html_card = f"""<div class="project-card">
-<div class="badge-tier-proj" style="color: {proj['badge_color']}; border: 1px solid {proj['badge_color']}; background: {proj['bg_color']}; padding: 4px 12px; border-radius: 20px;">
-<div class="shield-badge {proj['shield_class']}">{proj['shield_text']}</div> {proj['tier']}
+<div class="badge-tier-proj" style="color: {badge_c}; border: 1px solid {badge_c}; background: {bg_c}; padding: 4px 12px; border-radius: 20px;">
+<div class="shield-badge {s_class}">{s_text}</div> {p_tier}
 </div>
 <div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 180px;">
 {proj['name']}
