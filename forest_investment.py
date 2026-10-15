@@ -218,6 +218,7 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
                 st.rerun()
         with c_rep2:
             if st.button(t["btn_submit_rep"], type="primary", use_container_width=True, key=f"sub_rep_proj_in_{proj_idx}"):
+                st.session_state["verified_reports"] = st.session_state.get("verified_reports", 0) + 1
                 st.toast(t["rep_msg"], icon="✅")
                 st.session_state[f"show_rep_proj_{proj_idx}"] = False
                 st.rerun()
@@ -262,7 +263,8 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             "pts": "Điểm cống hiến",
             "ratio_lbl": "Tỷ lệ góp vốn:",
             "benefit_lbl": "Quyền lợi nhận được:",
-            "status_lbl": "Tiến độ dự án:"
+            "status_lbl": "Tiến độ dự án:",
+            "ai_verified_badge": "✓ Đã được xác minh bởi AI"
         },
         "English": {
             "title": "REMOTE FOREST INVESTMENT PORTAL",
@@ -295,7 +297,8 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             "pts": "Contribution points",
             "ratio_lbl": "Funding Ratio:",
             "benefit_lbl": "Benefits Received:",
-            "status_lbl": "Project Progress:"
+            "status_lbl": "Project Progress:",
+            "ai_verified_badge": "✓ Verified by AI"
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
@@ -382,6 +385,21 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         .project-card:hover { border-color: #38bdf8; box-shadow: 0 8px 30px rgba(56, 189, 248, 0.25); transform: translateY(-3px); }
         .badge-tier-proj { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
         
+        .ai-verified-invest-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(72, 187, 120, 0.16);
+            color: #4ade80;
+            border: 1px solid rgba(72, 187, 120, 0.55);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: 10px;
+            box-shadow: 0 0 10px rgba(72, 187, 120, 0.25);
+            vertical-align: middle;
+        }
+
         div[data-testid="stFormSubmitButton"] button, div[class*="st-key-btn_invest_"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important; border: 1.5px solid #4ade80 !important;
             border-radius: 10px !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important;
@@ -483,7 +501,8 @@ def hien_thi_dau_tu_trong_rung(lang=None):
                             "badge_color": badge_color, "bg_color": bg_color, 
                             "shield_class": shield_class, "shield_text": shield_text,
                             "owner": st.session_state.get("current_user", "Unknown"),
-                            "contact": p_contact, "file_html": file_data_html
+                            "contact": p_contact, "file_html": file_data_html,
+                            "ai_verified": ai_check
                         })
                         time.sleep(1)
                         st.rerun()
@@ -496,13 +515,15 @@ def hien_thi_dau_tu_trong_rung(lang=None):
                 "name": "Dự án Rừng Khộp Tây Nguyên" if lang == "Tiếng Việt" else "Central Highlands Dipterocarp Project",
                 "target": "$150,000", "tier": t["tier_c"], "badge_color": "#cbd5e1", "bg_color": "rgba(148, 163, 184, 0.15)",
                 "shield_class": "shield-c", "shield_text": "III",
-                "owner": "Hợp tác xã Nông Lâm", "contact": "htxnonglam@eco.vn", "file_html": ""
+                "owner": "Hợp tác xã Nông Lâm", "contact": "htxnonglam@eco.vn", "file_html": "",
+                "ai_verified": True
             },
             {
                 "name": "Phục hồi Sinh thái Ngập mặn Đồng bằng Sông Cửu Long" if lang == "Tiếng Việt" else "Mekong Delta Mangrove Ecological Restoration",
                 "target": "$500,000", "tier": t["tier_b"], "badge_color": "#38bdf8", "bg_color": "rgba(56, 189, 248, 0.15)",
                 "shield_class": "shield-b", "shield_text": "II",
-                "owner": "Tập đoàn Phát triển Rừng Ven Biển", "contact": "+84 909 123 456", "file_html": ""
+                "owner": "Tập đoàn Phát triển Rừng Ven Biển", "contact": "+84 909 123 456", "file_html": "",
+                "ai_verified": True
             }
         ]
 
@@ -522,15 +543,22 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         s_class = proj.get('shield_class', default_s_class)
         s_text = proj.get('shield_text', default_s_text)
 
+        is_verified = proj.get("ai_verified", True)
+        ai_badge_html = f'<span class="ai-verified-invest-badge">{t["ai_verified_badge"]}</span>' if is_verified else ""
+
+        owner_lbl = "Managing Entity:" if lang == "English" else "Chủ quản:"
+        target_lbl = "Target:" if lang == "English" else "Mục tiêu:"
+
         html_card = f"""<div class="project-card">
 <div class="badge-tier-proj" style="color: {badge_c}; border: 1px solid {badge_c}; background: {bg_c}; padding: 4px 12px; border-radius: 20px;">
 <div class="shield-badge {s_class}">{s_text}</div> {p_tier}
 </div>
-<div style="font-size: 1.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; padding-right: 180px;">
-{proj['name']}
+<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; padding-right: 180px;">
+<span style="font-size: 1.2rem; font-weight: 800; color: #f8fafc;">{proj['name']}</span>
+{ai_badge_html}
 </div>
 <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px;">
-Chủ quản: <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; Mục tiêu: <b style="color: #4ade80;">{proj['target']}</b>
+{owner_lbl} <b style="color: #cbd5e1;">{proj['owner']}</b> &nbsp;|&nbsp; {target_lbl} <b style="color: #4ade80;">{proj['target']}</b>
 </div>
 {file_rendered}
 </div>"""
