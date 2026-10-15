@@ -3,6 +3,72 @@ import datetime
 import time
 import base64
 
+@st.dialog("BÁO CÁO DỰ ÁN / REPORT PROJECT", width="medium")
+def hop_thoai_bao_cao_du_an(proj_idx, lang="Tiếng Việt"):
+    proj = st.session_state["invest_projects"][proj_idx]
+    
+    T = {
+        "Tiếng Việt": {
+            "proj_lbl": "Dự án đang báo cáo:",
+            "owner_lbl": "Đơn vị chủ quản:",
+            "rep_reason_lbl": "Lý do báo cáo dự án:",
+            "rep_r1": "Dự án ảo / Khống sinh khối",
+            "rep_r2": "Chủ rừng mạo danh / Không có thật",
+            "rep_r3": "Giấy tờ pháp lý giả mạo",
+            "rep_r4": "Mục tiêu gọi vốn bất thường",
+            "rep_r5": "Đã nhận vốn nhưng không triển khai",
+            "rep_r6": "Xâm phạm quy chuẩn cộng đồng MRV",
+            "rep_r7": "Lý do khác...",
+            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
+            "btn_submit_rep": "GỬI BÁO CÁO",
+            "btn_cancel": "HỦY",
+            "rep_msg": "Hệ thống đang xác minh dự án này. Thời gian thẩm định từ 3-4 ngày. Nếu báo cáo chính xác, bạn sẽ nhận được Điểm Cống hiến quy đổi tín chỉ."
+        },
+        "English": {
+            "proj_lbl": "Reporting Project:",
+            "owner_lbl": "Managing Entity:",
+            "rep_reason_lbl": "Reason for reporting:",
+            "rep_r1": "Fake project / Phantom biomass",
+            "rep_r2": "Impersonated / Non-existent owner",
+            "rep_r3": "Forged legal documents",
+            "rep_r4": "Suspicious funding target",
+            "rep_r5": "Funds received but no deployment",
+            "rep_r6": "Violation of MRV community standards",
+            "rep_r7": "Other reason...",
+            "rep_other_lbl": "Please specify:",
+            "btn_submit_rep": "SUBMIT REPORT",
+            "btn_cancel": "CANCEL",
+            "rep_msg": "System is verifying this project. Evaluation takes 3-4 days. If accurate, you will earn Contribution Points for credits."
+        }
+    }
+    t = T.get(lang, T["Tiếng Việt"])
+
+    st.markdown(f"""
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(239, 68, 68, 0.45); border-left: 5px solid #ef4444; padding: 14px 18px; border-radius: 8px; margin-bottom: 16px;">
+            <div style="color: #f8fafc; font-weight: 800; font-size: 1.05rem;">{t['proj_lbl']} <span style="color: #f87171;">{proj['name']}</span></div>
+            <div style="color: #94a3b8; font-size: 0.85rem; margin-top: 4px;">{t['owner_lbl']} <b style="color: #cbd5e1;">{proj['owner']}</b></div>
+        </div>
+        <div style="color: #ef4444; font-weight: 800; font-size: 1rem; margin-bottom: 8px;">{t['rep_reason_lbl']}</div>
+    """, unsafe_allow_html=True)
+
+    rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
+    choice = st.radio("Lý do báo cáo dự án", rep_reasons, label_visibility="collapsed", key=f"rad_rep_modal_{proj_idx}")
+
+    if choice == t["rep_r7"]:
+        st.text_input(t["rep_other_lbl"], key=f"txt_rep_modal_{proj_idx}")
+
+    st.markdown("<br/>", unsafe_allow_html=True)
+    c_rep1, c_rep2 = st.columns(2)
+    with c_rep1:
+        if st.button(t["btn_cancel"], use_container_width=True, key=f"ccl_rep_modal_{proj_idx}"):
+            st.rerun()
+    with c_rep2:
+        if st.button(t["btn_submit_rep"], type="primary", use_container_width=True, key=f"sub_rep_modal_{proj_idx}"):
+            st.session_state["verified_reports"] = st.session_state.get("verified_reports", 0) + 1
+            st.session_state["report_toast_msg"] = t["rep_msg"]
+            st.rerun()
+
+
 @st.dialog("CỔNG THANH TOÁN & ĐẦU TƯ / INVESTMENT GATEWAY", width="large")
 def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
     proj = st.session_state["invest_projects"][proj_idx]
@@ -19,21 +85,8 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "invest_pct": "Tỷ lệ góp vốn (% mục tiêu dự án):",
             "btn_confirm": "XÁC NHẬN THANH TOÁN",
             "btn_contact": "LIÊN HỆ CHỦ QUẢN",
-            "btn_report": "BÁO CÁO DỰ ÁN",
             "success_msg": "Giao dịch thành công! Bạn đã góp phần kiến tạo mảng xanh mới.",
-            "progress_msg": "Hệ thống đang xử lý giao dịch qua Vietcombank Escrow...",
-            "rep_reason_lbl": "Lý do báo cáo dự án:",
-            "rep_r1": "Dự án ảo / Khống sinh khối",
-            "rep_r2": "Chủ rừng mạo danh / Không có thật",
-            "rep_r3": "Giấy tờ pháp lý giả mạo",
-            "rep_r4": "Mục tiêu gọi vốn bất thường",
-            "rep_r5": "Đã nhận vốn nhưng không triển khai",
-            "rep_r6": "Xâm phạm quy chuẩn cộng đồng MRV",
-            "rep_r7": "Lý do khác...",
-            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
-            "btn_submit_rep": "GỬI BÁO CÁO",
-            "btn_cancel": "HỦY",
-            "rep_msg": "Hệ thống đang xác minh dự án này. Thời gian thẩm định từ 3-4 ngày. Nếu báo cáo chính xác, bạn sẽ nhận được Điểm Cống hiến quy đổi tín chỉ."
+            "progress_msg": "Hệ thống đang xử lý giao dịch qua Vietcombank Escrow..."
         },
         "English": {
             "pledge_title": "TRANSPARENCY PLEDGE (VERIFIED)",
@@ -46,21 +99,8 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "invest_pct": "Funding ratio (% of project target):",
             "btn_confirm": "CONFIRM PAYMENT",
             "btn_contact": "CONTACT OWNER",
-            "btn_report": "REPORT PROJECT",
             "success_msg": "Transaction successful! You have contributed to a new green legacy.",
-            "progress_msg": "Processing transaction via Vietcombank Escrow...",
-            "rep_reason_lbl": "Reason for reporting:",
-            "rep_r1": "Fake project / Phantom biomass",
-            "rep_r2": "Impersonated / Non-existent owner",
-            "rep_r3": "Forged legal documents",
-            "rep_r4": "Suspicious funding target",
-            "rep_r5": "Funds received but no deployment",
-            "rep_r6": "Violation of MRV community standards",
-            "rep_r7": "Other reason...",
-            "rep_other_lbl": "Please specify:",
-            "btn_submit_rep": "SUBMIT REPORT",
-            "btn_cancel": "CANCEL",
-            "rep_msg": "System is verifying this project. Evaluation takes 3-4 days. If accurate, you will earn Contribution Points for credits."
+            "progress_msg": "Processing transaction via Vietcombank Escrow..."
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
@@ -114,37 +154,19 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             letter-spacing: 0.5px;
         }
         
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
+        div[class*="st-key-pay_"] button {
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
             border: 1.5px solid #4ade80 !important; color: #ffffff !important; font-weight: 800 !important;
             border-radius: 8px !important; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4) !important; transition: all 0.3s ease !important;
         }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(34, 197, 94, 0.7) !important; }
+        div[class*="st-key-pay_"] button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(34, 197, 94, 0.7) !important; }
         
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
+        div[class*="st-key-cnt_"] button {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
             border: 1.5px solid #38bdf8 !important; color: #ffffff !important; font-weight: 800 !important;
             border-radius: 8px !important; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4) !important; transition: all 0.3s ease !important;
         }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.7) !important; }
-        
-        div[data-testid="stHorizontalBlock"] > div:nth-child(3) button {
-            background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%) !important;
-            border: 1.5px solid #f87171 !important; color: #ffffff !important; font-weight: 800 !important;
-            border-radius: 8px !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; transition: all 0.3s ease !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(3) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(239, 68, 68, 0.7) !important; }
-        
-        .report-section {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            border-left: 4px solid #ef4444;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        div[class*="st-key-cnt_"] button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.7) !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -205,7 +227,7 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
         )
     
     st.markdown("<br/>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([0.45, 0.3, 0.25])
+    c1, c2 = st.columns([0.6, 0.4])
     
     with c1:
         if st.button(t["btn_confirm"], use_container_width=True, key=f"pay_{proj_idx}"):
@@ -235,33 +257,6 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
     with c2:
         if st.button(t["btn_contact"], use_container_width=True, key=f"cnt_{proj_idx}"):
             st.toast(f"Email: {proj.get('contact', 'contact@eco.vn')}")
-            
-    with c3:
-        if st.button(t["btn_report"], use_container_width=True, key=f"rpt_{proj_idx}"):
-            st.session_state[f"show_rep_proj_{proj_idx}"] = not st.session_state.get(f"show_rep_proj_{proj_idx}", False)
-            st.rerun()
-
-    # Khắc phục lỗi báo cáo: Render Form báo cáo ngay bên trong cửa sổ hiện tại (Inline)
-    if st.session_state.get(f"show_rep_proj_{proj_idx}", False):
-        st.markdown(f"<div class='report-section'><b style='color:#ef4444; font-size:1.05rem;'>{t['rep_reason_lbl']}</b>", unsafe_allow_html=True)
-        rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
-        choice = st.radio("Lý do báo cáo dự án", rep_reasons, label_visibility="collapsed", key=f"rad_rep_proj_in_{proj_idx}")
-        
-        if choice == t["rep_r7"]:
-            st.text_input(t["rep_other_lbl"], key=f"txt_rep_proj_in_{proj_idx}")
-        
-        c_rep1, c_rep2 = st.columns(2)
-        with c_rep1:
-            if st.button(t["btn_cancel"], use_container_width=True, key=f"ccl_rep_in_{proj_idx}"):
-                st.session_state[f"show_rep_proj_{proj_idx}"] = False
-                st.rerun()
-        with c_rep2:
-            if st.button(t["btn_submit_rep"], type="primary", use_container_width=True, key=f"sub_rep_proj_in_{proj_idx}"):
-                st.session_state["verified_reports"] = st.session_state.get("verified_reports", 0) + 1
-                st.toast(t["rep_msg"], icon="✅")
-                st.session_state[f"show_rep_proj_{proj_idx}"] = False
-                st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
 
 def hien_thi_dau_tu_trong_rung(lang=None):
@@ -269,6 +264,11 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         lang = st.session_state.get("language", st.session_state.get("lang", st.session_state.get("current_lang", "Tiếng Việt")))
     if lang not in ["Tiếng Việt", "English"]:
         lang = "Tiếng Việt"
+
+    # Hiển thị thông báo toast nếu người dùng vừa gửi báo cáo thành công từ hộp thoại
+    if st.session_state.get("report_toast_msg"):
+        st.toast(st.session_state["report_toast_msg"], icon="✅")
+        del st.session_state["report_toast_msg"]
 
     T = {
         "Tiếng Việt": {
@@ -295,6 +295,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             "ai_success": "AI xác minh: Đạt chuẩn minh bạch ban đầu. Dự án đã được đăng!",
             "market_title": "DANH MỤC ĐẦU TƯ SINH THÁI ĐANG MỞ",
             "btn_invest": "ĐẦU TƯ NGAY",
+            "btn_report": "BÁO CÁO DỰ ÁN",
             "contact_lbl": "Liên hệ chủ quản:",
             "my_invest_title": "CÁC DỰ ÁN TÔI ĐÃ ĐẦU TƯ",
             "no_invest": "Bạn chưa tham gia đầu tư dự án nào.",
@@ -329,6 +330,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             "ai_success": "AI Verified: Initial transparency met. Project published!",
             "market_title": "OPEN ECO-INVESTMENT PORTFOLIO",
             "btn_invest": "INVEST NOW",
+            "btn_report": "REPORT PROJECT",
             "contact_lbl": "Contact owner:",
             "my_invest_title": "MY INVESTMENT PORTFOLIO",
             "no_invest": "You haven't invested in any projects yet.",
@@ -419,7 +421,7 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 
         .project-card {
             background: rgba(15, 23, 42, 0.65); border: 1.5px solid rgba(56, 189, 248, 0.3); border-radius: 14px;
-            padding: 22px; margin-bottom: 25px; position: relative; overflow: hidden; transition: all 0.3s ease;
+            padding: 22px; margin-bottom: 16px; position: relative; overflow: hidden; transition: all 0.3s ease;
         }
         .project-card:hover { border-color: #38bdf8; box-shadow: 0 8px 30px rgba(56, 189, 248, 0.25); transform: translateY(-3px); }
         .badge-tier-proj { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
@@ -453,6 +455,27 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         }
         div[data-testid="stFormSubmitButton"] button:focus, div[class*="st-key-btn_invest_"] button:focus {
             outline: none !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important; color: #ffffff !important;
+        }
+
+        /* Style cho nút BÁO CÁO DỰ ÁN nằm bên dưới bài đăng */
+        div[class*="st-key-btn_report_ext_"] button {
+            background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%) !important;
+            border: 1.5px solid #f87171 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 5px 0 #7f1d1d, 0 8px 18px rgba(220, 38, 38, 0.4) !important;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+        div[class*="st-key-btn_report_ext_"] button:hover {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 9px 0 #7f1d1d, 0 14px 26px rgba(239, 68, 68, 0.7) !important;
+            border-color: #fca5a5 !important;
+        }
+        div[class*="st-key-btn_report_ext_"] button:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 1px 0 #7f1d1d, 0 4px 10px rgba(220, 38, 38, 0.4) !important;
         }
         
         .contact-chip { display: inline-block; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.4); padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; color: #7dd3fc; margin-top: 10px; }
@@ -603,11 +626,14 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 </div>"""
         st.markdown(html_card, unsafe_allow_html=True)
         
-        col_btn, _ = st.columns([0.3, 0.7])
-        with col_btn:
+        col_btn_inv, col_btn_rep, _ = st.columns([0.28, 0.25, 0.47])
+        with col_btn_inv:
             if st.button(t["btn_invest"], key=f"btn_invest_{idx}", use_container_width=True):
                 hop_thoai_thanh_toan_dau_tu(idx, lang)
-        st.markdown("<div style='margin-bottom: 15px;'></div>", unsafe_allow_html=True)
+        with col_btn_rep:
+            if st.button(t["btn_report"], key=f"btn_report_ext_{idx}", use_container_width=True):
+                hop_thoai_bao_cao_du_an(idx, lang)
+        st.markdown("<div style='margin-bottom: 22px;'></div>", unsafe_allow_html=True)
 
     # DANH MỤC ĐÃ ĐẦU TƯ CỦA TÔI
     st.markdown(f'<div class="section-sweep" style="font-size:1.4rem; margin-top:40px; margin-bottom:20px; text-align:center;">{t["my_invest_title"]}</div>', unsafe_allow_html=True)
