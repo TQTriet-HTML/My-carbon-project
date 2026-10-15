@@ -3,58 +3,6 @@ import datetime
 import time
 import base64
 
-@st.dialog("BÁO CÁO DỰ ÁN LỪA ĐẢO / REPORT SCAM PROJECT", width="small")
-def hop_thoai_bao_cao_du_an(proj_idx, lang="Tiếng Việt"):
-    proj = st.session_state["invest_projects"][proj_idx]
-    
-    T = {
-        "Tiếng Việt": {
-            "rep_reason_lbl": "Lý do báo cáo dự án:",
-            "rep_r1": "Dự án ảo / Khống sinh khối",
-            "rep_r2": "Chủ rừng mạo danh / Không có thật",
-            "rep_r3": "Giấy tờ pháp lý giả mạo",
-            "rep_r4": "Mục tiêu gọi vốn bất thường",
-            "rep_r5": "Đã nhận vốn nhưng không triển khai",
-            "rep_r6": "Xâm phạm quy chuẩn cộng đồng MRV",
-            "rep_r7": "Lý do khác...",
-            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
-            "btn_submit_rep": "GỬI BÁO CÁO",
-            "rep_msg": "Hệ thống đang xác minh dự án này. Thời gian thẩm định từ 3-4 ngày. Nếu báo cáo chính xác, bạn sẽ nhận được Điểm Cống hiến quy đổi tín chỉ.",
-            "btn_cancel": "HỦY"
-        },
-        "English": {
-            "rep_reason_lbl": "Reason for reporting:",
-            "rep_r1": "Fake project / Phantom biomass",
-            "rep_r2": "Impersonated / Non-existent owner",
-            "rep_r3": "Forged legal documents",
-            "rep_r4": "Suspicious funding target",
-            "rep_r5": "Funds received but no deployment",
-            "rep_r6": "Violation of MRV community standards",
-            "rep_r7": "Other reason...",
-            "rep_other_lbl": "Please specify:",
-            "btn_submit_rep": "SUBMIT REPORT",
-            "rep_msg": "System is verifying this project. Evaluation takes 3-4 days. If accurate, you will earn Contribution Points for credits.",
-            "btn_cancel": "CANCEL"
-        }
-    }
-    t = T.get(lang, T["Tiếng Việt"])
-
-    st.markdown(f"<b style='color:#ef4444; font-size:1.05rem;'>{t['rep_reason_lbl']}</b>", unsafe_allow_html=True)
-    rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
-    choice = st.radio("Lý do báo cáo dự án", rep_reasons, label_visibility="collapsed", key=f"rad_rep_proj_{proj_idx}")
-    
-    if choice == t["rep_r7"]:
-        st.text_input(t["rep_other_lbl"], key=f"txt_rep_proj_{proj_idx}")
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button(t["btn_cancel"], use_container_width=True, key=f"ccl_rep_{proj_idx}"):
-            st.rerun()
-    with c2:
-        if st.button(t["btn_submit_rep"], type="primary", use_container_width=True, key=f"sub_rep_proj_{proj_idx}"):
-            st.toast(t["rep_msg"], icon="✅")
-            st.rerun()
-
 @st.dialog("CỔNG THANH TOÁN & ĐẦU TƯ / INVESTMENT GATEWAY", width="large")
 def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
     proj = st.session_state["invest_projects"][proj_idx]
@@ -72,7 +20,19 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "btn_contact": "LIÊN HỆ CHỦ QUẢN",
             "btn_report": "BÁO CÁO DỰ ÁN",
             "success_msg": "Giao dịch thành công! Bạn đã góp phần kiến tạo mảng xanh mới.",
-            "progress_msg": "Hệ thống đang xử lý giao dịch qua Vietcombank Escrow..."
+            "progress_msg": "Hệ thống đang xử lý giao dịch qua Vietcombank Escrow...",
+            "rep_reason_lbl": "Lý do báo cáo dự án:",
+            "rep_r1": "Dự án ảo / Khống sinh khối",
+            "rep_r2": "Chủ rừng mạo danh / Không có thật",
+            "rep_r3": "Giấy tờ pháp lý giả mạo",
+            "rep_r4": "Mục tiêu gọi vốn bất thường",
+            "rep_r5": "Đã nhận vốn nhưng không triển khai",
+            "rep_r6": "Xâm phạm quy chuẩn cộng đồng MRV",
+            "rep_r7": "Lý do khác...",
+            "rep_other_lbl": "Vui lòng nhập lý do cụ thể:",
+            "btn_submit_rep": "GỬI BÁO CÁO",
+            "btn_cancel": "HỦY",
+            "rep_msg": "Hệ thống đang xác minh dự án này. Thời gian thẩm định từ 3-4 ngày. Nếu báo cáo chính xác, bạn sẽ nhận được Điểm Cống hiến quy đổi tín chỉ."
         },
         "English": {
             "pledge_title": "TRANSPARENCY PLEDGE (VERIFIED)",
@@ -86,7 +46,19 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "btn_contact": "CONTACT OWNER",
             "btn_report": "REPORT PROJECT",
             "success_msg": "Transaction successful! You have contributed to a new green legacy.",
-            "progress_msg": "Processing transaction via Vietcombank Escrow..."
+            "progress_msg": "Processing transaction via Vietcombank Escrow...",
+            "rep_reason_lbl": "Reason for reporting:",
+            "rep_r1": "Fake project / Phantom biomass",
+            "rep_r2": "Impersonated / Non-existent owner",
+            "rep_r3": "Forged legal documents",
+            "rep_r4": "Suspicious funding target",
+            "rep_r5": "Funds received but no deployment",
+            "rep_r6": "Violation of MRV community standards",
+            "rep_r7": "Other reason...",
+            "rep_other_lbl": "Please specify:",
+            "btn_submit_rep": "SUBMIT REPORT",
+            "btn_cancel": "CANCEL",
+            "rep_msg": "System is verifying this project. Evaluation takes 3-4 days. If accurate, you will earn Contribution Points for credits."
         }
     }
     t = T.get(lang, T["Tiếng Việt"])
@@ -160,6 +132,17 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             border-radius: 8px !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; transition: all 0.3s ease !important;
         }
         div[data-testid="stHorizontalBlock"] > div:nth-child(3) button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(239, 68, 68, 0.7) !important; }
+        
+        .report-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         </style>
     """, unsafe_allow_html=True)
 
@@ -216,7 +199,29 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             
     with c3:
         if st.button(t["btn_report"], use_container_width=True, key=f"rpt_{proj_idx}"):
-            hop_thoai_bao_cao_du_an(proj_idx, lang)
+            st.session_state[f"show_rep_proj_{proj_idx}"] = not st.session_state.get(f"show_rep_proj_{proj_idx}", False)
+            st.rerun()
+
+    # Khắc phục lỗi báo cáo: Render Form báo cáo ngay bên trong cửa sổ hiện tại (Inline)
+    if st.session_state.get(f"show_rep_proj_{proj_idx}", False):
+        st.markdown(f"<div class='report-section'><b style='color:#ef4444; font-size:1.05rem;'>{t['rep_reason_lbl']}</b>", unsafe_allow_html=True)
+        rep_reasons = [t["rep_r1"], t["rep_r2"], t["rep_r3"], t["rep_r4"], t["rep_r5"], t["rep_r6"], t["rep_r7"]]
+        choice = st.radio("Lý do báo cáo dự án", rep_reasons, label_visibility="collapsed", key=f"rad_rep_proj_in_{proj_idx}")
+        
+        if choice == t["rep_r7"]:
+            st.text_input(t["rep_other_lbl"], key=f"txt_rep_proj_in_{proj_idx}")
+        
+        c_rep1, c_rep2 = st.columns(2)
+        with c_rep1:
+            if st.button(t["btn_cancel"], use_container_width=True, key=f"ccl_rep_in_{proj_idx}"):
+                st.session_state[f"show_rep_proj_{proj_idx}"] = False
+                st.rerun()
+        with c_rep2:
+            if st.button(t["btn_submit_rep"], type="primary", use_container_width=True, key=f"sub_rep_proj_in_{proj_idx}"):
+                st.toast(t["rep_msg"], icon="✅")
+                st.session_state[f"show_rep_proj_{proj_idx}"] = False
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
 def hien_thi_dau_tu_trong_rung(lang=None):
@@ -297,7 +302,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
 
     st.markdown("""
         <style>
-        /* Tittle: Green -> Header Blue Sweep */
         @keyframes greenToBlueSweep {
             0%, 100% { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
             50% { color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.8); }
@@ -313,7 +317,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             animation: greenToBlueSweep 6s infinite ease-in-out;
         }
 
-        /* Subtitle: Blue -> Green sweep every 5s */
         @keyframes blueSubSweep {
             0% { background-position: -200% center; }
             100% { background-position: 200% center; }
@@ -331,7 +334,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             animation: blueSubSweep 5s linear infinite;
         }
         
-        /* Section Titles Sweep */
         .section-sweep {
             color: #4ade80;
             font-weight: 800;
@@ -341,7 +343,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             animation: greenToBlueSweep 5s infinite ease-in-out;
         }
 
-        /* KHỐI ĐỘNG CÓ HIỆU ỨNG LÓA SÁNG XANH LÁ */
         @keyframes greenGlowPulse {
             0%, 100% { box-shadow: 0 0 15px rgba(72, 187, 120, 0.2); }
             50% { box-shadow: 0 0 25px rgba(72, 187, 120, 0.6); }
@@ -363,7 +364,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         .tier-desc { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2; }
         .tier-price { font-size: 0.95rem; font-weight: 700; padding: 8px 12px; border-radius: 6px; display: inline-block; position: relative; z-index: 2; }
 
-        /* SHIELD BADGES ĐÃ BO TRÒN */
         .shield-badge {
             display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 32px;
             border-radius: 4px 4px 16px 16px;
@@ -511,7 +511,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
     for idx, proj in enumerate(st.session_state["invest_projects"]):
         file_rendered = proj.get("file_html", "")
         
-        # Tự động gán/khôi phục khiên đồng bộ với chữ Hạng nếu dự án cũ chưa có.
         p_tier = proj.get('tier', t['tier_c'])
         default_badge_c = "#fbbf24" if "A" in p_tier else ("#38bdf8" if "B" in p_tier else "#cbd5e1")
         default_bg_c = "rgba(251, 191, 36, 0.15)" if "A" in p_tier else ("rgba(56, 189, 248, 0.15)" if "B" in p_tier else "rgba(148, 163, 184, 0.15)")
