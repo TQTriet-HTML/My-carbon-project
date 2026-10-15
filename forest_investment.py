@@ -16,6 +16,7 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "tier_2": "Góp vốn 10% - 30%: Chiết khấu 10% mua tín chỉ + Lãi suất 4%/năm + Báo cáo vệ tinh chi tiết",
             "tier_3": "Góp vốn > 30%: Chiết khấu 15% mua tín chỉ + Lãi suất 6%/năm + Quyền đặt giá tham chiếu",
             "invest_amt": "Nhập số tiền đầu tư ($):",
+            "invest_pct": "Tỷ lệ góp vốn (% mục tiêu dự án):",
             "btn_confirm": "XÁC NHẬN THANH TOÁN",
             "btn_contact": "LIÊN HỆ CHỦ QUẢN",
             "btn_report": "BÁO CÁO DỰ ÁN",
@@ -42,6 +43,7 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             "tier_2": "Funding 10% - 30%: 10% Credit Discount + 4% Annual Yield + Detailed Satellite Report",
             "tier_3": "Funding > 30%: 15% Credit Discount + 6% Annual Yield + Reference Pricing Rights",
             "invest_amt": "Enter investment amount ($):",
+            "invest_pct": "Funding ratio (% of project target):",
             "btn_confirm": "CONFIRM PAYMENT",
             "btn_contact": "CONTACT OWNER",
             "btn_report": "REPORT PROJECT",
@@ -162,7 +164,45 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
         </div>
     """, unsafe_allow_html=True)
 
-    amt = st.number_input(t["invest_amt"], min_value=100, step=1000)
+    # --- ĐỒNG BỘ 2 CHIỀU GIỮA SỐ TIỀN ($) VÀ PHẦN TRĂM (%) DỰ ÁN ---
+    target_val = float(proj['target'].replace('$', '').replace(',', ''))
+    amt_key = f"inv_amt_val_{proj_idx}"
+    pct_key = f"inv_pct_val_{proj_idx}"
+
+    if amt_key not in st.session_state:
+        st.session_state[amt_key] = 100
+    if pct_key not in st.session_state:
+        st.session_state[pct_key] = round((st.session_state[amt_key] / target_val) * 100, 2) if target_val > 0 else 0.0
+
+    def sync_from_amt():
+        if target_val > 0:
+            st.session_state[pct_key] = round((st.session_state[amt_key] / target_val) * 100, 2)
+
+    def sync_from_pct():
+        if target_val > 0:
+            calc_amt = int(round((st.session_state[pct_key] / 100.0) * target_val))
+            st.session_state[amt_key] = max(100, calc_amt)
+
+    col_input_amt, col_input_pct = st.columns(2)
+    with col_input_amt:
+        amt = st.number_input(
+            t["invest_amt"],
+            min_value=100,
+            max_value=int(target_val * 2) if target_val > 0 else 10000000,
+            step=1000,
+            key=amt_key,
+            on_change=sync_from_amt
+        )
+    with col_input_pct:
+        pct = st.number_input(
+            f"{t['invest_pct']} (100% = {proj['target']})",
+            min_value=0.01,
+            max_value=100.0,
+            step=1.0,
+            format="%.2f",
+            key=pct_key,
+            on_change=sync_from_pct
+        )
     
     st.markdown("<br/>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns([0.45, 0.3, 0.25])
@@ -174,7 +214,6 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
             
             if "my_investments" not in st.session_state: st.session_state["my_investments"] = []
             
-            target_val = float(proj['target'].replace('$', '').replace(',', ''))
             ratio = (amt / target_val) * 100 if target_val > 0 else 0
             
             discount = "5%" if ratio < 10 else ("10%" if ratio <= 30 else "15%")
