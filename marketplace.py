@@ -50,6 +50,20 @@ def hien_thi_san_giao_dich():
             color: #48bb78;
             border: 1px solid rgba(72, 187, 120, 0.5);
         }
+        .ai-verified-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(72, 187, 120, 0.16);
+            color: #4ade80;
+            border: 1px solid rgba(72, 187, 120, 0.55);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: 10px;
+            box-shadow: 0 0 10px rgba(72, 187, 120, 0.25);
+            vertical-align: middle;
+        }
 
         @keyframes greenNeonGlowBreathe {
             0%, 100% {
@@ -128,8 +142,29 @@ def hien_thi_san_giao_dich():
     user_holdings = user_portfolios.get(current_u, [])
     total_tons = sum([item.get("volume", 0) for item in user_holdings]) if isinstance(user_holdings, list) else 0
 
+    # --- TÍNH TOÁN ĐIỂM SỐNG XANH & TÍN CHỈ HẠNG 2 ---
+    # Lọc tổng số tín chỉ mua trực tiếp (không tính tín chỉ hạng 2 đã quy đổi) để tính điểm chuẩn xác
+    purchased_tons = sum([item.get("volume", 0) for item in user_holdings if not item.get("is_tier2", False)]) if isinstance(user_holdings, list) else 0
+    verified_reports = st.session_state.get("verified_reports", 0)
+    
+    if "redeemed_green_points_map" not in st.session_state:
+        st.session_state["redeemed_green_points_map"] = {}
+    if "tier2_credits_map" not in st.session_state:
+        st.session_state["tier2_credits_map"] = {}
+
+    redeemed_pts = st.session_state["redeemed_green_points_map"].get(current_u, 0)
+    tier2_owned = st.session_state["tier2_credits_map"].get(current_u, 0)
+
+    # 100 tín chỉ mua = 1 điểm | 5 báo cáo có ích được xác nhận = 1 điểm
+    pts_from_buy = int(purchased_tons // 100)
+    pts_from_reports = int(verified_reports // 5)
+    total_earned_pts = pts_from_buy + pts_from_reports
+    available_green_pts = max(0, total_earned_pts - redeemed_pts)
+
+    is_en = st.session_state.get("current_lang") == "English"
+
     with st.container(border=True):
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown(f"""
                 <div class="dash-card">
@@ -142,12 +177,12 @@ def hien_thi_san_giao_dich():
             st.markdown(f"""
                 <div class="dash-card">
                     <div class="dash-label">{t("Tổng Tín Chỉ Sở Hữu")}</div>
-                    <div class="dash-value">{total_tons:,.0f} {t("Tấn")}</div>
+                    <div class="dash-value">{total_tons + tier2_owned:,.0f} {t("Tấn")}</div>
                     <div class="dash-badge">{t("Đã bù trừ")}</div>
                 </div>
             """, unsafe_allow_html=True)
         with c3:
-            rating_text = "Tier A+" if st.session_state.get("current_lang") == "English" else "Hạng A+"
+            rating_text = "Tier A+" if is_en else "Hạng A+"
             st.markdown(f"""
                 <div class="dash-card">
                     <div class="dash-label">{t("Hạng Tín Nhiệm (ESG)")}</div>
@@ -155,14 +190,54 @@ def hien_thi_san_giao_dich():
                     <div class="dash-badge">{t("Đạt chuẩn")}</div>
                 </div>
             """, unsafe_allow_html=True)
+        with c4:
+            gp_label = "Green Living Points" if is_en else "Điểm Sống Xanh"
+            gp_unit = "Pts" if is_en else "Điểm"
+            gp_badge = "1 Pt = 1 Tier-2 Credit" if is_en else "1 Điểm = 1 TC Hạng 2"
+            st.markdown(f"""
+                <div class="dash-card">
+                    <div class="dash-label">{gp_label}</div>
+                    <div class="dash-value" style="color: #48bb78;">{available_green_pts:,} {gp_unit}</div>
+                    <div class="dash-badge">{gp_badge}</div>
+                </div>
+            """, unsafe_allow_html=True)
         
         with st.expander(t("XEM CHI TIẾT KHO TÍN CHỈ")):
-            if user_holdings:
+            if user_holdings or tier2_owned > 0:
                 for h in user_holdings:
                     st.write(f"- Project: **{h.get('project_name', 'Forest Carbon')}** | Volume: **{h.get('volume', 0):,.0f} {t('Tấn')}** | Price: **${h.get('price', 10.5)}/{t('Tấn')}**")
+                if tier2_owned > 0:
+                    t2_lbl = "Tier-2 Carbon Credits (Redeemed from Green Living Points)" if is_en else "Tín chỉ Carbon Hạng 2 (Quy đổi từ Điểm Sống Xanh)"
+                    st.write(f"- Project: **{t2_lbl}** | Volume: **{tier2_owned:,.0f} {t('Tấn')}** | Price: **Reward**")
             else:
-                msg_empty = "Tài khoản chưa nắm giữ tín chỉ nào. Bạn có thể đặt lệnh mua ở sàn bên dưới." if st.session_state.get("current_lang") == "Tiếng Việt" else "No credits in vault. You can place purchase orders in the market below."
+                msg_empty = "Tài khoản chưa nắm giữ tín chỉ nào. Bạn có thể đặt lệnh mua ở sàn bên dưới." if not is_en else "No credits in vault. You can place purchase orders in the market below."
                 st.write(msg_empty)
+
+            st.markdown("<hr style='border-color: rgba(72, 187, 120, 0.25); margin: 12px 0;'>", unsafe_allow_html=True)
+            col_gp_info, col_gp_btn = st.columns([0.65, 0.35])
+            with col_gp_info:
+                rule_txt = (
+                    f"🌱 **Green Living Points:** `{available_green_pts} Pts` *(Earned from {purchased_tons:,.0f} purchased tons = +{pts_from_buy} pts & {verified_reports} verified reports = +{pts_from_reports} pts | Rule: 100 credits = 1 pt, 5 verified reports = 1 pt)*"
+                    if is_en else
+                    f"🌱 **Điểm Sống Xanh khả dụng:** `{available_green_pts} Điểm` *(Tích lũy từ {purchased_tons:,.0f} tín chỉ đã mua = +{pts_from_buy} điểm & {verified_reports} báo cáo có ích = +{pts_from_reports} điểm | Quy tắc: 100 tín chỉ = 1 điểm, 5 báo cáo xác nhận = 1 điểm)*"
+                )
+                st.markdown(rule_txt)
+            with col_gp_btn:
+                btn_redeem_lbl = f"REDEEM {available_green_pts} TIER-2 CREDITS" if is_en else f"ĐỔI {available_green_pts} TÍN CHỈ HẠNG 2"
+                if available_green_pts > 0:
+                    if st.button(btn_redeem_lbl, type="primary", use_container_width=True):
+                        st.session_state["redeemed_green_points_map"][current_u] = redeemed_pts + available_green_pts
+                        st.session_state["tier2_credits_map"][current_u] = tier2_owned + available_green_pts
+                        succ_redeem = (
+                            f"Redeemed {available_green_pts} Green Living Points for {available_green_pts} Tier-2 Carbon Credits!"
+                            if is_en else
+                            f"Đã đổi thành công {available_green_pts} Điểm Sống Xanh lấy {available_green_pts} Tín chỉ Carbon Hạng 2!"
+                        )
+                        st.success(succ_redeem)
+                        st.rerun()
+                else:
+                    no_pt_lbl = "NOT ENOUGH POINTS TO REDEEM" if is_en else "CHƯA ĐỦ ĐIỂM ĐỔI TÍN CHỈ HẠNG 2"
+                    st.button(no_pt_lbl, disabled=True, use_container_width=True)
 
     # 2. BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY
     st.markdown(f'<div class="dash-title-green" style="margin-top: 35px;">{t("BIỂU ĐỒ GIÁ TÍN CHỈ GIAO NGAY")}</div>', unsafe_allow_html=True)
@@ -348,6 +423,8 @@ def hien_thi_san_giao_dich():
         }
     ]
 
+    ai_verified_txt = "✓ Verified by AI" if st.session_state.get("current_lang") == "English" else "✓ Đã được xác minh bởi AI"
+
     for p in projects_data:
         with st.container(border=True):
             col_info_p, col_action_p = st.columns([0.75, 0.25])
@@ -355,8 +432,11 @@ def hien_thi_san_giao_dich():
                 owner_lbl = "Managing Entity:" if st.session_state.get("current_lang") == "English" else "Đơn vị quản lý:"
                 code_lbl = "Standard Code:" if st.session_state.get("current_lang") == "English" else "Mã chuẩn hóa:"
                 st.markdown(f"""
-                    <div style='color:#48bb78; font-size:1.25rem; font-weight:800;'>{p['name']}</div>
-                    <div style='color:#94a3b8; font-size:0.85rem; margin-top:2px;'>{owner_lbl} {p['owner']} | {code_lbl} {p['code']}</div>
+                    <div style='display:flex; align-items:center; flex-wrap:wrap; gap:4px;'>
+                        <span style='color:#48bb78; font-size:1.25rem; font-weight:800;'>{p['name']}</span>
+                        <span class='ai-verified-badge'>{ai_verified_txt}</span>
+                    </div>
+                    <div style='color:#94a3b8; font-size:0.85rem; margin-top:4px;'>{owner_lbl} {p['owner']} | {code_lbl} {p['code']}</div>
                     <div style='color:#cbd5e1; font-size:0.95rem; margin-top:10px; line-height:1.5;'>{p['desc']}</div>
                 """, unsafe_allow_html=True)
             with col_action_p:
