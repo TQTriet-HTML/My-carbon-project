@@ -50,19 +50,42 @@ def hien_thi_san_giao_dich():
             color: #48bb78;
             border: 1px solid rgba(72, 187, 120, 0.5);
         }
+
+        /* HIỆU ỨNG QUÉT ÁNH SÁNG XANH DƯƠNG 7 GIÂY CHO HUY HIỆU AI */
+        @keyframes aiSweep7s {
+            0%, 70% { background-position: -150% 0; }
+            100% { background-position: 250% 0; }
+        }
+
         .ai-verified-badge {
             display: inline-flex;
             align-items: center;
-            background: rgba(72, 187, 120, 0.16);
-            color: #4ade80;
-            border: 1px solid rgba(72, 187, 120, 0.55);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(14, 165, 233, 0.18));
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.55);
             border-radius: 20px;
             padding: 3px 12px;
             font-size: 0.8rem;
             font-weight: 700;
             margin-left: 10px;
-            box-shadow: 0 0 10px rgba(72, 187, 120, 0.25);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
             vertical-align: middle;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-verified-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            background-size: 50% 100%;
+            background-repeat: no-repeat;
+            animation: aiSweep7s 7s infinite linear;
+            pointer-events: none;
         }
 
         @keyframes greenNeonGlowBreathe {
@@ -142,8 +165,6 @@ def hien_thi_san_giao_dich():
     user_holdings = user_portfolios.get(current_u, [])
     total_tons = sum([item.get("volume", 0) for item in user_holdings]) if isinstance(user_holdings, list) else 0
 
-    # --- TÍNH TOÁN ĐIỂM SỐNG XANH & TÍN CHỈ HẠNG 2 ---
-    # Lọc tổng số tín chỉ mua trực tiếp (không tính tín chỉ hạng 2 đã quy đổi) để tính điểm chuẩn xác
     purchased_tons = sum([item.get("volume", 0) for item in user_holdings if not item.get("is_tier2", False)]) if isinstance(user_holdings, list) else 0
     verified_reports = st.session_state.get("verified_reports", 0)
     
@@ -155,7 +176,6 @@ def hien_thi_san_giao_dich():
     redeemed_pts = st.session_state["redeemed_green_points_map"].get(current_u, 0)
     tier2_owned = st.session_state["tier2_credits_map"].get(current_u, 0)
 
-    # 100 tín chỉ mua = 1 điểm | 5 báo cáo có ích được xác nhận = 1 điểm
     pts_from_buy = int(purchased_tons // 100)
     pts_from_reports = int(verified_reports // 5)
     total_earned_pts = pts_from_buy + pts_from_reports
