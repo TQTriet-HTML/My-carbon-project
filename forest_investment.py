@@ -170,23 +170,6 @@ def hop_thoai_thanh_toan_dau_tu(proj_idx, lang="Tiếng Việt"):
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-        <div class="animated-info-block">
-            <div class="animated-title-text" style="color: #10b981;">{t['pledge_title']}</div>
-            <div style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">{t['pledge_desc']}</div>
-        </div>
-        
-        <div class="animated-discount-block">
-            <div class="animated-title-text" style="color: #38bdf8;">{t['discount_title']}</div>
-            <ul style="color: #e2e8f0; font-size: 0.95rem; margin-bottom: 0;">
-                <li>{t['tier_1']}</li>
-                <li style="margin-top: 5px;">{t['tier_2']}</li>
-                <li style="margin-top: 5px; color: #fbbf24; font-weight: 700;">{t['tier_3']}</li>
-            </ul>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # --- ĐỒNG BỘ 2 CHIỀU GIỮA SỐ TIỀN ($) VÀ PHẦN TRĂM (%) DỰ ÁN ---
     target_val = float(proj['target'].replace('$', '').replace(',', ''))
     amt_key = f"inv_amt_val_{proj_idx}"
     pct_key = f"inv_pct_val_{proj_idx}"
@@ -265,7 +248,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
     if lang not in ["Tiếng Việt", "English"]:
         lang = "Tiếng Việt"
 
-    # Hiển thị thông báo toast nếu người dùng vừa gửi báo cáo thành công từ hộp thoại
     if st.session_state.get("report_toast_msg"):
         st.toast(st.session_state["report_toast_msg"], icon="✅")
         del st.session_state["report_toast_msg"]
@@ -426,19 +408,41 @@ def hien_thi_dau_tu_trong_rung(lang=None):
         .project-card:hover { border-color: #38bdf8; box-shadow: 0 8px 30px rgba(56, 189, 248, 0.25); transform: translateY(-3px); }
         .badge-tier-proj { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
         
+        /* HIỆU ỨNG QUÉT ÁNH SÁNG XANH DƯƠNG 7 GIÂY CHO CỔNG ĐẦU TƯ */
+        @keyframes aiSweep7s {
+            0%, 70% { background-position: -150% 0; }
+            100% { background-position: 250% 0; }
+        }
+
         .ai-verified-invest-badge {
             display: inline-flex;
             align-items: center;
-            background: rgba(72, 187, 120, 0.16);
-            color: #4ade80;
-            border: 1px solid rgba(72, 187, 120, 0.55);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(14, 165, 233, 0.18));
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.55);
             border-radius: 20px;
             padding: 3px 12px;
             font-size: 0.8rem;
             font-weight: 700;
             margin-left: 10px;
-            box-shadow: 0 0 10px rgba(72, 187, 120, 0.25);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
             vertical-align: middle;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-verified-invest-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            background-size: 50% 100%;
+            background-repeat: no-repeat;
+            animation: aiSweep7s 7s infinite linear;
+            pointer-events: none;
         }
 
         div[data-testid="stFormSubmitButton"] button, div[class*="st-key-btn_invest_"] button {
@@ -457,7 +461,6 @@ def hien_thi_dau_tu_trong_rung(lang=None):
             outline: none !important; box-shadow: 0 5px 0 #15803d, 0 8px 18px rgba(34, 197, 94, 0.45) !important; color: #ffffff !important;
         }
 
-        /* Style cho nút BÁO CÁO DỰ ÁN nằm bên dưới bài đăng */
         div[class*="st-key-btn_report_ext_"] button {
             background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%) !important;
             border: 1.5px solid #f87171 !important;
