@@ -243,8 +243,9 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
 
     # 3. Đồng bộ các dự án Đã Niêm yết (Người bán)
     invest_projs = st.session_state.get("invest_projects", [])
+    curr_role = st.session_state.get("current_role", "")
     for proj in invest_projs:
-        if proj.get("owner") == curr_user:
+        if proj.get("owner") == curr_u or ("Chủ rừng" in curr_role):
             title = f"Đăng dự án: {proj['name']}" if lang == "Tiếng Việt" else f"Listed Project: {proj['name']}"
             content = f"Mục tiêu gọi vốn: {proj['target']} | Hạng tín chỉ: {proj['tier']}" if lang == "Tiếng Việt" else f"Funding Target: {proj['target']} | Credit Tier: {proj['tier']}"
             
@@ -299,26 +300,25 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                     if day != 0:
                         date_str = f"{sel_year}-{sel_month:02d}-{day:02d}"
                         
-                        # Khởi tạo mặc định: Màu nền mờ, viền nhạt, chữ trắng
+                        # Khởi tạo mặc định: Màu nền mờ, viền nhạt
                         border_color = "rgba(255,255,255,0.05)"
                         bg_color = "rgba(30, 41, 59, 0.5)"
                         box_shadow = "none"
-                        text_color = "#f8fafc"
                         
                         # Set màu cho Ngày có sự kiện
                         if date_str in records:
                             ev_type = records[date_str].get("type", t["event_type_list"][2])
                             if ev_type == t["event_type_list"][0]: # Đỏ
                                 border_color = "#ef4444"
-                                bg_color = "rgba(239, 68, 68, 0.15)"
+                                bg_color = "rgba(239, 68, 68, 0.25)"
                                 box_shadow = "0 0 10px rgba(239, 68, 68, 0.3)"
                             elif ev_type == t["event_type_list"][1]: # Cam
                                 border_color = "#f59e0b"
-                                bg_color = "rgba(245, 158, 11, 0.15)"
+                                bg_color = "rgba(245, 158, 11, 0.25)"
                                 box_shadow = "0 0 10px rgba(245, 158, 11, 0.3)"
                             else: # Xanh
                                 border_color = "#22c55e"
-                                bg_color = "rgba(34, 197, 94, 0.15)"
+                                bg_color = "rgba(34, 197, 94, 0.25)"
                                 box_shadow = "0 0 10px rgba(34, 197, 94, 0.3)"
                         
                         # Ghi đè viền nổi bật nếu là Ngày Hôm Nay
@@ -328,34 +328,34 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                             if date_str not in records:
                                 bg_color = "rgba(56, 189, 248, 0.1)"
                         
-                        # --- FIX LỖI CSS: KHÓA MÀU Ở MỌI TRẠNG THÁI ---
-                        st.markdown(f'<div id="anchor-{day}" style="display:none;"></div>', unsafe_allow_html=True)
+                        # --- FIX LỖI CSS BẰNG MÃ ID DUY NHẤT CHO MỖI Ô ---
+                        st.markdown(f'<div id="anchor-{sel_year}-{sel_month}-{day}" style="display:none;"></div>', unsafe_allow_html=True)
                         st.markdown(f"""
                         <style>
-                        div[data-testid="column"]:has(#anchor-{day}) button {{
+                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button {{
                             border: 2px solid {border_color} !important;
                             background: {bg_color} !important;
                             box-shadow: {box_shadow} !important;
-                            color: {text_color} !important;
+                            color: #ffffff !important;
                             font-size: 1.1rem !important;
                             font-weight: 800 !important;
                         }}
-                        div[data-testid="column"]:has(#anchor-{day}) button:hover,
-                        div[data-testid="column"]:has(#anchor-{day}) button:focus,
-                        div[data-testid="column"]:has(#anchor-{day}) button:active {{
+                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:hover,
+                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:focus,
+                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:active {{
                             border-color: {border_color} !important;
                             background: {bg_color} !important;
                             box-shadow: {box_shadow} !important;
-                            color: {text_color} !important;
+                            color: #ffffff !important;
                             transform: translateY(0px) !important;
                         }}
-                        div[data-testid="column"]:has(#anchor-{day}) button:hover {{
+                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:hover {{
                             transform: translateY(-2px) !important;
                         }}
                         </style>
                         """, unsafe_allow_html=True)
                         
-                        if st.button(str(day), key=f"btn_day_{day}", use_container_width=True):
+                        if st.button(str(day), key=f"btn_day_{sel_year}_{sel_month}_{day}", use_container_width=True):
                             hop_thoai_ghi_su_kien(day, sel_month, sel_year, lang)
                     else:
                         st.write("") 
