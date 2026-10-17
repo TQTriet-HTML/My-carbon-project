@@ -61,9 +61,11 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
             "title": "NHẬT KÝ XANH - LỊCH TRÌNH MRV",
             "month": "Tháng:", "year": "Năm:", "current_time": "Thời điểm hiện tại:",
             "legend_red": "Đỏ: Quan trọng", "legend_orange": "Cam: Bất thường", "legend_green": "Xanh: Định kỳ",
+            "legend_blue": "Lóe sáng: Giao dịch",
             "month_prefix": "THÁNG", "year_prefix": "NĂM",
             "days": ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"],
             "event_type_list": ["Quan trọng", "Bất thường", "Định kỳ"],
+            "sys_type": "Giao dịch",
             "diary_list": "Danh sách nhật ký đã ghi:", "lbl_date": "Ngày", "lbl_class": "Phân loại", "no_detail": "Không có chi tiết",
             "msg_sync": "Hệ thống đã tự động đồng bộ giao dịch mới vào lịch trình!"
         },
@@ -71,9 +73,11 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
             "title": "GREEN DIARY - MRV SCHEDULE",
             "month": "Month:", "year": "Year:", "current_time": "Current time:",
             "legend_red": "Red: Critical", "legend_orange": "Orange: Abnormal", "legend_green": "Green: Routine",
+            "legend_blue": "Glowing: Transaction",
             "month_prefix": "MONTH", "year_prefix": "YEAR",
             "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
             "event_type_list": ["Critical", "Abnormal", "Routine"],
+            "sys_type": "Transaction",
             "diary_list": "Recorded Diary List:", "lbl_date": "Date", "lbl_class": "Type", "no_detail": "No details provided",
             "msg_sync": "System automatically synced new transactions to the schedule!"
         }
@@ -87,9 +91,16 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         .info-box-diary { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(72,187,120,0.3); border-radius: 8px; padding: 10px 15px; margin-top: 25px; display: flex; flex-direction: column; justify-content: center; }
         .cal-header { text-align: center; font-weight: 800; color: #94a3b8; font-size: 0.85rem; padding: 8px 0; text-transform: uppercase; margin-top: 15px; margin-bottom: 10px; }
         
+        /* Hiệu ứng lóe sáng xanh dương cho Giao dịch */
+        @keyframes blueFlashSweep {
+            0%, 100% { box-shadow: 0 0 8px rgba(14, 165, 233, 0.4); border-color: rgba(14, 165, 233, 0.5) !important; }
+            50% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), inset 0 0 10px rgba(56, 189, 248, 0.4); border-color: #38bdf8 !important; }
+        }
+
         .event-box-important { background: rgba(239, 68, 68, 0.12); border-left: 5px solid #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
         .event-box-abnormal { background: rgba(245, 158, 11, 0.12); border-left: 5px solid #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
         .event-box-regular { background: rgba(34, 197, 94, 0.12); border-left: 5px solid #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+        .event-box-transaction { background: rgba(14, 165, 233, 0.12); border-left: 5px solid #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -98,7 +109,6 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
     today = datetime.date.today()
     today_str = today.strftime("%Y-%m-%d")
 
-    # --- KHỞI TẠO DỮ LIỆU SỰ KIỆN MẶC ĐỊNH ---
     if "diary_records" not in st.session_state:
         st.session_state["diary_records"] = {
             "2026-10-15": {
@@ -114,54 +124,37 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         }
 
     # =====================================================================
-    # --- AUTO-SYNC: TỰ ĐỘNG ĐỒNG BỘ GIAO DỊCH VÀO LỊCH TRÌNH ---
+    # --- AUTO-SYNC: ĐỒNG BỘ GIAO DỊCH (LOẠI MỚI: "GIAO DỊCH") ---
     # =====================================================================
     sync_occurred = False
+    sys_type = t["sys_type"]
     
-    # 1. Đồng bộ Mua Tín chỉ 
     portfolios = st.session_state.get("user_portfolios", {})
     curr_u = st.session_state.get("current_user", "")
-    my_credits = portfolios.get(curr_u, [])
-    for cred in my_credits:
+    for cred in portfolios.get(curr_u, []):
         title = f"Mua tín chỉ: {cred['project_name']}" if lang == "Tiếng Việt" else f"Purchased: {cred['project_name']}"
         content = f"Khối lượng: {cred['volume']:,} Tấn | Đơn giá: ${cred['price']:.2f}/Tấn" if lang == "Tiếng Việt" else f"Volume: {cred['volume']:,} Tons | Price: ${cred['price']:.2f}/Ton"
-        
         if today_str not in st.session_state["diary_records"] or st.session_state["diary_records"][today_str]["title"] != title:
-            st.session_state["diary_records"][today_str] = {
-                "title": title, "type": t["event_type_list"][0], "content": content
-            }
+            st.session_state["diary_records"][today_str] = {"title": title, "type": sys_type, "content": content}
             sync_occurred = True
 
-    # 2. Đồng bộ Đầu tư Trồng rừng
-    my_invs = st.session_state.get("my_investments", [])
-    for inv in my_invs:
+    for inv in st.session_state.get("my_investments", []):
         try:
-            d_obj = datetime.datetime.strptime(inv["time"], "%d/%m/%Y")
-            date_key = d_obj.strftime("%Y-%m-%d")
-            
+            date_key = datetime.datetime.strptime(inv["time"], "%d/%m/%Y").strftime("%Y-%m-%d")
             title = f"Đầu tư: {inv['name']}" if lang == "Tiếng Việt" else f"Invested: {inv['name']}"
             content = f"Số tiền: ${inv['amount']:,.0f} | Quyền lợi: {inv.get('yield', '')} & {inv.get('discount', '')} | Chủ quản: {inv.get('owner', '')}" if lang == "Tiếng Việt" else f"Amount: ${inv['amount']:,.0f} | Benefit: {inv.get('yield', '')} & {inv.get('discount', '')} | Owner: {inv.get('owner', '')}"
-            
             if date_key not in st.session_state["diary_records"] or st.session_state["diary_records"][date_key]["title"] != title:
-                st.session_state["diary_records"][date_key] = {
-                    "title": title, "type": t["event_type_list"][0], "content": content
-                }
+                st.session_state["diary_records"][date_key] = {"title": title, "type": sys_type, "content": content}
                 sync_occurred = True
-        except:
-            pass
+        except: pass
 
-    # 3. Đồng bộ Niêm yết Dự án (Cho Chủ Rừng)
-    invest_projs = st.session_state.get("invest_projects", [])
     curr_role = st.session_state.get("current_role", "")
-    for proj in invest_projs:
+    for proj in st.session_state.get("invest_projects", []):
         if proj.get("owner") == curr_u or ("Chủ rừng" in curr_role):
             title = f"Đăng dự án: {proj['name']}" if lang == "Tiếng Việt" else f"Listed Project: {proj['name']}"
             content = f"Mục tiêu gọi vốn: {proj['target']} | Hạng tín chỉ: {proj['tier']}" if lang == "Tiếng Việt" else f"Funding Target: {proj['target']} | Credit Tier: {proj['tier']}"
-            
             if today_str not in st.session_state["diary_records"] or st.session_state["diary_records"][today_str]["title"] != title:
-                st.session_state["diary_records"][today_str] = {
-                    "title": title, "type": t["event_type_list"][2], "content": content
-                }
+                st.session_state["diary_records"][today_str] = {"title": title, "type": sys_type, "content": content}
                 sync_occurred = True
 
     if sync_occurred:
@@ -183,7 +176,8 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                 <div style="font-size: 0.9rem;">
                     <span style="color:#ef4444; font-weight:700;">{t["legend_red"]}</span> &bull; 
                     <span style="color:#f59e0b; font-weight:700;">{t["legend_orange"]}</span> &bull; 
-                    <span style="color:#22c55e; font-weight:700;">{t["legend_green"]}</span>
+                    <span style="color:#22c55e; font-weight:700;">{t["legend_green"]}</span> &bull; 
+                    <span style="color:#0ea5e9; font-weight:700;">{t["legend_blue"]}</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -199,25 +193,22 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         cal = calendar.monthcalendar(sel_year, sel_month)
         records = st.session_state["diary_records"]
 
-        # ---------------------------------------------------------
-        # CHUẨN BỊ CSS CHO TOÀN BỘ CÁC NÚT TRÊN LỊCH CHỐNG RÒ RỈ 100%
-        # ---------------------------------------------------------
+        # CSS mặc định chống đỏ chét khi click cho mọi nút
         css_rules = ["""
-        /* Kiểu dáng mặc định cho MỌI nút ngày trên Lịch */
         div[class*="st-key-btn_day_"] button {
-            width: 100% !important;
-            height: 60px !important;
-            border-radius: 10px !important;
-            transition: all 0.25s ease !important;
-            border: 2px solid rgba(255,255,255,0.05) !important;
-            background: rgba(30, 41, 59, 0.4) !important;
-            color: #f8fafc !important; /* Chữ luôn trắng */
-            font-size: 1.15rem !important;
-            font-weight: 800 !important;
+            width: 100% !important; height: 60px !important; border-radius: 10px !important; transition: all 0.25s ease !important;
+            border: 2px solid rgba(255,255,255,0.05) !important; background: rgba(30, 41, 59, 0.4) !important;
+            color: #f8fafc !important; font-size: 1.15rem !important; font-weight: 800 !important;
         }
-        div[class*="st-key-btn_day_"] button:hover {
-            transform: translateY(-3px) !important;
-            border-color: #ffffff !important;
+        /* Ép trạng thái hover, focus, active thành màu XANH DƯƠNG thay vì ĐỎ */
+        div[class*="st-key-btn_day_"] button:hover,
+        div[class*="st-key-btn_day_"] button:focus,
+        div[class*="st-key-btn_day_"] button:active {
+            background-color: rgba(56, 189, 248, 0.2) !important;
+            border-color: #38bdf8 !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            outline: none !important;
         }
         """]
 
@@ -232,32 +223,33 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                         is_today = (sel_year == today.year and sel_month == today.month and day == today.day)
                         has_event = date_str in records
                         
-                        border_color, bg_color, box_shadow = None, None, None
+                        border_color, bg_color, box_shadow, extra_css = None, None, None, ""
                         
-                        # Set màu nếu có sự kiện
                         if has_event:
-                            ev_type = records[date_str].get("type", t["event_type_list"][2])
+                            ev_type = records[date_str].get("type", "")
                             if ev_type == t["event_type_list"][0]: # Đỏ
                                 border_color, bg_color, box_shadow = "#ef4444", "rgba(239, 68, 68, 0.25)", "0 0 10px rgba(239, 68, 68, 0.4)"
                             elif ev_type == t["event_type_list"][1]: # Cam
                                 border_color, bg_color, box_shadow = "#f59e0b", "rgba(245, 158, 11, 0.25)", "0 0 10px rgba(245, 158, 11, 0.4)"
-                            else: # Xanh
+                            elif ev_type == sys_type: # Hệ thống: Lóe sáng Cyan
+                                border_color, bg_color, box_shadow = "#0ea5e9", "rgba(14, 165, 233, 0.2)", "0 0 15px rgba(14, 165, 233, 0.5)"
+                                extra_css = "animation: blueFlashSweep 2.5s infinite ease-in-out;"
+                            else: # Xanh (Định kỳ cá nhân)
                                 border_color, bg_color, box_shadow = "#22c55e", "rgba(34, 197, 94, 0.25)", "0 0 10px rgba(34, 197, 94, 0.4)"
                         
-                        # Ghi đè hiệu ứng nổi bật cho NGÀY HÔM NAY
                         if is_today:
                             border_color = "#38bdf8"
                             box_shadow = "0 0 15px rgba(56, 189, 248, 0.7), inset 0 0 8px rgba(56, 189, 248, 0.3)"
                             if not has_event:
                                 bg_color = "rgba(56, 189, 248, 0.15)"
 
-                        # Inject CSS đích danh từng nút thông qua thuộc tính st-key (Bulletproof)
-                        if border_color or bg_color or box_shadow:
+                        if border_color or bg_color or box_shadow or extra_css:
                             css_rules.append(f"""
                             div[class*="st-key-{key_name}"] button {{
                                 {f"border-color: {border_color} !important;" if border_color else ""}
                                 {f"background: {bg_color} !important;" if bg_color else ""}
                                 {f"box-shadow: {box_shadow} !important;" if box_shadow else ""}
+                                {extra_css}
                             }}
                             """)
                         
@@ -266,7 +258,6 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                     else:
                         st.write("") 
 
-        # Đẩy toàn bộ CSS lên UI (chỉ chạy 1 lần duy nhất, tối ưu hiệu năng)
         st.markdown(f'<style>{"".join(css_rules)}</style>', unsafe_allow_html=True)
 
     st.markdown(f'<div class="diary-sub-green">{t["diary_list"]}</div>', unsafe_allow_html=True)
@@ -279,6 +270,7 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         box_cls, type_color = "event-box-regular", "#22c55e"
         if ev_type == t["event_type_list"][0]: box_cls, type_color = "event-box-important", "#ef4444"
         elif ev_type == t["event_type_list"][1]: box_cls, type_color = "event-box-abnormal", "#f59e0b"
+        elif ev_type == sys_type: box_cls, type_color = "event-box-transaction", "#0ea5e9"
 
         with st.expander(f"{t['lbl_date']} {k}: {item['title']} ({ev_type})"):
             st.markdown(f"""
