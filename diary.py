@@ -8,7 +8,7 @@ def hop_thoai_ghi_su_kien(ngay_chon, thang_chon, nam_chon, lang="Tiếng Việt"
     
     lbl_selected = "Ngày được chọn:" if lang == "Tiếng Việt" else "Selected date:"
     
-    # Chuyển màu nổi bật sang Xanh Dương (Blue) cho đỡ chói mắt
+    # Khung ngày được chọn với viền Xanh Dương (Blue) dịu mắt
     st.markdown(f"""
         <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.45); border-left: 5px solid #38bdf8; padding: 14px 18px; border-radius: 8px; margin-bottom: 16px;">
             <div style="color: #f8fafc; font-weight: 800; font-size: 1.05rem;">
@@ -62,6 +62,7 @@ def hop_thoai_ghi_su_kien(ngay_chon, thang_chon, nam_chon, lang="Tiếng Việt"
         else:
             st.warning(t["msg_warning"])
 
+
 def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
     T = {
         "Tiếng Việt": {
@@ -106,78 +107,32 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
     st.markdown("""
         <style>
         .diary-title-green {
-            color: #48bb78 !important;
-            font-size: clamp(24px, 2.7vw, 34px) !important;
-            font-weight: 900 !important;
-            text-align: center;
-            letter-spacing: 1.5px;
-            margin-bottom: 22px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
+            color: #48bb78 !important; font-size: clamp(24px, 2.7vw, 34px) !important; font-weight: 900 !important;
+            text-align: center; letter-spacing: 1.5px; margin-bottom: 22px; text-transform: uppercase; text-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
         }
         .diary-sub-green {
-            color: #48bb78 !important;
-            font-weight: 800 !important;
-            font-size: 1.25rem !important;
-            margin: 25px 0 15px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #48bb78 !important; font-weight: 800 !important; font-size: 1.25rem !important;
+            margin: 25px 0 15px 0; text-transform: uppercase; letter-spacing: 1px;
         }
         
         .info-box-diary {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(72,187,120,0.3);
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-top: 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(72,187,120,0.3); border-radius: 8px;
+            padding: 10px 15px; margin-top: 25px; display: flex; flex-direction: column; justify-content: center;
         }
 
         .cal-header {
-            text-align: center;
-            font-weight: 800;
-            color: #94a3b8;
-            font-size: 0.85rem;
-            padding: 8px 0;
-            text-transform: uppercase;
-            margin-top: 15px;
-            margin-bottom: 10px;
+            text-align: center; font-weight: 800; color: #94a3b8; font-size: 0.85rem; padding: 8px 0; text-transform: uppercase; margin-top: 15px; margin-bottom: 10px;
         }
 
-        /* Base styles cho button Lịch để không bị viền chói */
+        /* Định dạng cơ sở cho nút bấm trên Lịch */
         div.stButton > button {
-            width: 100% !important;
-            height: 60px !important;
-            border-radius: 10px !important;
-            transition: all 0.25s ease !important;
+            width: 100% !important; height: 60px !important; border-radius: 10px !important; transition: all 0.25s ease !important;
         }
 
-        .event-box-important {
-            background: rgba(239, 68, 68, 0.12);
-            border-left: 5px solid #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-        }
-        .event-box-abnormal {
-            background: rgba(245, 158, 11, 0.12);
-            border-left: 5px solid #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.4);
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-        }
-        .event-box-regular {
-            background: rgba(34, 197, 94, 0.12);
-            border-left: 5px solid #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.4);
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-        }
+        /* Danh sách nhật ký chi tiết */
+        .event-box-important { background: rgba(239, 68, 68, 0.12); border-left: 5px solid #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+        .event-box-abnormal { background: rgba(245, 158, 11, 0.12); border-left: 5px solid #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+        .event-box-regular { background: rgba(34, 197, 94, 0.12); border-left: 5px solid #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -186,6 +141,7 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
     today = datetime.date.today()
     today_str = today.strftime("%Y-%m-%d")
 
+    # --- KHỞI TẠO DỮ LIỆU SỰ KIỆN MẶC ĐỊNH ---
     if "diary_records" not in st.session_state:
         st.session_state["diary_records"] = {
             "2026-10-15": {
@@ -201,11 +157,11 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         }
 
     # =====================================================================
-    # --- AUTO-SYNC: TỰ ĐỘNG ĐỒNG BỘ MỌI GIAO DỊCH TỪ CÁC PHÂN HỆ ---
+    # --- AUTO-SYNC: TỰ ĐỘNG ĐỒNG BỘ GIAO DỊCH VÀO LỊCH TRÌNH ---
     # =====================================================================
     sync_occurred = False
     
-    # 1. Đồng bộ Mua Tín chỉ (Từ Sàn Giao Dịch)
+    # 1. Đồng bộ Mua Tín chỉ 
     portfolios = st.session_state.get("user_portfolios", {})
     curr_u = st.session_state.get("current_user", "")
     my_credits = portfolios.get(curr_u, [])
@@ -215,13 +171,11 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         
         if today_str not in st.session_state["diary_records"] or st.session_state["diary_records"][today_str]["title"] != title:
             st.session_state["diary_records"][today_str] = {
-                "title": title,
-                "type": t["event_type_list"][0], # Đỏ: Giao dịch Quan trọng
-                "content": content
+                "title": title, "type": t["event_type_list"][0], "content": content
             }
             sync_occurred = True
 
-    # 2. Đồng bộ các khoản Đầu tư Trồng rừng
+    # 2. Đồng bộ Đầu tư Trồng rừng
     my_invs = st.session_state.get("my_investments", [])
     for inv in my_invs:
         try:
@@ -233,15 +187,13 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
             
             if date_key not in st.session_state["diary_records"] or st.session_state["diary_records"][date_key]["title"] != title:
                 st.session_state["diary_records"][date_key] = {
-                    "title": title,
-                    "type": t["event_type_list"][0],
-                    "content": content
+                    "title": title, "type": t["event_type_list"][0], "content": content
                 }
                 sync_occurred = True
         except:
             pass
 
-    # 3. Đồng bộ các dự án Đã Niêm yết (Người bán)
+    # 3. Đồng bộ Niêm yết Dự án (Cho Chủ Rừng)
     invest_projs = st.session_state.get("invest_projects", [])
     curr_role = st.session_state.get("current_role", "")
     for proj in invest_projs:
@@ -251,13 +203,10 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
             
             if today_str not in st.session_state["diary_records"] or st.session_state["diary_records"][today_str]["title"] != title:
                 st.session_state["diary_records"][today_str] = {
-                    "title": title,
-                    "type": t["event_type_list"][2], # Xanh: Định kỳ / Hoạt động
-                    "content": content
+                    "title": title, "type": t["event_type_list"][2], "content": content
                 }
                 sync_occurred = True
 
-    # Hiển thị Toast thông báo nếu có đồng bộ mới
     if sync_occurred:
         st.toast(t["msg_sync"], icon="🔄")
     # =====================================================================
@@ -300,69 +249,59 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                     if day != 0:
                         date_str = f"{sel_year}-{sel_month:02d}-{day:02d}"
                         
-                        # Khởi tạo màu cơ bản cho ngày không có sự kiện
+                        # Style Mặc Định (Ngày trống)
                         border_color = "rgba(255,255,255,0.05)"
                         bg_color = "rgba(30, 41, 59, 0.4)"
                         box_shadow = "none"
                         
-                        # Đổi màu nếu ngày đó CÓ SỰ KIỆN được lưu
-                        if date_str in records:
+                        is_today = (sel_year == today.year and sel_month == today.month and day == today.day)
+                        has_event = date_str in records
+                        
+                        # Style nếu CÓ SỰ KIỆN
+                        if has_event:
                             ev_type = records[date_str].get("type", t["event_type_list"][2])
                             if ev_type == t["event_type_list"][0]: # Đỏ
-                                border_color = "#ef4444"
-                                bg_color = "rgba(239, 68, 68, 0.25)"
-                                box_shadow = "0 0 10px rgba(239, 68, 68, 0.3)"
+                                border_color, bg_color, box_shadow = "#ef4444", "rgba(239, 68, 68, 0.25)", "0 0 10px rgba(239, 68, 68, 0.4)"
                             elif ev_type == t["event_type_list"][1]: # Cam
-                                border_color = "#f59e0b"
-                                bg_color = "rgba(245, 158, 11, 0.25)"
-                                box_shadow = "0 0 10px rgba(245, 158, 11, 0.3)"
+                                border_color, bg_color, box_shadow = "#f59e0b", "rgba(245, 158, 11, 0.25)", "0 0 10px rgba(245, 158, 11, 0.4)"
                             else: # Xanh
-                                border_color = "#22c55e"
-                                bg_color = "rgba(34, 197, 94, 0.25)"
-                                box_shadow = "0 0 10px rgba(34, 197, 94, 0.3)"
+                                border_color, bg_color, box_shadow = "#22c55e", "rgba(34, 197, 94, 0.25)", "0 0 10px rgba(34, 197, 94, 0.4)"
                         
-                        # Làm nổi bật nếu là NGÀY HÔM NAY (Đè màu nếu chưa có sự kiện)
-                        if sel_year == today.year and sel_month == today.month and day == today.day:
-                            border_color = "#38bdf8"
-                            box_shadow = "0 0 15px rgba(56, 189, 248, 0.7), inset 0 0 8px rgba(56, 189, 248, 0.3)"
-                            if date_str not in records:
+                        # Style NỔI BẬT DÀNH RIÊNG CHO NGÀY HÔM NAY (Viền Xanh Dương)
+                        if is_today:
+                            if not has_event:
+                                border_color = "#38bdf8"
                                 bg_color = "rgba(56, 189, 248, 0.15)"
+                                box_shadow = "0 0 15px rgba(56, 189, 248, 0.6)"
+                            else:
+                                # Nếu hôm nay vừa là hiện tại, vừa có sự kiện -> Giữ nền sự kiện, nhưng viền xanh dương sáng
+                                border_color = "#38bdf8"
+                                box_shadow = f"0 0 15px {border_color}, 0 0 8px #38bdf8 inset"
                         
-                        # --- CƠ CHẾ SIBLING ANCHOR: Khóa chặt CSS vào đúng ô ---
-                        marker_id = f"marker-day-{sel_year}-{sel_month}-{day}"
+                        # --- HACK CSS: SỬ DỤNG MỎ NEO LIỀN KỀ KHÓA CHẶT CSS, CHỐNG RÒ RỈ 100% ---
+                        marker_id = f"marker_day_{sel_year}_{sel_month}_{day}"
                         
-                        # 1. Đặt thẻ neo ẩn
                         st.markdown(f'<div id="{marker_id}" style="display:none;"></div>', unsafe_allow_html=True)
-                        
-                        # 2. Đặt nút bấm NGAY LẬP TỨC phía sau thẻ neo
-                        if st.button(str(day), key=f"btn_day_{sel_year}_{sel_month}_{day}", use_container_width=True):
-                            hop_thoai_ghi_su_kien(day, sel_month, sel_year, lang)
-                            
-                        # 3. Ép CSS chỉ tác dụng lên nút nằm ngay cạnh thẻ neo đó
                         st.markdown(f"""
                         <style>
-                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button {{
+                        div[data-testid="element-container"]:has(#{marker_id}) + div[data-testid="element-container"] button {{
                             border: 2px solid {border_color} !important;
                             background: {bg_color} !important;
                             box-shadow: {box_shadow} !important;
-                            color: #ffffff !important;
+                            color: #f8fafc !important; /* Số ngày LUÔN LUÔN màu trắng */
                             font-size: 1.15rem !important;
                             font-weight: 800 !important;
                         }}
-                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:hover,
-                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:focus,
-                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:active {{
+                        div[data-testid="element-container"]:has(#{marker_id}) + div[data-testid="element-container"] button:hover {{
                             border-color: #ffffff !important;
-                            background: {bg_color} !important;
-                            box-shadow: {box_shadow} !important;
-                            color: #ffffff !important;
-                            transform: translateY(0px) !important;
-                        }}
-                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:hover {{
                             transform: translateY(-3px) !important;
                         }}
                         </style>
                         """, unsafe_allow_html=True)
+                        
+                        # Gọi Nút Sự Kiện
+                        if st.button(str(day), key=f"btn_cal_{sel_year}_{sel_month}_{day}", use_container_width=True):
+                            hop_thoai_ghi_su_kien(day, sel_month, sel_year, lang)
                     else:
                         st.write("") 
 
