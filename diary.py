@@ -300,12 +300,12 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                     if day != 0:
                         date_str = f"{sel_year}-{sel_month:02d}-{day:02d}"
                         
-                        # Khởi tạo mặc định: Màu nền mờ, viền nhạt
+                        # Khởi tạo màu cơ bản cho ngày không có sự kiện
                         border_color = "rgba(255,255,255,0.05)"
-                        bg_color = "rgba(30, 41, 59, 0.5)"
+                        bg_color = "rgba(30, 41, 59, 0.4)"
                         box_shadow = "none"
                         
-                        # Set màu cho Ngày có sự kiện
+                        # Đổi màu nếu ngày đó CÓ SỰ KIỆN được lưu
                         if date_str in records:
                             ev_type = records[date_str].get("type", t["event_type_list"][2])
                             if ev_type == t["event_type_list"][0]: # Đỏ
@@ -321,42 +321,48 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
                                 bg_color = "rgba(34, 197, 94, 0.25)"
                                 box_shadow = "0 0 10px rgba(34, 197, 94, 0.3)"
                         
-                        # Ghi đè viền nổi bật nếu là Ngày Hôm Nay
+                        # Làm nổi bật nếu là NGÀY HÔM NAY (Đè màu nếu chưa có sự kiện)
                         if sel_year == today.year and sel_month == today.month and day == today.day:
                             border_color = "#38bdf8"
-                            box_shadow = "0 0 15px rgba(56, 189, 248, 0.7), inset 0 0 10px rgba(56, 189, 248, 0.3)"
+                            box_shadow = "0 0 15px rgba(56, 189, 248, 0.7), inset 0 0 8px rgba(56, 189, 248, 0.3)"
                             if date_str not in records:
-                                bg_color = "rgba(56, 189, 248, 0.1)"
+                                bg_color = "rgba(56, 189, 248, 0.15)"
                         
-                        # --- FIX LỖI CSS BẰNG MÃ ID DUY NHẤT CHO MỖI Ô ---
-                        st.markdown(f'<div id="anchor-{sel_year}-{sel_month}-{day}" style="display:none;"></div>', unsafe_allow_html=True)
+                        # --- CƠ CHẾ SIBLING ANCHOR: Khóa chặt CSS vào đúng ô ---
+                        marker_id = f"marker-day-{sel_year}-{sel_month}-{day}"
+                        
+                        # 1. Đặt thẻ neo ẩn
+                        st.markdown(f'<div id="{marker_id}" style="display:none;"></div>', unsafe_allow_html=True)
+                        
+                        # 2. Đặt nút bấm NGAY LẬP TỨC phía sau thẻ neo
+                        if st.button(str(day), key=f"btn_day_{sel_year}_{sel_month}_{day}", use_container_width=True):
+                            hop_thoai_ghi_su_kien(day, sel_month, sel_year, lang)
+                            
+                        # 3. Ép CSS chỉ tác dụng lên nút nằm ngay cạnh thẻ neo đó
                         st.markdown(f"""
                         <style>
-                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button {{
+                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button {{
                             border: 2px solid {border_color} !important;
                             background: {bg_color} !important;
                             box-shadow: {box_shadow} !important;
                             color: #ffffff !important;
-                            font-size: 1.1rem !important;
+                            font-size: 1.15rem !important;
                             font-weight: 800 !important;
                         }}
-                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:hover,
-                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:focus,
-                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:active {{
-                            border-color: {border_color} !important;
+                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:hover,
+                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:focus,
+                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:active {{
+                            border-color: #ffffff !important;
                             background: {bg_color} !important;
                             box-shadow: {box_shadow} !important;
                             color: #ffffff !important;
                             transform: translateY(0px) !important;
                         }}
-                        div[data-testid="column"]:has(#anchor-{sel_year}-{sel_month}-{day}) button:hover {{
-                            transform: translateY(-2px) !important;
+                        div:has(> div[data-testid="stMarkdownContainer"] div#{marker_id}) + div button:hover {{
+                            transform: translateY(-3px) !important;
                         }}
                         </style>
                         """, unsafe_allow_html=True)
-                        
-                        if st.button(str(day), key=f"btn_day_{sel_year}_{sel_month}_{day}", use_container_width=True):
-                            hop_thoai_ghi_su_kien(day, sel_month, sel_year, lang)
                     else:
                         st.write("") 
 
@@ -367,15 +373,9 @@ def hien_thi_nhat_ky_xanh(lang="Tiếng Việt"):
         item = records[k]
         ev_type = item.get("type", t["event_type_list"][2])
         
-        if ev_type == t["event_type_list"][0]:
-            box_cls = "event-box-important"
-            type_color = "#ef4444"
-        elif ev_type == t["event_type_list"][1]:
-            box_cls = "event-box-abnormal"
-            type_color = "#f59e0b"
-        else:
-            box_cls = "event-box-regular"
-            type_color = "#22c55e"
+        box_cls, type_color = "event-box-regular", "#22c55e"
+        if ev_type == t["event_type_list"][0]: box_cls, type_color = "event-box-important", "#ef4444"
+        elif ev_type == t["event_type_list"][1]: box_cls, type_color = "event-box-abnormal", "#f59e0b"
 
         with st.expander(f"{t['lbl_date']} {k}: {item['title']} ({ev_type})"):
             st.markdown(f"""
