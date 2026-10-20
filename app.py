@@ -59,6 +59,7 @@ if "market_projects" not in st.session_state:
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 if "currency_mode" not in st.session_state: st.session_state["currency_mode"] = "VND"
+if "mrv_area_hectares" not in st.session_state: st.session_state["mrv_area_hectares"] = 50.0
 
 def inject_custom_css():
     st.markdown("""
@@ -72,6 +73,26 @@ def inject_custom_css():
             background: linear-gradient(to right, #48bb78, #63b3ed, #48bb78);
             background-size: 200% auto; color: #fff; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: titleWave 4s linear infinite; margin-bottom: 0px !important; padding-bottom: 0px !important; letter-spacing: 1px;
+        }
+        
+        /* HIỆU ỨNG ÁNH SÁNG LƯỚT CHỮ XANH DƯƠNG MỖI 10 GIÂY */
+        @keyframes blueShimmerSweep10s {
+            0%, 80% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .welcome-text-blue {
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-top: 5px;
+            margin-bottom: 25px;
+            display: inline-block;
+            background: linear-gradient(90deg, #38bdf8 0%, #38bdf8 40%, #bae6fd 50%, #38bdf8 60%, #38bdf8 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: blueShimmerSweep10s 10s linear infinite;
         }
         
         button[data-baseweb="tab"] { font-weight: 700 !important; font-size: 0.95rem !important; }
@@ -209,7 +230,8 @@ def hop_thoai_dang_xuat():
 
 def render_mrv_results(nam_co_so, nam_so_sanh):
     seed = st.session_state["mrv_polygon_seed"]
-    dien_tich_hecta = 8000.0 + (seed % 12000) 
+    # Lấy diện tích hecta từ slider nhập liệu để tính toán sinh khối
+    dien_tich_hecta = st.session_state.get("mrv_area_hectares", 50.0) 
     
     base_val = int(dien_tich_hecta * 95.0 + (nam_co_so - 2020) * 27000 + (seed % 5000))
     comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
@@ -402,8 +424,8 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
             
             _, c_btn, _ = st.columns([0.1, 0.8, 0.1])
             with c_btn:
-                btn_label = t("Đổi sang USD") if is_vnd else t("Đổi sang VND")
-                if st.button(btn_label, type="primary", use_container_width=True, key="btn_toggle_curr"):
+                btn_label = "Đổi sang USD" if is_vnd else "Đổi sang VND"
+                if st.button(t(btn_label), type="primary", use_container_width=True, key="btn_toggle_curr"):
                     st.session_state["currency_mode"] = "USD" if is_vnd else "VND"
                     st.rerun()
 
@@ -421,7 +443,8 @@ def main_app():
     col_t, col_l = st.columns([7, 1])
     with col_t:
         st.markdown(f'<div class="main-title">{t("NỀN TẢNG MRV & SÀN GIAO DỊCH")}</div>', unsafe_allow_html=True)
-        st.caption(f"{t('Xin chào')}, **{st.session_state['current_user']}** ({role_display})")
+        # SỬ DỤNG CLASS "welcome-text-blue" CHO DÒNG LỜI CHÀO (MÀU XANH DƯƠNG + HIỆU ỨNG LƯỚT SÁNG)
+        st.markdown(f'<div class="welcome-text-blue">{t("Xin chào")}, {st.session_state["current_user"]} ({role_display})</div>', unsafe_allow_html=True)
     
     with col_l:
         st.markdown("""
@@ -466,6 +489,19 @@ def main_app():
             st.markdown(f"<div style='text-align:center; color:#48bb78; font-weight:800; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;'>{t('HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI')}</div>", unsafe_allow_html=True)
             
             with st.container(border=True):
+                # --- PHẦN NÂNG CẤP GIAO DIỆN NHẬP DỮ LIỆU ĐẦU VÀO CHO MRV ---
+                st.markdown("<h4 style='color: #38bdf8; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px;'>THÔNG SỐ VÙNG KHOANH VÀ TÀI LIỆU</h4>", unsafe_allow_html=True)
+                
+                c_input1, c_input2 = st.columns(2)
+                with c_input1:
+                    st.text_input("Tọa độ vùng khoanh (VD: 10.762622, 106.660172):", placeholder="Vĩ độ, Kinh độ")
+                    # Lưu giá trị diện tích vào session_state để hàm tính toán dùng chung
+                    st.session_state["mrv_area_hectares"] = st.slider("Diện tích khu vực ước tính (Hecta):", min_value=1.0, max_value=1000.0, value=50.0, step=0.5)
+                with c_input2:
+                    st.file_uploader("Tải lên Sổ đỏ / Bản đồ ranh giới (PDF, PNG, JPG):", type=['pdf', 'png', 'jpg', 'jpeg'])
+
+                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 20px 0;'>", unsafe_allow_html=True)
+                
                 c1, c2 = st.columns(2)
                 with c1: nam_co_so = st.selectbox(t("Năm cơ sở:"), range(2016, 2027), index=4) 
                 with c2: nam_so_sanh = st.selectbox(t("Năm so sánh:"), range(2016, 2027), index=8) 
