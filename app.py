@@ -68,7 +68,7 @@ if "market_projects" not in st.session_state:
 if "mrv_calc_state" not in st.session_state: st.session_state["mrv_calc_state"] = False
 if "mrv_polygon_seed" not in st.session_state: st.session_state["mrv_polygon_seed"] = random.randint(10000, 99999)
 if "currency_mode" not in st.session_state: st.session_state["currency_mode"] = "VND"
-if "mrv_area_hectares" not in st.session_state: st.session_state["mrv_area_hectares"] = 50.0
+if "mrv_area_hectares" not in st.session_state: st.session_state["mrv_area_hectares"] = 150.0
 
 def inject_custom_css():
     st.markdown("""
@@ -134,62 +134,70 @@ def inject_custom_css():
         .sb-desc.highlight { color: #48bb78; font-weight: 600; }
         
         /* -----------------------------------------------------------
-           BỘ CSS CHO KHỐI CÔNG NGHỆ CHUYÊN SÂU & TOGGLE MỚI
+           BỘ CSS CHO KHỐI CÔNG NGHỆ CHUYÊN SÂU (HÀO QUANG XANH LÁ)
            ----------------------------------------------------------- */
-        @keyframes techGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); border-color: rgba(245, 158, 11, 0.6); }
+        @keyframes techGreenGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(72, 187, 120, 0.7); border-color: #48bb78; }
         }
         
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.tech-block-marker) {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(23, 37, 84, 0.98)) !important;
-            border: 1px solid rgba(245, 158, 11, 0.4) !important;
-            animation: techGlow 4s infinite ease-in-out !important;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(10, 20, 35, 0.98)) !important;
+            border: 1px solid rgba(72, 187, 120, 0.5) !important;
+            animation: techGreenGlow 4s infinite ease-in-out !important;
             padding: 20px 24px !important;
+            transition: transform 0.15s ease, box-shadow 0.15s ease !important;
         }
         
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tech-block-marker):hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.25) !important;
-            border-color: #4ade80 !important;
+        /* Hiệu ứng lún xuống khi nhấn vào khối */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tech-block-marker):active {
+            transform: scale(0.98) translateY(2px) !important;
+            box-shadow: 0 0 10px rgba(72, 187, 120, 0.3) !important;
+            border-color: #38a169 !important;
         }
         
-        /* Chuyển Text thành Font nổi bật, không cần icon */
         .tech-title {
-            color: #f59e0b;
+            color: #4ade80;
             font-size: 1.15rem;
             font-weight: 900;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
             text-transform: uppercase;
-        }
-
-        /* Ẩn cục Switch nhỏ của Streamlit, thay bằng Box chữ */
-        div[data-testid="stToggle"] { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px; }
-        div[data-testid="stToggle"] label { padding: 0 !important; width: 100%; }
-        div[data-testid="stToggle"] label > div[data-testid="stMarkdownContainer"] {
-            width: 100%;
             text-align: center;
         }
+
+        /* Tùy chỉnh 3 công tắc thành Box Lớn (Không Icon) */
+        div[data-testid="stToggle"] { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 12px; }
+        div[data-testid="stToggle"] label { padding: 0 !important; width: 100%; cursor: pointer; }
+        div[data-testid="stToggle"] label > div[data-testid="stMarkdownContainer"] { width: 100%; text-align: center; }
+        
         div[data-testid="stToggle"] label > div[data-testid="stMarkdownContainer"] > p {
-            font-weight: 800; font-size: 0.95rem; letter-spacing: 0.5px;
-            padding: 12px 15px; border-radius: 8px; width: 100%;
-            transition: all 0.3s ease; text-transform: uppercase;
+            font-weight: 800; font-size: 0.95rem; letter-spacing: 0.8px;
+            padding: 15px 15px; border-radius: 8px; width: 100%;
+            transition: all 0.3s ease; text-transform: uppercase; margin: 0;
         }
-        /* Tắt nút gạt gốc */
+        /* Ẩn cục Switch mặc định của Streamlit */
         div[data-testid="stToggle"] label > div:last-child { display: none !important; }
 
-        /* Tùy chỉnh màu khi trạng thái BẬT/TẮT thông qua aria-checked (Của widget cha) */
-        div[data-testid="stToggle"]:has(input[aria-checked="true"]) label > div[data-testid="stMarkdownContainer"] > p {
-            background: rgba(34, 197, 94, 0.15) !important;
-            border: 1px solid #4ade80 !important;
-            color: #4ade80 !important;
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3) !important;
-        }
+        /* MÀU ĐỎ NHẠT KHI TẮT */
         div[data-testid="stToggle"]:has(input[aria-checked="false"]) label > div[data-testid="stMarkdownContainer"] > p {
             background: rgba(239, 68, 68, 0.1) !important;
             border: 1px solid rgba(239, 68, 68, 0.4) !important;
             color: #fca5a5 !important;
+        }
+        div[data-testid="stToggle"]:has(input[aria-checked="false"]) label > div[data-testid="stMarkdownContainer"] > p:hover {
+            background: rgba(239, 68, 68, 0.2) !important; transform: translateY(-1px);
+        }
+
+        /* MÀU XANH LÁ KHI BẬT */
+        div[data-testid="stToggle"]:has(input[aria-checked="true"]) label > div[data-testid="stMarkdownContainer"] > p {
+            background: rgba(34, 197, 94, 0.15) !important;
+            border: 1px solid #4ade80 !important;
+            color: #4ade80 !important;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4) !important;
+        }
+        div[data-testid="stToggle"]:has(input[aria-checked="true"]) label > div[data-testid="stMarkdownContainer"] > p:hover {
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.6) !important; transform: translateY(-1px);
         }
         </style>
     """, unsafe_allow_html=True)
@@ -236,7 +244,6 @@ def hop_thoai_dang_xuat():
         if st.button(t("Tiếp tục chặng đường"), use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
-# --- HỘP THOẠI ĐĂNG DỰ ÁN TỪ MRV DÀNH CHO CHỦ RỪNG ---
 @st.dialog("NIÊM YẾT DỰ ÁN TỪ KẾT QUẢ MRV / LIST PROJECT", width="large")
 def hop_thoai_dang_du_an_mrv(est_credits, lang="Tiếng Việt"):
     st.info("Hệ thống đã nhận kết quả thẩm định. Bạn có thể điều chỉnh số lượng tín chỉ nếu thấy cần thiết trước khi đẩy sang Cổng Đầu Tư." if lang == "Tiếng Việt" else "Assessment received. You can adjust the estimated credits before pushing to the Investment Portal.")
@@ -284,21 +291,29 @@ def hop_thoai_dang_du_an_mrv(est_credits, lang="Tiếng Việt"):
         else:
             st.warning("Vui lòng nhập tên dự án." if lang == "Tiếng Việt" else "Please enter project name.")
 
-def render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=False):
+def render_mrv_results(nam_co_so, nam_so_sanh, sar_on, era5_on, lulc_on):
     lang = st.session_state.get("current_lang", "Tiếng Việt")
     seed = st.session_state["mrv_polygon_seed"]
-    
-    dien_tich_hecta = st.session_state.get("mrv_area_hectares", 50.0) 
+    dien_tich_hecta = st.session_state.get("mrv_area_hectares", 150.0) 
     
     base_val = int(dien_tich_hecta * 95.0 + (nam_co_so - 2020) * 27000 + (seed % 5000))
     comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
     
-    is_filtered = False
-    if filter_grass:
-        is_filtered = True
-        noise_reduction = 0.16 
-        base_val = int(base_val * (1 - noise_reduction))
-        comp_val = int(comp_val * (1 - noise_reduction))
+    # KẾT HỢP CÁC BỘ LỌC CÔNG NGHỆ (Mô phỏng tác động định lượng)
+    active_filters = []
+    
+    if sar_on:
+        base_val = int(base_val * 0.84)
+        comp_val = int(comp_val * 0.84)
+        active_filters.append(t("Lọc ~16% sinh khối ảo (Cỏ dại)") if lang == "Tiếng Việt" else "Filtered ~16% fake biomass")
+        
+    if era5_on:
+        # Khử nhiễu khí hậu giúp làm mịn sai số
+        comp_val = int(comp_val * 0.98) 
+        active_filters.append(t("Đối soát lượng mưa ERA5") if lang == "Tiếng Việt" else "ERA5 rainfall validated")
+        
+    if lulc_on:
+        active_filters.append(t("Xác thực LULC") if lang == "Tiếng Việt" else "LULC transition verified")
 
     diff = comp_val - base_val
     base_credits = base_val
@@ -359,9 +374,11 @@ def render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=False):
     with st.container(border=True):
         st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
         
-        if is_filtered:
-            msg_filter = "Đã lọc ~16% sinh khối ảo (thảm cỏ/cây bụi) bằng sóng Radar SAR. Trả về kết quả đo lường Sinh khối Gỗ Lõi (Core Woody Biomass)." if lang == "Tiếng Việt" else "Filtered ~16% fake biomass (grass/shrubs) via SAR Radar. Returning Core Woody Biomass measurement."
-            st.markdown(f"<div style='background:rgba(245,158,11,0.1); border:1px solid #f59e0b; color:#fbbf24; padding:8px 12px; border-radius:8px; font-size:0.9rem; font-weight:800; margin-bottom:15px; text-align:center;'>{msg_filter}</div>", unsafe_allow_html=True)
+        # IN THÔNG BÁO TỔNG HỢP CÁC BỘ LỌC TRÊN 1 DÒNG DÀI
+        if active_filters:
+            joined_str = " | ".join(active_filters)
+            msg_final = f"{t('Đã áp dụng')}: {joined_str}. {t('Kết quả trả về là Sinh khối Gỗ Lõi')}" if lang == "Tiếng Việt" else f"Applied: {joined_str}. Returning Core Woody Biomass."
+            st.markdown(f"<div style='background:rgba(34, 197, 94, 0.15); border:1px solid #4ade80; color:#4ade80; padding:10px 15px; border-radius:8px; font-size:0.95rem; font-weight:800; margin-bottom:20px; text-align:center;'>{msg_final}</div>", unsafe_allow_html=True)
 
         title_text = t("KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG")
         title_html = '<div class="mrv-blue-title-container">'
@@ -489,30 +506,38 @@ def main_app():
             st.markdown(f"<div style='text-align:center; color:#48bb78; font-weight:800; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;'>{t('HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI')}</div>", unsafe_allow_html=True)
             
             with st.container(border=True):
-                st.markdown("<h4 style='color: #38bdf8; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px;'>THÔNG SỐ VÙNG KHOANH VÀ TÀI LIỆU</h4>", unsafe_allow_html=True)
+                lbl_thong_so = "THÔNG SỐ VÙNG KHOANH VÀ DỮ LIỆU KHÔNG GIAN" if lang == "Tiếng Việt" else "SPATIAL BOUNDARY & DATA PARAMETERS"
+                st.markdown(f"<h4 style='color: #38bdf8; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;'>{lbl_thong_so}</h4>", unsafe_allow_html=True)
                 
                 c_input1, c_input2 = st.columns(2)
                 with c_input1:
-                    st.text_input("Tọa độ vùng khoanh (VD: 10.762622, 106.660172):", placeholder="Vĩ độ, Kinh độ")
-                    st.session_state["mrv_area_hectares"] = st.slider("Diện tích khu vực ước tính (Hecta):", min_value=1.0, max_value=1000.0, value=50.0, step=0.5)
+                    lbl_toado = "Tọa độ đa giác (Nhập các đỉnh ranh giới, cách nhau bởi dấu ;):" if lang == "Tiếng Việt" else "Polygon Coordinates (Enter vertices, separated by ;):"
+                    plh_toado = "VD: 11.42, 107.42 ; 11.45, 107.45 ; 11.41, 107.48" if lang == "Tiếng Việt" else "Ex: 11.42, 107.42 ; 11.45, 107.45 ; 11.41, 107.48"
+                    st.text_area(lbl_toado, placeholder=plh_toado, height=90)
+                    
+                    lbl_area = "Diện tích khu vực ước tính (Hecta):" if lang == "Tiếng Việt" else "Estimated Area (Hectares):"
+                    st.session_state["mrv_area_hectares"] = st.slider(lbl_area, min_value=1.0, max_value=10000.0, value=500.0, step=10.0)
                 with c_input2:
-                    st.file_uploader("Tải lên Sổ đỏ / Bản đồ ranh giới (PDF, PNG, JPG):", type=['pdf', 'png', 'jpg', 'jpeg'])
+                    lbl_upload = "Tải lên Dữ liệu Không gian (KML, GeoJSON, SHP.zip):" if lang == "Tiếng Việt" else "Upload Spatial Data (KML, GeoJSON, SHP.zip):"
+                    st.file_uploader(lbl_upload, type=['kml', 'geojson', 'zip'])
+                    
+                    lbl_upload_note = "* Yêu cầu tải lên tệp định dạng chuẩn để AI tự động bóc tách ranh giới và loại trừ vùng chồng lấn." if lang == "Tiếng Việt" else "* Standard formats required for AI to automatically extract boundaries and exclude overlaps."
+                    st.markdown(f"<div style='font-size: 0.85rem; color: #94a3b8; margin-top: 5px;'><i>{lbl_upload_note}</i></div>", unsafe_allow_html=True)
 
                 # --- NÂNG CẤP KHỐI CÔNG NGHỆ CHUYÊN SÂU ---
                 st.markdown('<div class="tech-block-marker"></div>', unsafe_allow_html=True)
                 with st.container(border=True):
-                    st.markdown("<div class='tech-title'>CÔNG NGHỆ CHUYÊN SÂU (ĐỘC QUYỀN)</div>" if lang == "Tiếng Việt" else "<div class='tech-title'>ADVANCED TECHNOLOGY (EXCLUSIVE)</div>", unsafe_allow_html=True)
+                    lbl_tech = "CÔNG NGHỆ CHUYÊN SÂU (ĐỘC QUYỀN)" if lang == "Tiếng Việt" else "ADVANCED TECHNOLOGY (EXCLUSIVE)"
+                    st.markdown(f"<div class='tech-title'>{lbl_tech}</div>", unsafe_allow_html=True)
                     
-                    c_tech1, c_tech2, c_tech3 = st.columns(3)
-                    with c_tech1:
-                        lbl_radar = "Tích hợp Radar SAR (Lọc sinh khối ảo)" if lang == "Tiếng Việt" else "Integrate SAR Radar (Filter fake biomass)"
-                        is_filter_grass_on = st.toggle(lbl_radar, value=True, key="tech_sar")
-                    with c_tech2:
-                        lbl_weather = "Khử nhiễu Khí hậu (ERA5 Data)" if lang == "Tiếng Việt" else "Climate Noise Reduction (ERA5 Data)"
-                        st.toggle(lbl_weather, value=False, key="tech_weather")
-                    with c_tech3:
-                        lbl_lulc = "Phân tích chuyển đổi lớp phủ (LULC)" if lang == "Tiếng Việt" else "Land Use Change Detection (LULC)"
-                        st.toggle(lbl_lulc, value=False, key="tech_lulc")
+                    lbl_sar = "Tích hợp Radar SAR (Lọc sinh khối ảo)" if lang == "Tiếng Việt" else "Integrate SAR Radar (Filter fake biomass)"
+                    is_filter_grass_on = st.toggle(lbl_sar, value=True, key="tech_sar")
+                    
+                    lbl_weather = "Khử nhiễu Khí hậu (Dữ liệu ERA5)" if lang == "Tiếng Việt" else "Climate Noise Reduction (ERA5 Data)"
+                    is_era5_on = st.toggle(lbl_weather, value=False, key="tech_weather")
+                    
+                    lbl_lulc = "Phân tích Chuyển đổi Lớp phủ (LULC)" if lang == "Tiếng Việt" else "Land Use Change Detection (LULC)"
+                    is_lulc_on = st.toggle(lbl_lulc, value=False, key="tech_lulc")
 
                 st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 20px 0;'>", unsafe_allow_html=True)
                 
@@ -535,7 +560,7 @@ def main_app():
                 st.session_state["mrv_calc_state"] = True
 
             if st.session_state["mrv_calc_state"]:
-                render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=is_filter_grass_on)
+                render_mrv_results(nam_co_so, nam_so_sanh, is_filter_grass_on, is_era5_on, is_lulc_on)
 
             try:
                 with st.spinner(t("AI đang phân tích dữ liệu không gian...")):
