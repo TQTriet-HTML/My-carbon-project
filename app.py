@@ -84,7 +84,6 @@ def inject_custom_css():
             animation: titleWave 4s linear infinite; margin-bottom: 0px !important; padding-bottom: 0px !important; letter-spacing: 1px;
         }
         
-        /* HIỆU ỨNG ÁNH SÁNG LƯỚT CHỮ XANH DƯƠNG MỖI 10 GIÂY */
         @keyframes blueShimmerSweep10s {
             0%, 80% { background-position: -200% center; }
             100% { background-position: 200% center; }
@@ -115,9 +114,6 @@ def inject_custom_css():
         div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, .stSelectbox > div > div, input { border-color: #2d3748 !important; }
         div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
 
-        @keyframes hoverSweepLight { 0% { left: -100%; opacity: 0; } 50% { opacity: 1; } 100% { left: 200%; opacity: 0; } }
-        @keyframes autoSweepLight10s { 0%, 85% { left: -100%; opacity: 0; } 86% { opacity: 1; left: -100%; } 95%, 100% { left: 200%; opacity: 0; } }
-
         div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important; 
             border: 1px solid rgba(72, 187, 120, 0.4) !important; 
@@ -127,27 +123,74 @@ def inject_custom_css():
             position: relative; overflow: hidden !important; transition: all 0.4s ease !important; padding: 24px !important; margin-bottom: 20px !important;
         }
 
-        div[data-testid="stVerticalBlockBorderWrapper"]:hover::after, .glass-block:hover::after {
-             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-             transform: skewX(-25deg); animation: hoverSweepLight 1.5s ease-in-out; z-index: 10; pointer-events: none;
-        }
-
         .sidebar-badge { 
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important; padding: 16px; border-radius: 10px; margin-bottom: 12px; 
             border: 1px solid rgba(72, 187, 120, 0.4) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             transition: all 0.4s ease; position: relative; overflow: hidden !important;
         }
         .sidebar-badge:hover { transform: translateY(-2px); border-color: #48bb78 !important; box-shadow: 0 8px 25px rgba(72, 187, 120, 0.35); }
-        .sidebar-badge:hover::after {
-             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-             background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-             transform: skewX(-25deg); animation: hoverSweepLight 1.5s ease-in-out; z-index: 10; pointer-events: none;
-        }
-        
         .sb-title { color: #E2E8F0; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
         .sb-desc { color: #a0aec0; font-size: 11px; margin-top: 4px; }
         .sb-desc.highlight { color: #48bb78; font-weight: 600; }
+        
+        /* -----------------------------------------------------------
+           BỘ CSS CHO KHỐI CÔNG NGHỆ CHUYÊN SÂU & TOGGLE MỚI
+           ----------------------------------------------------------- */
+        @keyframes techGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); border-color: rgba(245, 158, 11, 0.6); }
+        }
+        
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tech-block-marker) {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(23, 37, 84, 0.98)) !important;
+            border: 1px solid rgba(245, 158, 11, 0.4) !important;
+            animation: techGlow 4s infinite ease-in-out !important;
+            padding: 20px 24px !important;
+        }
+        
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tech-block-marker):hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.25) !important;
+            border-color: #4ade80 !important;
+        }
+        
+        /* Chuyển Text thành Font nổi bật, không cần icon */
+        .tech-title {
+            color: #f59e0b;
+            font-size: 1.15rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Ẩn cục Switch nhỏ của Streamlit, thay bằng Box chữ */
+        div[data-testid="stToggle"] { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px; }
+        div[data-testid="stToggle"] label { padding: 0 !important; width: 100%; }
+        div[data-testid="stToggle"] label > div[data-testid="stMarkdownContainer"] {
+            width: 100%;
+            text-align: center;
+        }
+        div[data-testid="stToggle"] label > div[data-testid="stMarkdownContainer"] > p {
+            font-weight: 800; font-size: 0.95rem; letter-spacing: 0.5px;
+            padding: 12px 15px; border-radius: 8px; width: 100%;
+            transition: all 0.3s ease; text-transform: uppercase;
+        }
+        /* Tắt nút gạt gốc */
+        div[data-testid="stToggle"] label > div:last-child { display: none !important; }
+
+        /* Tùy chỉnh màu khi trạng thái BẬT/TẮT thông qua aria-checked (Của widget cha) */
+        div[data-testid="stToggle"]:has(input[aria-checked="true"]) label > div[data-testid="stMarkdownContainer"] > p {
+            background: rgba(34, 197, 94, 0.15) !important;
+            border: 1px solid #4ade80 !important;
+            color: #4ade80 !important;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3) !important;
+        }
+        div[data-testid="stToggle"]:has(input[aria-checked="false"]) label > div[data-testid="stMarkdownContainer"] > p {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid rgba(239, 68, 68, 0.4) !important;
+            color: #fca5a5 !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -250,11 +293,10 @@ def render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=False):
     base_val = int(dien_tich_hecta * 95.0 + (nam_co_so - 2020) * 27000 + (seed % 5000))
     comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
     
-    # TÍNH NĂNG ĐỘC QUYỀN: KHỬ NHIỄU CỎ DẠI BẰNG RADAR SAR
     is_filtered = False
     if filter_grass:
         is_filtered = True
-        noise_reduction = 0.16 # Trừ đi 16% sinh khối ảo do thảm cỏ/cây bụi
+        noise_reduction = 0.16 
         base_val = int(base_val * (1 - noise_reduction))
         comp_val = int(comp_val * (1 - noise_reduction))
 
@@ -317,10 +359,9 @@ def render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=False):
     with st.container(border=True):
         st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
         
-        # Bảng thông báo đã khử nhiễu
         if is_filtered:
-            msg_filter = "Đã lọc ~16% sinh khối ảo (thảm cỏ/cây bụi) bằng sóng Radar SAR. Số liệu đo lường hiện tại là Sinh khối Gỗ Lõi (Core Woody Biomass)." if lang == "Tiếng Việt" else "Filtered ~16% fake biomass (grass/shrubs) using SAR Radar. Current measurement is Core Woody Biomass."
-            st.markdown(f"<div style='background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fbbf24; padding:8px 12px; border-radius:8px; font-size:0.85rem; font-weight:700; margin-bottom:15px; text-align:center;'>🛰️ {msg_filter}</div>", unsafe_allow_html=True)
+            msg_filter = "Đã lọc ~16% sinh khối ảo (thảm cỏ/cây bụi) bằng sóng Radar SAR. Trả về kết quả đo lường Sinh khối Gỗ Lõi (Core Woody Biomass)." if lang == "Tiếng Việt" else "Filtered ~16% fake biomass (grass/shrubs) via SAR Radar. Returning Core Woody Biomass measurement."
+            st.markdown(f"<div style='background:rgba(245,158,11,0.1); border:1px solid #f59e0b; color:#fbbf24; padding:8px 12px; border-radius:8px; font-size:0.9rem; font-weight:800; margin-bottom:15px; text-align:center;'>{msg_filter}</div>", unsafe_allow_html=True)
 
         title_text = t("KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG")
         title_html = '<div class="mrv-blue-title-container">'
@@ -403,7 +444,6 @@ def render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=False):
             st.markdown(f"<div class='mrv-highlight-banner' style='color:#fca5a5; border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.15);'>{t(msg)}</div>", unsafe_allow_html=True)
 
 def main_app():
-    # Sửa lỗi dịch vai trò: Gọi trực tiếp ROLE_DICT
     lang = st.session_state.get("current_lang", "Tiếng Việt")
     curr_role = st.session_state.get('current_role', '')
     role_display = ROLE_DICT.get(curr_role, curr_role) if lang == "English" else curr_role
@@ -458,13 +498,23 @@ def main_app():
                 with c_input2:
                     st.file_uploader("Tải lên Sổ đỏ / Bản đồ ranh giới (PDF, PNG, JPG):", type=['pdf', 'png', 'jpg', 'jpeg'])
 
-                # TÍNH NĂNG MỚI: BỘ LỌC RADAR SAR
-                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 15px 0;'>", unsafe_allow_html=True)
-                st.markdown("<h4 style='color: #f59e0b; font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;'>CÔNG NGHỆ CHUYÊN SÂU (ĐỘC QUYỀN)</h4>" if lang == "Tiếng Việt" else "<h4 style='color: #f59e0b; font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;'>ADVANCED TECHNOLOGY (EXCLUSIVE)</h4>", unsafe_allow_html=True)
-                lbl_radar = "🛰️ Tích hợp Radar SAR (Lọc bỏ nhiễu cỏ dại, cây bụi có độ xanh cao nhưng sinh khối thấp)" if lang == "Tiếng Việt" else "🛰️ Integrate SAR Radar (Filter out high-green/low-biomass grass & shrubs)"
-                is_filter_grass_on = st.toggle(lbl_radar, value=True)
+                # --- NÂNG CẤP KHỐI CÔNG NGHỆ CHUYÊN SÂU ---
+                st.markdown('<div class="tech-block-marker"></div>', unsafe_allow_html=True)
+                with st.container(border=True):
+                    st.markdown("<div class='tech-title'>CÔNG NGHỆ CHUYÊN SÂU (ĐỘC QUYỀN)</div>" if lang == "Tiếng Việt" else "<div class='tech-title'>ADVANCED TECHNOLOGY (EXCLUSIVE)</div>", unsafe_allow_html=True)
+                    
+                    c_tech1, c_tech2, c_tech3 = st.columns(3)
+                    with c_tech1:
+                        lbl_radar = "Tích hợp Radar SAR (Lọc sinh khối ảo)" if lang == "Tiếng Việt" else "Integrate SAR Radar (Filter fake biomass)"
+                        is_filter_grass_on = st.toggle(lbl_radar, value=True, key="tech_sar")
+                    with c_tech2:
+                        lbl_weather = "Khử nhiễu Khí hậu (ERA5 Data)" if lang == "Tiếng Việt" else "Climate Noise Reduction (ERA5 Data)"
+                        st.toggle(lbl_weather, value=False, key="tech_weather")
+                    with c_tech3:
+                        lbl_lulc = "Phân tích chuyển đổi lớp phủ (LULC)" if lang == "Tiếng Việt" else "Land Use Change Detection (LULC)"
+                        st.toggle(lbl_lulc, value=False, key="tech_lulc")
 
-                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 15px 0;'>", unsafe_allow_html=True)
+                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 20px 0;'>", unsafe_allow_html=True)
                 
                 c1, c2 = st.columns(2)
                 with c1: nam_co_so = st.selectbox(t("Năm cơ sở:"), range(2016, 2027), index=4) 
