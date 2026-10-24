@@ -4,6 +4,7 @@ import geemap.foliumap as geemap
 from streamlit_folium import folium_static 
 import os
 import random
+import datetime
 
 from i18n import t
 from auth import hien_thi_cong_dang_nhap
@@ -46,6 +47,14 @@ if "users_db" not in st.session_state:
         "investor": {"password": "123", "role": "Nhà đầu tư từ xa (Cổ đông)", "wallet_balance": 250000.0},
         "buyer": {"password": "123", "role": "Doanh nghiệp mua tín chỉ", "wallet_balance": 500000.0}
     }
+
+# BỘ TỪ ĐIỂN DỊCH VAI TRÒ
+ROLE_DICT = {
+    "Doanh nghiệp mua tín chỉ": "Corporate Buyer",
+    "Nhà đầu tư từ xa (Cổ đông)": "Remote Investor",
+    "Chủ rừng / Kỹ sư MRV": "Forest Owner / MRV Eng."
+}
+
 if "logged_in" not in st.session_state: st.session_state["logged_in"] = False
 if "current_user" not in st.session_state: st.session_state["current_user"] = ""
 if "current_role" not in st.session_state: st.session_state["current_role"] = ""
@@ -96,14 +105,8 @@ def inject_custom_css():
         }
         
         button[data-baseweb="tab"] { font-weight: 700 !important; font-size: 0.95rem !important; }
-        button[data-baseweb="tab"][aria-selected="true"] { 
-            color: #48bb78 !important; 
-            text-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important; 
-        }
-        div[data-baseweb="tab-highlight"] { 
-            background-color: #48bb78 !important; 
-            box-shadow: 0 0 12px rgba(72, 187, 120, 0.8) !important; 
-        }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #48bb78 !important; text-shadow: 0 0 10px rgba(72, 187, 120, 0.6) !important; }
+        div[data-baseweb="tab-highlight"] { background-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.8) !important; }
 
         button[kind="primary"] { background-color: #48bb78 !important; border-color: #48bb78 !important; color: white !important; font-weight: 700 !important; letter-spacing: 0.5px; }
         button[kind="primary"]:hover { background-color: #38a169 !important; box-shadow: 0 0 20px rgba(72, 187, 120, 0.7) !important; }
@@ -111,19 +114,9 @@ def inject_custom_css():
         *:focus, *:active { outline: none !important; }
         div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, .stSelectbox > div > div, input { border-color: #2d3748 !important; }
         div[data-baseweb="select"]:hover, div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:hover, div[data-baseweb="input"]:focus-within { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
-        [aria-invalid="true"] { border-color: #48bb78 !important; box-shadow: 0 0 12px rgba(72, 187, 120, 0.4) !important; }
 
-        @keyframes hoverSweepLight {
-            0% { left: -100%; opacity: 0; }
-            50% { opacity: 1; }
-            100% { left: 200%; opacity: 0; }
-        }
-
-        @keyframes autoSweepLight10s {
-            0%, 85% { left: -100%; opacity: 0; }
-            86% { opacity: 1; left: -100%; }
-            95%, 100% { left: 200%; opacity: 0; }
-        }
+        @keyframes hoverSweepLight { 0% { left: -100%; opacity: 0; } 50% { opacity: 1; } 100% { left: 200%; opacity: 0; } }
+        @keyframes autoSweepLight10s { 0%, 85% { left: -100%; opacity: 0; } 86% { opacity: 1; left: -100%; } 95%, 100% { left: 200%; opacity: 0; } }
 
         div[data-testid="stVerticalBlockBorderWrapper"], .glass-block {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(45, 55, 72, 0.95)) !important; 
@@ -138,28 +131,6 @@ def inject_custom_css():
              content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
              background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
              transform: skewX(-25deg); animation: hoverSweepLight 1.5s ease-in-out; z-index: 10; pointer-events: none;
-        }
-
-        @keyframes unifiedGreenGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); border-color: rgba(72, 187, 120, 0.3) !important; }
-            50% { box-shadow: 0 0 30px rgba(72, 187, 120, 0.8), inset 0 0 10px rgba(72, 187, 120, 0.2); border-color: #48bb78 !important; }
-        }
-
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block) {
-             animation: unifiedGreenGlow 4s infinite ease-in-out !important;
-        }
-
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block):hover {
-            transform: translateY(-8px) scale(1.02) !important;
-            box-shadow: 0 20px 40px rgba(72, 187, 120, 0.9), inset 0 0 20px rgba(72, 187, 120, 0.5) !important;
-            border-color: #48bb78 !important;
-            z-index: 5 !important;
-        }
-        
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.auto-glow-block)::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(72, 187, 120, 0.6), transparent);
-            transform: skewX(-25deg); animation: autoSweepLight10s 10s infinite linear; z-index: 10; pointer-events: none;
         }
 
         .sidebar-badge { 
@@ -201,15 +172,9 @@ with st.sidebar:
 def hop_thoai_dang_xuat():
     st.markdown("""
         <style>
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important;
-            color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
-        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; border: 1px solid rgba(239, 68, 68, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
         div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
-            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important;
-            color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important;
-        }
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button { background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important; border: 1px solid rgba(72, 187, 120, 0.8) !important; color: white !important; font-weight: 800 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
         div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover { box-shadow: 0 0 25px rgba(72,187,120,0.9) !important; transform: translateY(-2px) scale(1.03) !important; }
         </style>
     """, unsafe_allow_html=True)
@@ -228,15 +193,72 @@ def hop_thoai_dang_xuat():
         if st.button(t("Tiếp tục chặng đường"), use_container_width=True, key="confirm_out_no"):
             st.rerun()
 
-def render_mrv_results(nam_co_so, nam_so_sanh):
+# --- HỘP THOẠI ĐĂNG DỰ ÁN TỪ MRV DÀNH CHO CHỦ RỪNG ---
+@st.dialog("NIÊM YẾT DỰ ÁN TỪ KẾT QUẢ MRV / LIST PROJECT", width="large")
+def hop_thoai_dang_du_an_mrv(est_credits, lang="Tiếng Việt"):
+    st.info("Hệ thống đã nhận kết quả thẩm định. Bạn có thể điều chỉnh số lượng tín chỉ nếu thấy cần thiết trước khi đẩy sang Cổng Đầu Tư." if lang == "Tiếng Việt" else "Assessment received. You can adjust the estimated credits before pushing to the Investment Portal.")
+    p_name = st.text_input("Tên dự án sinh thái:" if lang == "Tiếng Việt" else "Eco Project Name:")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        p_credits = st.number_input("Số tín chỉ ước tính (Tấn):" if lang == "Tiếng Việt" else "Estimated credits (Tons):", min_value=100, value=int(est_credits), step=100)
+    with c2:
+        p_target = st.number_input("Mục tiêu gọi vốn ($):" if lang == "Tiếng Việt" else "Funding Target ($):", min_value=1000, step=5000, value=int(p_credits * 10.5))
+    
+    opts_tier = ["Hạng A (Cao cấp)", "Hạng B (Tiêu chuẩn)", "Hạng C (Ươm mầm)"] if lang == "Tiếng Việt" else ["Tier A (Premium)", "Tier B (Standard)", "Tier C (Seedling)"]
+    p_type = st.selectbox("Loại tín chỉ dự kiến cung cấp:" if lang == "Tiếng Việt" else "Expected Credit Type:", opts_tier)
+    
+    if st.button("ĐĂNG DỰ ÁN LÊN CỔNG ĐẦU TƯ" if lang == "Tiếng Việt" else "PUBLISH TO INVESTMENT PORTAL", type="primary", use_container_width=True):
+        if p_name.strip():
+            if "invest_projects" not in st.session_state: st.session_state["invest_projects"] = []
+            
+            badge_color = "#fbbf24" if "A" in p_type else ("#38bdf8" if "B" in p_type else "#cbd5e1")
+            bg_color = "rgba(251, 191, 36, 0.15)" if "A" in p_type else ("rgba(56, 189, 248, 0.15)" if "B" in p_type else "rgba(148, 163, 184, 0.15)")
+            shield_class = "shield-a" if "A" in p_type else ("shield-b" if "B" in p_type else "shield-c")
+            shield_text = "I" if "A" in p_type else ("II" if "B" in p_type else "III")
+
+            st.session_state["invest_projects"].insert(0, {
+                "name": p_name, "target": f"${p_target:,.0f}", "tier": p_type,
+                "badge_color": badge_color, "bg_color": bg_color, 
+                "shield_class": shield_class, "shield_text": shield_text,
+                "owner": st.session_state.get("current_user", "Unknown"),
+                "contact": "Theo hồ sơ viễn thám AI" if lang == "Tiếng Việt" else "Per AI spatial record",
+                "file_html": f"<div style='margin-top:15px; margin-bottom:15px; padding:10px; background:rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius:8px; color: #6ee7b7; font-weight: 700;'>📎 Hồ sơ: Đã thẩm định {p_credits:,} Tấn qua không gian AI</div>",
+                "ai_verified": True
+            })
+            
+            today_str = datetime.date.today().strftime("%Y-%m-%d")
+            if "diary_records" not in st.session_state: st.session_state["diary_records"] = {}
+            st.session_state["diary_records"][today_str] = {
+                "title": f"Đăng dự án (MRV): {p_name}",
+                "type": "Giao dịch" if lang == "Tiếng Việt" else "Transaction",
+                "content": f"Mục tiêu: ${p_target:,.0f} | Hạng: {p_type} | Khối lượng MRV: {p_credits:,} Tấn"
+            }
+            
+            st.success("Đã niêm yết dự án thành công! Hệ thống đã ghi nhận vào Nhật Ký Xanh." if lang == "Tiếng Việt" else "Project successfully listed and recorded in Green Diary!")
+            st.session_state["mrv_calc_state"] = False 
+            st.rerun()
+        else:
+            st.warning("Vui lòng nhập tên dự án." if lang == "Tiếng Việt" else "Please enter project name.")
+
+def render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=False):
+    lang = st.session_state.get("current_lang", "Tiếng Việt")
     seed = st.session_state["mrv_polygon_seed"]
-    # Lấy diện tích hecta từ slider nhập liệu để tính toán sinh khối
+    
     dien_tich_hecta = st.session_state.get("mrv_area_hectares", 50.0) 
     
     base_val = int(dien_tich_hecta * 95.0 + (nam_co_so - 2020) * 27000 + (seed % 5000))
     comp_val = int(dien_tich_hecta * 95.0 + (nam_so_sanh - 2020) * 27000 + (nam_so_sanh - nam_co_so) * 41000 + (seed % 5000))
-    diff = comp_val - base_val
     
+    # TÍNH NĂNG ĐỘC QUYỀN: KHỬ NHIỄU CỎ DẠI BẰNG RADAR SAR
+    is_filtered = False
+    if filter_grass:
+        is_filtered = True
+        noise_reduction = 0.16 # Trừ đi 16% sinh khối ảo do thảm cỏ/cây bụi
+        base_val = int(base_val * (1 - noise_reduction))
+        comp_val = int(comp_val * (1 - noise_reduction))
+
+    diff = comp_val - base_val
     base_credits = base_val
     comp_credits = comp_val
     
@@ -249,30 +271,17 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
     st.markdown("""
         <style>
         @keyframes greenBreathGlow {
-            0%, 100% {
-                box-shadow: 0 0 18px rgba(72, 187, 120, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.08);
-                border-color: rgba(72, 187, 120, 0.6);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(72, 187, 120, 0.75), inset 0 0 25px rgba(56, 189, 248, 0.18);
-                border-color: #48bb78;
-            }
+            0%, 100% { box-shadow: 0 0 18px rgba(72, 187, 120, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.08); border-color: rgba(72, 187, 120, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(72, 187, 120, 0.75), inset 0 0 25px rgba(56, 189, 248, 0.18); border-color: #48bb78; }
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) {
             background: linear-gradient(135deg, rgba(13, 31, 60, 0.96), rgba(18, 42, 77, 0.93)) !important;
-            border: 2px solid #38a169 !important;
-            border-radius: 18px !important;
-            padding: 26px 28px 38px 28px !important;
-            animation: greenBreathGlow 4s infinite ease-in-out !important;
-            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
-            position: relative;
-            overflow: hidden !important;
-            margin-bottom: 25px !important;
+            border: 2px solid #38a169 !important; border-radius: 18px !important; padding: 26px 28px 38px 28px !important;
+            animation: greenBreathGlow 4s infinite ease-in-out !important; transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease !important;
+            position: relative; overflow: hidden !important; margin-bottom: 25px !important;
         }
         div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker):hover {
-            transform: translateY(-8px) scale(1.015) !important;
-            box-shadow: 0 22px 50px rgba(72, 187, 120, 0.9), inset 0 0 30px rgba(72, 187, 120, 0.4) !important;
-            border-color: #48bb78 !important;
+            transform: translateY(-8px) scale(1.015) !important; box-shadow: 0 22px 50px rgba(72, 187, 120, 0.9), inset 0 0 30px rgba(72, 187, 120, 0.4) !important; border-color: #48bb78 !important;
         }
 
         @keyframes blueCharWaveGlow {
@@ -282,95 +291,37 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
             100% { color: #38bdf8; text-shadow: none; transform: translateY(0); }
         }
         .mrv-blue-title-container { text-align: center; margin-bottom: 25px; white-space: nowrap; }
-        .mrv-blue-char {
-            display: inline-block;
-            font-size: clamp(20px, 2.3vw, 30px);
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            color: #38bdf8;
-            animation: blueCharWaveGlow 10s infinite ease-in-out;
-            text-transform: uppercase;
-        }
+        .mrv-blue-char { display: inline-block; font-size: clamp(20px, 2.3vw, 30px); font-weight: 900; letter-spacing: 1.5px; color: #38bdf8; animation: blueCharWaveGlow 10s infinite ease-in-out; text-transform: uppercase; }
 
-        .mrv-stat-box { 
-            text-align: center; 
-            padding: 8px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+        .mrv-stat-box { text-align: center; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .mrv-stat-title { color: #cbd5e1; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .mrv-stat-num { 
-            font-size: clamp(1.35rem, 1.9vw, 2rem); 
-            font-weight: 900; 
-            line-height: 1.2; 
-            letter-spacing: 0.5px; 
-            white-space: nowrap;
-            color: #48bb78 !important; 
-        }
-        .mrv-sub-credit {
-            color: #38bdf8;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-top: 6px;
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            border-radius: 8px;
-            padding: 2px 12px;
-        }
+        .mrv-stat-num { font-size: clamp(1.35rem, 1.9vw, 2rem); font-weight: 900; line-height: 1.2; letter-spacing: 0.5px; white-space: nowrap; color: #48bb78 !important; }
+        .mrv-sub-credit { color: #38bdf8; font-size: 0.85rem; font-weight: 700; margin-top: 6px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 2px 12px; }
 
         .mrv-delta-badge { display: inline-block; padding: 3px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; margin-top: 6px; }
         .mrv-delta-pos { background: rgba(72, 187, 120, 0.2) !important; color: #48bb78 !important; border: 1px solid rgba(72, 187, 120, 0.6) !important; }
         .mrv-delta-neg { background: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; }
-
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            border: 1.5px solid #34d399 !important;
-            color: #ffffff !important;
-            font-weight: 800 !important;
-            font-size: 0.88rem !important;
-            letter-spacing: 0.5px;
-            border-radius: 10px !important;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-            margin-top: 8px !important;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.mrv-result-marker) button:hover {
-            background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
-            transform: translateY(-4px) scale(1.04) !important;
-            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
-            border-color: #6ee7b7 !important;
-        }
 
         @keyframes pulseBanner {
             0%, 100% { border-color: rgba(72, 187, 120, 0.45); box-shadow: 0 0 10px rgba(72, 187, 120, 0.2); }
             50% { border-color: rgba(72, 187, 120, 0.9); box-shadow: 0 0 24px rgba(72, 187, 120, 0.5); }
         }
         .mrv-highlight-banner {
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.3), rgba(16, 185, 129, 0.12));
-            border: 1.5px solid rgba(72, 187, 120, 0.7);
-            border-radius: 12px;
-            padding: 14px 20px;
-            text-align: center;
-            font-size: clamp(12.5px, 1.05vw, 15.5px);
-            font-weight: 700;
-            color: #68d391;
-            letter-spacing: 0.5px;
-            animation: pulseBanner 4s infinite ease-in-out;
-            margin-top: 18px;
-            margin-bottom: 8px;
-            white-space: nowrap !important;
-            overflow-x: auto;
-            scrollbar-width: none;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.3), rgba(16, 185, 129, 0.12)); border: 1.5px solid rgba(72, 187, 120, 0.7);
+            border-radius: 12px; padding: 14px 20px; text-align: center; font-size: clamp(12.5px, 1.05vw, 15.5px); font-weight: 700; color: #68d391; letter-spacing: 0.5px;
+            animation: pulseBanner 4s infinite ease-in-out; margin-top: 18px; margin-bottom: 8px; white-space: nowrap !important; overflow-x: auto; scrollbar-width: none;
         }
-        .mrv-highlight-banner::-webkit-scrollbar { display: none; }
         </style>
     """, unsafe_allow_html=True)
 
     with st.container(border=True):
         st.markdown("<div class='mrv-result-marker'></div>", unsafe_allow_html=True)
         
+        # Bảng thông báo đã khử nhiễu
+        if is_filtered:
+            msg_filter = "Đã lọc ~16% sinh khối ảo (thảm cỏ/cây bụi) bằng sóng Radar SAR. Số liệu đo lường hiện tại là Sinh khối Gỗ Lõi (Core Woody Biomass)." if lang == "Tiếng Việt" else "Filtered ~16% fake biomass (grass/shrubs) using SAR Radar. Current measurement is Core Woody Biomass."
+            st.markdown(f"<div style='background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fbbf24; padding:8px 12px; border-radius:8px; font-size:0.85rem; font-weight:700; margin-bottom:15px; text-align:center;'>🛰️ {msg_filter}</div>", unsafe_allow_html=True)
+
         title_text = t("KẾT QUẢ PHÂN TÍCH ĐỊNH LƯỢNG")
         title_html = '<div class="mrv-blue-title-container">'
         delay = 0.0
@@ -433,31 +384,40 @@ def render_mrv_results(nam_co_so, nam_so_sanh):
         if diff >= 0:
             msg = f"Khu vực phân tích ghi nhận sự tăng trưởng sinh khối. Bạn có thể niêm yết thêm {diff_text} tín chỉ carbon."
             st.markdown(f"<div class='mrv-highlight-banner'>{t(msg)}</div>", unsafe_allow_html=True)
+            
+            curr_role = st.session_state.get("current_role", "")
+            if "Chủ rừng" in curr_role or "Owner" in curr_role or "admin" in st.session_state.get("current_user", "").lower():
+                st.markdown('<div id="list-mrv-btn-wrapper"></div>', unsafe_allow_html=True)
+                st.markdown("""
+                <style>
+                div:has(> #list-mrv-btn-wrapper) + div button { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important; border: 1.5px solid #7dd3fc !important; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4) !important; margin-top: 15px !important; height: 45px !important; font-size: 1rem !important; color: white !important; font-weight: 800 !important; border-radius: 10px !important; transition: all 0.3s ease !important; width: 100%; }
+                div:has(> #list-mrv-btn-wrapper) + div button:hover { background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%) !important; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.7) !important; transform: translateY(-2px); }
+                </style>
+                """, unsafe_allow_html=True)
+                
+                btn_lbl = "🚀 NIÊM YẾT KẾT QUẢ NÀY LÊN CỔNG ĐẦU TƯ" if lang == "Tiếng Việt" else "🚀 LIST THIS RESULT TO INVESTMENT PORTAL"
+                if st.button(btn_lbl, key="btn_push_mrv"):
+                    hop_thoai_dang_du_an_mrv(diff, lang)
         else:
             msg = "Mật độ sinh khối trong khu vực sụt giảm. Cần rà soát biến động rừng."
             st.markdown(f"<div class='mrv-highlight-banner' style='color:#fca5a5; border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.15);'>{t(msg)}</div>", unsafe_allow_html=True)
 
 def main_app():
-    role_display = t(st.session_state['current_role'])
+    # Sửa lỗi dịch vai trò: Gọi trực tiếp ROLE_DICT
+    lang = st.session_state.get("current_lang", "Tiếng Việt")
+    curr_role = st.session_state.get('current_role', '')
+    role_display = ROLE_DICT.get(curr_role, curr_role) if lang == "English" else curr_role
     
     col_t, col_l = st.columns([7, 1])
     with col_t:
         st.markdown(f'<div class="main-title">{t("NỀN TẢNG MRV & SÀN GIAO DỊCH")}</div>', unsafe_allow_html=True)
-        # SỬ DỤNG CLASS "welcome-text-blue" CHO DÒNG LỜI CHÀO (MÀU XANH DƯƠNG + HIỆU ỨNG LƯỚT SÁNG)
         st.markdown(f'<div class="welcome-text-blue">{t("Xin chào")}, {st.session_state["current_user"]} ({role_display})</div>', unsafe_allow_html=True)
     
     with col_l:
         st.markdown("""
             <style>
-            button[kind="secondary"] {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important;
-                border: 1px solid rgba(239, 68, 68, 0.6) !important; color: #fca5a5 !important; font-weight: 700 !important;
-                border-radius: 8px !important; transition: all 0.3s ease !important;
-            }
-            button[kind="secondary"]:hover {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important;
-                border-color: #ef4444 !important; color: white !important; transform: translateY(-2px);
-            }
+            button[kind="secondary"] { background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4)) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; color: #fca5a5 !important; font-weight: 700 !important; border-radius: 8px !important; transition: all 0.3s ease !important; }
+            button[kind="secondary"]:hover { background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9)) !important; border-color: #ef4444 !important; color: white !important; transform: translateY(-2px); }
             </style>
         """, unsafe_allow_html=True)
         if st.button(t("ĐĂNG XUẤT"), type="secondary", use_container_width=True):
@@ -489,18 +449,22 @@ def main_app():
             st.markdown(f"<div style='text-align:center; color:#48bb78; font-weight:800; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;'>{t('HỆ THỐNG GIÁM SÁT KHÔNG GIAN AI')}</div>", unsafe_allow_html=True)
             
             with st.container(border=True):
-                # --- PHẦN NÂNG CẤP GIAO DIỆN NHẬP DỮ LIỆU ĐẦU VÀO CHO MRV ---
                 st.markdown("<h4 style='color: #38bdf8; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px;'>THÔNG SỐ VÙNG KHOANH VÀ TÀI LIỆU</h4>", unsafe_allow_html=True)
                 
                 c_input1, c_input2 = st.columns(2)
                 with c_input1:
                     st.text_input("Tọa độ vùng khoanh (VD: 10.762622, 106.660172):", placeholder="Vĩ độ, Kinh độ")
-                    # Lưu giá trị diện tích vào session_state để hàm tính toán dùng chung
                     st.session_state["mrv_area_hectares"] = st.slider("Diện tích khu vực ước tính (Hecta):", min_value=1.0, max_value=1000.0, value=50.0, step=0.5)
                 with c_input2:
                     st.file_uploader("Tải lên Sổ đỏ / Bản đồ ranh giới (PDF, PNG, JPG):", type=['pdf', 'png', 'jpg', 'jpeg'])
 
-                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 20px 0;'>", unsafe_allow_html=True)
+                # TÍNH NĂNG MỚI: BỘ LỌC RADAR SAR
+                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 15px 0;'>", unsafe_allow_html=True)
+                st.markdown("<h4 style='color: #f59e0b; font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;'>CÔNG NGHỆ CHUYÊN SÂU (ĐỘC QUYỀN)</h4>" if lang == "Tiếng Việt" else "<h4 style='color: #f59e0b; font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;'>ADVANCED TECHNOLOGY (EXCLUSIVE)</h4>", unsafe_allow_html=True)
+                lbl_radar = "🛰️ Tích hợp Radar SAR (Lọc bỏ nhiễu cỏ dại, cây bụi có độ xanh cao nhưng sinh khối thấp)" if lang == "Tiếng Việt" else "🛰️ Integrate SAR Radar (Filter out high-green/low-biomass grass & shrubs)"
+                is_filter_grass_on = st.toggle(lbl_radar, value=True)
+
+                st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 15px 0;'>", unsafe_allow_html=True)
                 
                 c1, c2 = st.columns(2)
                 with c1: nam_co_so = st.selectbox(t("Năm cơ sở:"), range(2016, 2027), index=4) 
@@ -521,7 +485,7 @@ def main_app():
                 st.session_state["mrv_calc_state"] = True
 
             if st.session_state["mrv_calc_state"]:
-                render_mrv_results(nam_co_so, nam_so_sanh)
+                render_mrv_results(nam_co_so, nam_so_sanh, filter_grass=is_filter_grass_on)
 
             try:
                 with st.spinner(t("AI đang phân tích dữ liệu không gian...")):
